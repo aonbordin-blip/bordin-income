@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bordin✓Income</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+body{margin:0;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:#f4f6fb;color: #333;}
+.header{background:linear-gradient(135deg,#6a5af9,#00c6ff);color:#fff;padding:30px 20px;border-radius:0 0 25px 25px;text-align: center;box-shadow: 0 4px 15px rgba(106, 90, 249, 0.3);}
+.title{font-size:24px;font-weight:bold; letter-spacing: 1px;}
+.card{background:#fff;margin:15px;padding:20px;border-radius:15px;box-shadow:0 5px 15px rgba(0,0,0,0.05);}
+
+/* ปรับ Grid เป็น 6 คอลัมน์ย่อยเพื่อให้จัดขนาดง่ายขึ้น */
+.grid-summary {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.item{background:#fff;padding:5px 5px;border-radius:15px;text-align:center;border: 1px solid #f0f0f0;box-shadow: 0 2px 10px rgba(0,0,0,0.02); grid-column: span 2; /* ปกติกิน 2/6 คือ 3 คอลัมน์ต่อแถว */}
+.item span { font-size: 14px; color: #888; font-weight: 700; display: block; margin-bottom: 5px; }
+.item h3 { margin: 0; font-size: 25px; color: #2d3436; font-weight: 700; }
+
+/* กลุ่มรายรับ */
+.item-salary { border-left: 5px solid #6a5af9; }
+.item-shift { border-left: 5px solid #00c6ff; }
+.item-ot { border-left: 5px solid #ff7675; }
+.item-gmp { border-left: 5px solid #55efc4; }
+.item-att { border-left: 5px solid #fd79a8; } 
+.item-bonus { border-left: 5px solid #e17055; }
+.item-extra { border-left: 5px solid #a29bfe; }
+
+/* ปรับตำแหน่ง รวมก่อนหัก ให้ใหญ่และอยู่ต่อจากเงินพิเศษ */
+.item-gross { 
+  grid-column: span 4; 
+  border: 1px solid #fdcb6e; 
+  background: #fffdf5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.item-gross h3 { color: #d97706; font-size: 22px; }
+
+/* กลุ่มรายการหัก แบ่ง 2 คอลัมน์ (คนละ 3/6) */
+.item-social { border-left: 5px solid #fab1a0; background: #fff9f8; grid-column: span 3; }
+.item-other-deduct { border-left: 5px solid #ff7675; background: #fff9f8; grid-column: span 3; }
+
+/* มือถือ */
+@media (max-width: 600px) {
+  .item h3 { font-size: 18px; }
+  .item-gross h3 { font-size: 22px; }
+}
+
+.payout-zone { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px; }
+.payout-card { padding: 15px; border-radius: 15px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s; }
+.payout-card:hover { transform: translateY(-3px); filter: brightness(1.1); }
+.payout-card:active { transform: scale(0.95); }
+.payout-25 { background: linear-gradient(135deg, #6c5ce7, #a29bfe); }
+.payout-10 { background: linear-gradient(135deg, #00b894, #55efc4); }
+.deduct-card { padding: 10px; border-radius: 12px; text-align: center; color: #555; background: #fff; border: 1px dashed #fab1a0; margin-top: 10px;}
+.payout-card span { font-size: 12px; opacity: 0.9; }
+.payout-card h4 { margin: 5px 0; font-size: 22px; }
+.deduct-card small { font-size: 11px; color: #888; display: block;}
+.deduct-card b { font-size: 14px; color: #e17055;}
+
+.grid-inputs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.full-width { grid-column: span 2; }
+
+button{background:linear-gradient(135deg,#6a5af9,#00c6ff);color:#fff;border:none;padding:14px;border-radius:12px;width:100%;cursor:pointer;font-weight: bold; font-size: 15px; transition: 0.3s;}
+button:active { transform: scale(0.98); }
+
+.excelBtn { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+.backupBtn { background: #6c5ce7; }
+.restoreBtn { background: #a29bfe; }
+
+input, select { width: 100%; padding: 12px; margin: 4px 0; border-radius: 10px; border: 1px solid #e0e0e0; box-sizing: border-box; font-size: 15px; background: #fafafa; }
+.table-container { overflow-x: auto; margin-top: 10px; margin-bottom: 25px; border: 1px solid #eee; border-radius: 10px; }
+table{width:100%;border-collapse:collapse; min-width: 750px;}
+th,td{padding: 8px 4px; text-align:center; border-bottom: 1px solid #f0f0f0; font-size: 13px;}
+th{background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap;}
+.period-header { background: #f1f2f6; padding: 10px; font-weight: bold; color: #2f3542; border-radius: 8px; margin-top: 10px; display: inline-block; }
+
+.totalBox{background:linear-gradient(135deg,#6a5af9,#00c6ff);color:#fff;text-align:center;padding:30px 20px;border-radius:20px;margin:15px; box-shadow: 0 10px 20px rgba(106, 90, 249, 0.2);}
+.totalBox h2 { margin: 10px 0 0 0; font-size: 44px; font-weight: 800; }
+
+.deleteBtn{background:#ff7675;color:#fff;border:none;padding:4px 8px;border-radius:6px;width: auto; font-size: 10px;}
+
+.row-holiday { background-color: #fff5f5 !important; }
+.badge-holiday { background: #ff7675 !important; color: white !important; padding: 3px 8px; border-radius: 6px; font-weight: bold; }
+
+.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+.modal-content { background-color: #fff; margin: 5% auto; padding: 0; border-radius: 20px; width: 95%; max-width: 1600px; max-height: 85vh; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.4); animation: slideUp 0.3s ease-out; display: flex; flex-direction: column; }
+@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.modal-header { padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.modal-header h3 { margin: 0; font-size: 18px; }
+.close-modal { font-size: 28px; font-weight: bold; cursor: pointer; }
+
+.modal-body { padding: 10px; overflow-y: auto; flex-grow: 1; }
+
+.modal-table-container { 
+  border-radius: 12px; 
+  border: 1px solid #edf2f7; 
+  overflow-x: auto; 
+  background: #fff;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-table { width: 100%; border-collapse: collapse; min-width: 750px; }
+.modal-table th { background: #f7fafc; padding: 12px 8px; color: #4a5568; font-weight: 600; font-size: 11px; border-bottom: 2px solid #edf2f7; white-space: nowrap; }
+.modal-table td { padding: 10px 8px; border-bottom: 1px solid #edf2f7; font-size: 13px; text-align: center; }
+
+.t-gross { color: #d97706; font-weight: bold; background: #fffbeb; }
+.t-social { color: #e53e3e; }
+.t-net { color: #6c5ce7; font-weight: 800; background: #f5f3ff; }
+
+.modal-footer-row { background: #2d3436 !important; color: white !important; font-weight: bold; }
+.modal-footer-row td { color: white !important; padding: 12px 8px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="title">✨Bordin✓Record Income.✨</div>
+</div>
+
+<div class="card grid-summary">
+  <div class="item item-salary"><span>ค่าแรง</span><h3 id="salary">0</h3></div>
+  <div class="item item-shift"><span>ค่ากะ</span><h3 id="shift">0</h3></div>
+  <div class="item item-ot"><span>OT</span><h3 id="ot">0</h3></div>
+  
+  <div class="item item-gmp"><span>GMP</span><h3 id="gmp">0</h3></div>
+  <div class="item item-att"><span>เบี้ยขยัน</span><h3 id="attDisplay">0</h3></div>
+  <div class="item item-bonus"><span>โบนัส</span><h3 id="bonusDisplay">0</h3></div>
+  
+  <div class="item item-extra"><span>เงินพิเศษ</span><h3 id="extraDisplay">0</h3></div>
+  <div class="item item-gross"><span>รวมรายได้ก่อนหัก</span><h3 id="grossTotalDisplay">0</h3></div>
+
+  <div class="item item-social"><span>รวมหักจ่ายประกันสังคม</span><h3 id="socialTotalDisplay">0</h3></div>
+  <div class="item item-other-deduct"><span>หักจ่ายอื่นๆ</span><h3 id="otherDeductTotalDisplay">0</h3></div>
+</div>
+
+<div class="payout-zone">
+  <div>
+    <div class="payout-card payout-25" onclick="openModal(1)">
+        <span>ยอดรับสุทธิ วันที่ 25 (คลิกดู)</span>
+        <h4 id="pay25">0</h4>
+    </div>
+    <div class="deduct-card"><small>✓รวมหักจ่าย ∆</small><b id="deduct25">0</b></div>
+  </div>
+  <div>
+    <div class="payout-card payout-10" onclick="openModal(2)">
+        <span>ยอดรับสุทธิ วันที่ 10 (คลิกดู)</span>
+        <h4 id="pay10">0</h4>
+    </div>
+    <div class="deduct-card"><small>✓รวมหักจ่าย ∆</small><b id="deduct10">0</b></div>
+  </div>
+</div>
+
+<div class="totalBox">
+  <span>รายได้สุทธิรวมประจำเดือน</span>
+  <h2 id="total">0 บาท</h2>
+</div>
+
+<div class="card"><canvas id="chart"></canvas></div>
+
+<div class="card">
+  <h3 style="margin-top:0">📅 เลือกเดือน</h3>
+  <input type="month" id="monthFilter" onchange="render()">
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">➕ เพิ่มรายได้</h3>
+  <div class="grid-inputs">
+    <input type="date" id="date" class="full-width">
+    <select id="shiftType" class="full-width">
+      <option value="N">N (กะกลางคืน)</option>
+      <option value="M">M (กะเช้า)</option>
+      <option value="H" selected>H (วันหยุด)</option>
+      <option value="GH">GH (วันหยุดนักขัตฤกษ์)</option>
+    </select>
+    <input type="number" id="salaryInput" placeholder="ค่าแรง"><input type="number" id="shiftInput" placeholder="ค่ากะ">
+    <input type="number" id="otInput" placeholder="OT"><input type="number" id="gmpInput" placeholder="GMP">
+    <input type="number" id="attInput" placeholder="เบี้ยขยัน"><input type="number" id="bonusInput" placeholder="โบนัส">
+    <input type="number" id="extraInput" placeholder="เงินพิเศษ"><input type="number" id="otherInput" placeholder="หักอื่นๆ">
+    <div class="full-width"><button onclick="addData()">บันทึกรายการ</button></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">📊 การจัดการข้อมูล</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+    <button class="excelBtn" onclick="exportToExcel()">📥 Excel</button>
+    <button class="backupBtn" onclick="backupJSON()">💾 สำรอง</button>
+    <button class="restoreBtn" onclick="restoreJSON()">📂 ดึงข้อมูล</button>
+  </div>
+  <input type="file" id="fileInput" style="display:none" onchange="handleFile(event)">
+
+  <div class="period-header">🗓️ ประวัติรายการทั้งหมด</div>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr><th>วันที่</th><th>กะ</th><th>ค่าแรง</th><th>ค่ากะ</th><th>OT</th><th>GMP</th><th>เบี้ยขยัน</th><th>โบนัส</th><th>พิเศษ</th><th>ก่อนหัก</th><th>ประกันสังคม</th><th>หักจ่ายอื่นๆ</th><th>สุทธิ</th><th>ลบ</th></tr>
+      </thead>
+      <tbody id="fullList"></tbody>
+    </table>
+  </div>
+  <button onclick="clearData()" style="background:#ff7675; margin-top:10px;">ล้างหน้ากระดาน (เริ่มใหม่)</button>
+</div>
+
+<div id="detailModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header" id="modalHeaderBg">
+        <h3 id="modalTitle">รายละเอียดงวด</h3>
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+        <div class="modal-table-container">
+            <table class="modal-table">
+              <thead>
+                <tr>
+                    <th>วันที่</th><th>กะ</th><th>ค่าแรง</th><th>ค่ากะ</th><th>OT</th><th>GMP</th><th>เบี้ยขยัน</th><th>โบนัส</th><th>พิเศษ</th>
+                    <th class="t-gross">ก่อนหัก</th><th class="t-social">ประกันสังคม</th><th>หักจ่ายอื่นๆ</th><th class="t-net">สุทธิ</th>
+                </tr>
+              </thead>
+              <tbody id="modalBody"></tbody>
+              <tfoot id="modalFoot"></tfoot>
+            </table>
+        </div>
+    </div>
+  </div>
+</div>
+<script>
+let data = JSON.parse(localStorage.getItem("income")) || [];
+function addData(){
+  if(!date.value) { alert("กรุณาเลือกวันที่"); return; }
+  const isDuplicate = data.some(item => item.date === date.value);
+  if(isDuplicate) { alert("❌ วันที่นี้มีข้อมูลอยู่แล้ว!"); return; }
+  data.push({
+    date: date.value, shift: shiftType.value, 
+    salary:+salaryInput.value||0, shiftPay:+shiftInput.value||0,
+    ot:+otInput.value||0, gmp:+gmpInput.value||0, 
+    att:+attInput.value||0, bonus:+bonusInput.value||0,
+    extra:+extraInput.value||0, other:+otherInput.value||0
+  });
+  localStorage.setItem("income",JSON.stringify(data));
+  render();
+  ["salaryInput","shiftInput","otInput","gmpInput","attInput","bonusInput","extraInput","otherInput"].forEach(id=>document.getElementById(id).value="");
+}
+
+function deleteItem(i){ if(confirm("ยืนยันการลบ?")){ data.splice(i,1); localStorage.setItem("income",JSON.stringify(data)); render(); } }
+
+function openModal(period) {
+    const month = monthFilter.value;
+    const title = period === 1 ? "🗓️ งวดที่ 1 (จ่ายวันที่ 25)" : "🗓️ งวดที่ 2 (จ่ายวันที่ 10)";
+    document.getElementById("modalTitle").innerText = title;
+    
+    const header = document.getElementById("modalHeaderBg");
+    if(period === 1) header.style.background = "linear-gradient(135deg, #6c5ce7, #a29bfe)";
+    else header.style.background = "linear-gradient(135deg, #00b894, #55efc4)";
+
+    let html = "";
+    let p = {s:0, sh:0, o:0, g:0, at:0, bn:0, ex:0, gr:0, soc:0, oth:0, net:0};
+    
+    data.sort((a,b) => new Date(a.date) - new Date(b.date));
+    data.forEach((d) => {
+        if(month && !d.date.startsWith(month)) return;
+        let day = new Date(d.date).getDate();
+        
+        if((period === 1 && day <= 15) || (period === 2 && day > 15)) {
+            let dSalary = d.salary || 0, dShiftPay = d.shiftPay || 0, dOt = d.ot || 0, dGmp = d.gmp || 0, dAtt = d.att || 0, dBonus = d.bonus || 0, dExtra = d.extra || 0, dOther = d.other || 0;
+            let gross = Math.ceil(dSalary + dShiftPay + dOt + dGmp + dAtt + dBonus + dExtra);
+            let social = Math.min(750, Math.ceil((dSalary + dShiftPay + dGmp) * 0.05));
+            let net = Math.ceil(gross - social - dOther);
+
+            let isHoliday = (d.shift === 'H');
+            let rowClass = isHoliday ? 'class="row-holiday"' : '';
+            let badgeClass = isHoliday ? 'class="badge-holiday"' : 'style="background:#edf2f7;padding:3px 8px;border-radius:6px; font-weight:bold;"';
+
+            html += `<tr ${rowClass}>
+                <td>${d.date}</td>
+                <td><span ${badgeClass}>${d.shift}</span></td>
+                <td>${dSalary.toLocaleString()}</td><td>${dShiftPay.toLocaleString()}</td><td>${dOt.toLocaleString()}</td>
+                <td>${dGmp.toLocaleString()}</td><td>${dAtt.toLocaleString()}</td><td>${dBonus.toLocaleString()}</td>
+                <td>${dExtra.toLocaleString()}</td>
+                <td class="t-gross">${gross.toLocaleString()}</td>
+                <td class="t-social">${social.toLocaleString()}</td>
+                <td>${dOther.toLocaleString()}</td>
+                <td class="t-net">${net.toLocaleString()}</td>
+            </tr>`;
+            p.s+=dSalary; p.sh+=dShiftPay; p.o+=dOt; p.g+=dGmp; p.at+=dAtt; p.bn+=dBonus; p.ex+=dExtra; p.gr+=gross; p.soc+=social; p.oth+=dOther; p.net+=net;
+        }
+    });
+
+    document.getElementById("modalBody").innerHTML = html || "<tr><td colspan='13' style='padding:40px; text-align:center;'>ไม่มีข้อมูลรายการในงวดนี้</td></tr>";
+    
+    if(p.net > 0) {
+        document.getElementById("modalFoot").innerHTML = `<tr class="modal-footer-row">
+            <td colspan="2">รวมงวด</td>
+            <td>${p.s.toLocaleString()}</td><td>${p.sh.toLocaleString()}</td><td>${p.o.toLocaleString()}</td>
+            <td>${p.g.toLocaleString()}</td><td>${p.at.toLocaleString()}</td><td>${p.bn.toLocaleString()}</td>
+            <td>${p.ex.toLocaleString()}</td><td>${p.gr.toLocaleString()}</td><td>${p.soc.toLocaleString()}</td>
+            <td>${p.oth.toLocaleString()}</td><td>${p.net.toLocaleString()}</td>
+        </tr>`;
+    } else { document.getElementById("modalFoot").innerHTML = ""; }
+    
+    document.getElementById("detailModal").style.display = "block";
+}
+
+function closeModal() { document.getElementById("detailModal").style.display = "none"; }
+window.onclick = function(event) { if (event.target == document.getElementById("detailModal")) closeModal(); }
+
+function render(){
+  let s=0, sh=0, o=0, g=0, at=0, bn=0, ex=0, tt=0, sTotal=0, oTotal=0, gTotal=0;
+  let p1Net = 0, p1Deduct = 0, p2Net = 0, p2Deduct = 0;
+  let month = monthFilter.value;
+  document.getElementById("fullList").innerHTML="";
+
+  data.sort((a,b) => new Date(a.date) - new Date(b.date));
+  data.forEach((d,i)=>{
+    if(month && !d.date.startsWith(month)) return;
+    let day = new Date(d.date).getDate();
+    let dSalary = d.salary || 0, dShiftPay = d.shiftPay || 0, dOt = d.ot || 0, dGmp = d.gmp || 0, dAtt = d.att || 0, dBonus = d.bonus || 0, dExtra = d.extra || 0, dOther = d.other || 0;
+    let gross = Math.ceil(dSalary + dShiftPay + dOt + dGmp + dAtt + dBonus + dExtra);
+    let social = Math.min(750, Math.ceil((dSalary + dShiftPay + dGmp) * 0.05));
+    let net = Math.ceil(gross - social - dOther);
+
+    let isHoliday = (d.shift === 'H');
+    let rowClass = isHoliday ? 'class="row-holiday"' : '';
+
+    document.getElementById("fullList").innerHTML += `<tr ${rowClass}>
+      <td>${d.date}</td><td>${d.shift}</td>
+      <td>${dSalary.toLocaleString()}</td><td>${dShiftPay.toLocaleString()}</td><td>${dOt.toLocaleString()}</td>
+      <td>${dGmp.toLocaleString()}</td><td>${dAtt.toLocaleString()}</td><td>${dBonus.toLocaleString()}</td>
+      <td>${dExtra.toLocaleString()}</td><td>${gross.toLocaleString()}</td>
+      <td>${social.toLocaleString()}</td><td>${dOther.toLocaleString()}</td>
+      <td>${net.toLocaleString()}</td>
+      <td><button class="deleteBtn" onclick="deleteItem(${i})">ลบ</button></td>
+    </tr>`;
+
+    if(day <= 15) { p1Net += net; p1Deduct += (social + dOther); } 
+    else { p2Net += net; p2Deduct += (social + dOther); }
+    
+    s+=dSalary; sh+=dShiftPay; o+=dOt; g+=dGmp; at+=dAtt; bn+=dBonus; ex+=dExtra; 
+    sTotal+=social; 
+    oTotal+=dOther; 
+    gTotal+=gross; 
+    tt+=net;
+  });
+  document.getElementById("salary").innerText=s.toLocaleString();
+  document.getElementById("shift").innerText=sh.toLocaleString();
+  document.getElementById("ot").innerText=o.toLocaleString();
+  document.getElementById("gmp").innerText=g.toLocaleString();
+  document.getElementById("attDisplay").innerText=at.toLocaleString();
+  document.getElementById("bonusDisplay").innerText=bn.toLocaleString();
+  document.getElementById("extraDisplay").innerText=ex.toLocaleString();
+  document.getElementById("grossTotalDisplay").innerText=gTotal.toLocaleString();
+  document.getElementById("socialTotalDisplay").innerText=sTotal.toLocaleString();
+  document.getElementById("otherDeductTotalDisplay").innerText=oTotal.toLocaleString();
+  document.getElementById("total").innerText=tt.toLocaleString()+" บาท";
+  document.getElementById("pay25").innerText = p1Net.toLocaleString();
+  document.getElementById("pay10").innerText = p2Net.toLocaleString();
+  document.getElementById("deduct25").innerText = p1Deduct.toLocaleString();
+  document.getElementById("deduct10").innerText = p2Deduct.toLocaleString();
+  updateChart();
+}
+
+function backupJSON() {
+  if(data.length === 0) { alert("ไม่มีข้อมูลที่จะสำรอง"); return; }
+  const now = new Date();
+  const dateStr = now.toISOString().split('T')[0];
+  const timeStr = now.getHours().toString().padStart(2, '0') + "-" + now.getMinutes().toString().padStart(2, '0');
+  const fileName = `Income_Backup_${dateStr}_${timeStr}.json`;
+  const blob = new Blob([JSON.stringify(data)], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function restoreJSON() { document.getElementById('fileInput').click(); }
+function handleFile(e) {
+  const reader = new FileReader();
+  reader.onload = (ev) => { try { data = JSON.parse(ev.target.result); localStorage.setItem("income", JSON.stringify(data)); render(); } catch(err) { alert("ไฟล์ไม่ถูกต้อง"); } };
+  reader.readAsText(e.target.files[0]);
+}
+
+function exportToExcel() {
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(data);
+  XLSX.utils.book_append_sheet(wb, ws, "Income");
+  XLSX.writeFile(wb, `Income_Data.xlsx`);
+}
+
+function clearData(){ if(confirm("ล้างข้อมูลทั้งหมด?")) { data=[]; localStorage.clear(); render(); } }
+
+let chart;
+function updateChart(){
+  let month = monthFilter.value;
+  let labels=[], totals=[];
+  data.forEach(d=>{
+    if(month && !d.date.startsWith(month)) return;
+    let soc = Math.min(750, Math.ceil(((d.salary||0) + (d.shiftPay||0) + (d.gmp||0)) * 0.05));
+    let dailyNet = (d.salary||0)+(d.shiftPay||0)+(d.ot||0)+(d.gmp||0)+(d.att||0)+(d.bonus||0)+(d.extra||0)-soc-(d.other||0);
+    totals.push(dailyNet);
+    labels.push(d.date.split('-')[2]);
+  });
+  if(chart) chart.destroy();
+  const ctx = document.getElementById("chart").getContext("2d");
+  chart = new Chart(ctx,{
+    type:"line",
+    data:{ labels, datasets:[{ label:"รายได้สุทธิ", data:totals, borderColor:'#6a5af9', tension:0.4, fill:true, backgroundColor:'rgba(106, 90, 249, 0.1)' }] },
+    options: { responsive: true, plugins: { legend: { display: false } } }
+  });
+}
+render();
+</script>
+</body>
+</html>
