@@ -9,17 +9,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
-
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* สีขาวนวลสะอาดตา ช่วยลดความล้าของสายตา */
     background: #FDFBF7; 
     color: #333;
     line-height: 1.6;
 }
 .author-line {
-  border-bottom: 2px solid #00e5ff; /* สีฟ้าสว่าง ดูพรีเมียม */
+  border-bottom: 2px solid #00e5ff;
   padding-bottom: 2px;
   display: inline-block;
 }
@@ -27,7 +25,6 @@ body {
   0%, 100% { text-shadow: 0 0 5px #fff, 0 0 10px #00e5ff; }
   50% { text-shadow: 0 0 15px #fff, 0 0 25px #6a5af9; }
 }
-
 .title {
   color: #fff;
   animation: glow 2s ease-in-out infinite;
@@ -35,32 +32,78 @@ body {
   font-weight: bold;
   letter-spacing: 5px;
 }
+.header {
+  background: linear-gradient(135deg,#6a5af9,#00c6ff);
+  color:#fff;
+  padding:5px 20px;
+  border-radius:0 0 10px 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 15px 35px rgba(0, 119, 255, 0.15);
+}
 
-.header{background:linear-gradient(135deg,#6a5af9,#00c6ff);color:#fff;padding:5px 20px;border-radius:0 0 10px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow: 0 15px 35px rgba(0, 119, 255, 0.15);}
+/* ===== POP ANIMATION ===== */
+@keyframes popNumber {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); color: #6a5af9; }
+    100% { transform: scale(1); }
+}
+.pop-animate {
+    animation: popNumber 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
 
-
-.title{font-size:30px;font-weight:bold; letter-spacing: 5px;}
+/* ===== CARDS & SHADOWS ===== */
 .card {
     background: #ffffff;
     margin: 15px;
     padding: 20px;
-    /* เพิ่มความโค้งมนเป็น 20px ให้ดูทันสมัย */
-    border-radius: 20px; 
-    /* ปรับเงาให้ดูบางเบาและนุ่มนวล (Soft Shadow) */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04); 
-    border: 1px solid rgba(0, 0, 0, 0.02);
+    border-radius: 24px;
+    /* เงา 3 มิติซ้อนกัน */
+    box-shadow: 
+        0 10px 20px rgba(0, 0, 0, 0.05),
+        0 0 0 1px rgba(106, 90, 249, 0.07),
+        0 20px 30px -10px rgba(106, 90, 249, 0.15);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 20px 30px rgba(0, 0, 0, 0.08),
+        0 0 0 1px rgba(0, 198, 255, 0.2),
+        0 25px 40px -10px rgba(106, 90, 249, 0.25);
 }
 
-/* ปรับ Grid เป็น 6 คอลัมน์ย่อยเพื่อให้จัดขนาดง่ายขึ้น */
 .grid-summary {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
 }
 
-.item{background:#fff;padding:2px 5px;border-radius:10px;text-align:center;border: 1px solid #f0f0f0;box-shadow: 0 2px 10px rgba(0,0,0,0.02); grid-column: span 2; /* ปกติกิน 2/6 คือ 3 คอลัมน์ต่อแถว */}
+.item {
+    background:#fff;
+    padding:2px 5px;
+    border-radius:10px;
+    text-align:center;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    grid-column: span 2;
+    transition: all 0.3s ease;
+}
+.item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(106,90,249,0.1);
+}
 .item span { font-size: 14px; color: #888; font-weight: 700; display: block; margin-bottom: 2px; }
-.item h3 { margin: 0; font-size: 25px; color: #2d3436; font-weight: 700; }
+.item h3 { 
+    margin: 0; 
+    font-size: 25px; 
+    color: #2d3436; 
+    font-weight: 700;
+    transition: color 0.3s, transform 0.2s;
+}
 
 /* กลุ่มรายรับ */
 .item-salary { border-left: 5px solid #6a5af9; }
@@ -71,7 +114,6 @@ body {
 .item-bonus { border-left: 5px solid #e17055; }
 .item-extra { border-left: 5px solid #a29bfe; }
 
-/* ปรับตำแหน่ง รวมก่อนหัก ให้ใหญ่และอยู่ต่อจากเงินพิเศษ */
 .item-gross { 
   grid-column: span 4; 
   border: 1px solid #fdcb6e; 
@@ -82,11 +124,9 @@ body {
 }
 .item-gross h3 { color: #d97706; font-size: 22px; }
 
-/* กลุ่มรายการหัก แบ่ง 2 คอลัมน์ (คนละ 3/6) */
 .item-social { border-left: 5px solid #fab1a0; background: #fff9f8; grid-column: span 3; }
 .item-other-deduct { border-left: 5px solid #ff7675; background: #fff9f8; grid-column: span 3; }
 
-/* มือถือ */
 @media (max-width: 600px) {
   .item h3 { font-size: 18px; }
   .item-gross h3 { font-size: 22px; }
@@ -94,7 +134,7 @@ body {
 
 .payout-zone { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px; }
 .payout-card { padding: 15px; border-radius: 15px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s; }
-.payout-card:hover { transform: translateY(-3px); filter: brightness(1.1); }
+.payout-card:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 15px 25px rgba(0,0,0,0.15); }
 .payout-card:active { transform: scale(0.95); }
 .payout-25 { background: linear-gradient(135deg, #6c5ce7, #a29bfe); }
 .payout-10 { background: linear-gradient(135deg, #00b894, #55efc4); }
@@ -102,29 +142,75 @@ body {
 .payout-card span { font-size: 13px; opacity: 0.9; }
 .payout-card h4 { margin: 1px 0; font-size: 22px; }
 .deduct-card small { font-size: 12px; color: #888; display: block;}
-.deduct-card b { font-size: 18px; color: #e17055;}
+.deduct-card b { font-size: 18px; color: #e17055; }
 
 .grid-inputs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .full-width { grid-column: span 2; }
 
-button{background:linear-gradient(135deg,#6a5af9,#00c6ff);color:#fff;border:none;padding:14px;border-radius:12px;width:100%;cursor:pointer;font-weight: bold; font-size: 15px; transition: 0.3s;}
+button {
+    background: linear-gradient(135deg,#6a5af9,#00c6ff);
+    color:#fff;
+    border:none;
+    padding:14px;
+    border-radius:12px;
+    width:100%;
+    cursor:pointer;
+    font-weight: bold;
+    font-size: 15px;
+    transition: 0.3s;
+    box-shadow: 0 4px 10px rgba(106, 90, 249, 0.3);
+}
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(106, 90, 249, 0.4);
+}
 button:active { transform: scale(0.98); }
 
 .excelBtn { background: linear-gradient(135deg, #27ae60, #2ecc71); }
 .backupBtn { background: #6c5ce7; }
 .restoreBtn { background: #a29bfe; }
 
-input, select { width: 100%; padding: 12px; margin: 4px 0; border-radius: 10px; border: 1px solid #e0e0e0; box-sizing: border-box; font-size: 15px; background: #fafafa; }
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin: 4px 0;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    box-sizing: border-box;
+    font-size: 15px;
+    background: #fafafa;
+    transition: border 0.3s;
+}
+input:focus, select:focus {
+    border-color: #6a5af9;
+    box-shadow: 0 0 0 3px rgba(106,90,249,0.1);
+}
+
 .table-container { overflow-x: auto; margin-top: 10px; margin-bottom: 25px; border: 1px solid #eee; border-radius: 10px; }
-table{width:100%;border-collapse:collapse; min-width: 750px;}
-th,td{padding: 8px 4px; text-align:center; border-bottom: 1px solid #f0f0f0; font-size: 13px;}
-th{background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap;}
+table { width:100%; border-collapse:collapse; min-width: 750px; }
+th,td { padding: 8px 4px; text-align:center; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
 .period-header { background: #f1f2f6; padding: 10px; font-weight: bold; color: #2f3542; border-radius: 8px; margin-top: 10px; display: inline-block; }
 
-.totalBox{background:linear-gradient(135deg,#6a5af9,#00c6ff);color:#fff;text-align:center;padding:30px 20px;border-radius:20px;margin:15px; box-shadow: 0 10px 20px rgba(106, 90, 249, 0.2);}
-.totalBox h2 { margin: 10px 0 0 0; font-size: 45px; font-weight: 800; }
+.totalBox {
+    background: linear-gradient(135deg,#6a5af9,#00c6ff);
+    color:#fff;
+    text-align:center;
+    padding:30px 20px;
+    border-radius:20px;
+    margin:15px;
+    box-shadow: 0 20px 30px rgba(106, 90, 249, 0.3), 0 5px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+.totalBox:hover { transform: scale(1.02); }
+.totalBox h2 { 
+    margin: 10px 0 0 0; 
+    font-size: 45px; 
+    font-weight: 800;
+    transition: color 0.3s;
+}
 
-.deleteBtn{background:#ff7675;color:#fff;border:none;padding:4px 8px;border-radius:6px;width: auto; font-size: 10px;}
+.deleteBtn { background:#ff7675; color:#fff; border:none; padding:4px 8px; border-radius:6px; width: auto; font-size: 10px; }
 
 .row-holiday { background-color: #fff5f5 !important; }
 .badge-holiday { background: #ff7675 !important; color: white !important; padding: 3px 8px; border-radius: 6px; font-weight: bold; }
@@ -133,7 +219,7 @@ th{background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap;}
 .modal-content { background-color: #fff; margin: 5% auto; padding: 0; border-radius: 20px; width: 95%; max-width: 1600px; max-height: 85vh; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.4); animation: slideUp 0.3s ease-out; display: flex; flex-direction: column; }
 @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-.modal-header { padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.modal-header { padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-radius: 20px 20px 0 0; }
 .modal-header h3 { margin: 0; font-size: 18px; }
 .close-modal { font-size: 28px; font-weight: bold; cursor: pointer; }
 
@@ -167,7 +253,6 @@ th{background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap;}
     <span class="author-line">by Aonbordin</span>
   </p>
 </div>
-
 
 <div class="card grid-summary">
   <div class="item item-salary"><span>ค่าแรง</span><h3 id="salary">0</h3></div>
@@ -208,7 +293,6 @@ th{background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap;}
   </span>
   <h2 id="total">0 บาท</h2>
 </div>
-
 
 <div class="card"><canvas id="chart"></canvas></div>
 
@@ -278,8 +362,19 @@ th{background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap;}
     </div>
   </div>
 </div>
+
 <script>
 let data = JSON.parse(localStorage.getItem("income")) || [];
+
+/* ===== POP ANIMATION HELPER ===== */
+function animateElement(el) {
+    if (!el) return;
+    // reset animation
+    el.classList.remove('pop-animate');
+    void el.offsetWidth; // trigger reflow
+    el.classList.add('pop-animate');
+}
+
 function addData(){
   if(!date.value) { alert("กรุณาเลือกวันที่"); return; }
   const isDuplicate = data.some(item => item.date === date.value);
@@ -296,7 +391,13 @@ function addData(){
   ["salaryInput","shiftInput","otInput","gmpInput","attInput","bonusInput","extraInput","otherInput"].forEach(id=>document.getElementById(id).value="");
 }
 
-function deleteItem(i){ if(confirm("ยืนยันการลบ?")){ data.splice(i,1); localStorage.setItem("income",JSON.stringify(data)); render(); } }
+function deleteItem(i){ 
+  if(confirm("ยืนยันการลบ?")){ 
+    data.splice(i,1); 
+    localStorage.setItem("income",JSON.stringify(data)); 
+    render(); 
+  } 
+}
 
 function openModal(period) {
     const month = monthFilter.value;
@@ -390,26 +491,31 @@ function render(){
     else { p2Net += net; p2Deduct += (social + dOther); }
     
     s+=dSalary; sh+=dShiftPay; o+=dOt; g+=dGmp; at+=dAtt; bn+=dBonus; ex+=dExtra; 
-    sTotal+=social; 
-    oTotal+=dOther; 
-    gTotal+=gross; 
-    tt+=net;
+    sTotal+=social; oTotal+=dOther; gTotal+=gross; tt+=net;
   });
-  document.getElementById("salary").innerText=s.toLocaleString();
-  document.getElementById("shift").innerText=sh.toLocaleString();
-  document.getElementById("ot").innerText=o.toLocaleString();
-  document.getElementById("gmp").innerText=g.toLocaleString();
-  document.getElementById("attDisplay").innerText=at.toLocaleString();
-  document.getElementById("bonusDisplay").innerText=bn.toLocaleString();
-  document.getElementById("extraDisplay").innerText=ex.toLocaleString();
-  document.getElementById("grossTotalDisplay").innerText=gTotal.toLocaleString();
-  document.getElementById("socialTotalDisplay").innerText=sTotal.toLocaleString();
-  document.getElementById("otherDeductTotalDisplay").innerText=oTotal.toLocaleString();
-  document.getElementById("total").innerText=tt.toLocaleString()+" บาท";
+
+  // Update summary texts
+  document.getElementById("salary").innerText = s.toLocaleString();
+  document.getElementById("shift").innerText = sh.toLocaleString();
+  document.getElementById("ot").innerText = o.toLocaleString();
+  document.getElementById("gmp").innerText = g.toLocaleString();
+  document.getElementById("attDisplay").innerText = at.toLocaleString();
+  document.getElementById("bonusDisplay").innerText = bn.toLocaleString();
+  document.getElementById("extraDisplay").innerText = ex.toLocaleString();
+  document.getElementById("grossTotalDisplay").innerText = gTotal.toLocaleString();
+  document.getElementById("socialTotalDisplay").innerText = sTotal.toLocaleString();
+  document.getElementById("otherDeductTotalDisplay").innerText = oTotal.toLocaleString();
+  document.getElementById("total").innerText = tt.toLocaleString()+" บาท";
   document.getElementById("pay25").innerText = p1Net.toLocaleString();
   document.getElementById("pay10").innerText = p2Net.toLocaleString();
   document.getElementById("deduct25").innerText = p1Deduct.toLocaleString();
   document.getElementById("deduct10").innerText = p2Deduct.toLocaleString();
+
+  // Trigger pop animation on all summary numbers
+  ['salary','shift','ot','gmp','attDisplay','bonusDisplay','extraDisplay','grossTotalDisplay','socialTotalDisplay','otherDeductTotalDisplay','total','pay25','pay10','deduct25','deduct10'].forEach(id => {
+      animateElement(document.getElementById(id));
+  });
+
   updateChart();
 }
 
@@ -462,6 +568,7 @@ function updateChart(){
     options: { responsive: true, plugins: { legend: { display: false } } }
   });
 }
+
 render();
 </script>
 </body>
