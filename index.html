@@ -65,7 +65,6 @@ body {
     margin: 15px;
     padding: 20px;
     border-radius: 24px;
-    /* เงา 3 มิติซ้อนกัน */
     box-shadow: 
         0 10px 20px rgba(0, 0, 0, 0.05),
         0 0 0 1px rgba(106, 90, 249, 0.07),
@@ -132,6 +131,25 @@ body {
 .item-social { border-left: 5px solid #fab1a0; background: #fff9f8; grid-column: span 3; }
 .item-other-deduct { border-left: 5px solid #ff7675; background: #fff9f8; grid-column: span 3; }
 
+/* ===== ส่วนสรุปจำนวนวันทำงาน/วันหยุดประจำงวด ที่เพิ่มใหม่ให้เข้ากับดีไซน์เดิม ===== */
+.work-days-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 15px;
+}
+.work-day-item {
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 16px;
+    text-align: center;
+    border: 1px solid rgba(106, 90, 249, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+}
+.work-day-item span { font-size: 13px; color: #888; display: block; font-weight: 700; margin-bottom: 5px; }
+.text-work { color: #6a5af9; font-weight: 800; font-size: 16px; }
+.text-holiday { color: #ff7675; font-weight: 800; font-size: 16px; }
+
 @media (max-width: 600px) {
   .item h3 { font-size: 18px; }
   .item-gross h3 { font-size: 22px; }
@@ -193,8 +211,8 @@ input:focus, select:focus {
 
 .table-container {
   overflow-x: auto;
-  overflow-y: auto;          /* ให้สกรอลล์แนวตั้งเมื่อเนื้อหาเกิน */
-  max-height: 400px;        /* ปรับความสูงสูงสุดตามชอบ */
+  overflow-y: auto;
+  max-height: 400px;
   margin-top: 10px;
   margin-bottom: 25px;
   border: 1px solid #eee;
@@ -203,7 +221,7 @@ input:focus, select:focus {
 .table-container table thead th {
   position: sticky;
   top: 0;
-  background: #f8f9fa;  /* สีพื้นหลังเดิม */
+  background: #f8f9fa;
   z-index: 2;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
@@ -218,11 +236,10 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     color: #2f3542; 
     border-radius: 8px; 
     margin-top: 10px; 
-    display: block;         /* เปลี่ยนจาก inline-block เป็น block เพื่อให้ยาวเต็มบรรทัด */
-    width: 100%;            /* บังคับให้ยาว 100% */
-    box-sizing: border-box; /* ป้องกันไม่ให้ padding ทำให้ขอบล้น */
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
 }
-
 
 .totalBox {
     background: linear-gradient(135deg,#6a5af9,#00c6ff);
@@ -301,6 +318,17 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
 
   <div class="item item-social"><span>รวมหักจ่ายประกันสังคม</span><h3 id="socialTotalDisplay">0</h3></div>
   <div class="item item-other-deduct"><span>หักจ่ายอื่นๆ</span><h3 id="otherDeductTotalDisplay">0</h3></div>
+</div>
+
+<div class="work-days-summary">
+  <div class="work-day-item">
+    <span>งวดวันที่ 25 (วันที่ 1-15)</span>
+    <div style="font-size: 14px;">วันทำงาน: <b id="p1Work" class="text-work">0</b> | วันหยุด: <b id="p1Holi" class="text-holiday">0</b></div>
+  </div>
+  <div class="work-day-item">
+    <span>งวดวันที่ 10 (วันที่ 16-30)</span>
+    <div style="font-size: 14px;">วันทำงาน: <b id="p2Work" class="text-work">0</b> | วันหยุด: <b id="p2Holi" class="text-holiday">0</b></div>
+  </div>
 </div>
 
 <div class="payout-zone">
@@ -403,7 +431,6 @@ let data = JSON.parse(localStorage.getItem("income")) || [];
 /* ===== POP ANIMATION HELPER ===== */
 function animateElement(el) {
     if (!el) return;
-    // reset animation
     el.classList.remove('pop-animate');
     void el.offsetWidth; // trigger reflow
     el.classList.add('pop-animate');
@@ -456,7 +483,7 @@ function openModal(period) {
             let social = Math.min(750, Math.ceil((dSalary + dShiftPay + dGmp) * 0.05));
             let net = Math.ceil(gross - social - dOther);
 
-            let isHoliday = (d.shift === 'H');
+            let isHoliday = (d.shift === 'H' || d.shift === 'GH');
             let rowClass = isHoliday ? 'class="row-holiday"' : '';
             let badgeClass = isHoliday ? 'class="badge-holiday"' : 'style="background:#edf2f7;padding:3px 8px;border-radius:6px; font-weight:bold;"';
 
@@ -496,6 +523,8 @@ window.onclick = function(event) { if (event.target == document.getElementById("
 function render(){
   let s=0, sh=0, o=0, g=0, at=0, bn=0, ex=0, tt=0, sTotal=0, oTotal=0, gTotal=0;
   let p1Net = 0, p1Deduct = 0, p2Net = 0, p2Deduct = 0;
+  let p1W = 0, p1H = 0, p2W = 0, p2H = 0; // เพิ่มตัวแปรนับวันแบ่งตามงวด
+  
   let month = monthFilter.value;
   document.getElementById("fullList").innerHTML="";
 
@@ -508,7 +537,7 @@ function render(){
     let social = Math.min(750, Math.ceil((dSalary + dShiftPay + dGmp) * 0.05));
     let net = Math.ceil(gross - social - dOther);
 
-    let isHoliday = (d.shift === 'H');
+    let isHoliday = (d.shift === 'H' || d.shift === 'GH');
     let rowClass = isHoliday ? 'class="row-holiday"' : '';
 
     document.getElementById("fullList").innerHTML += `<tr ${rowClass}>
@@ -521,8 +550,17 @@ function render(){
       <td><button class="deleteBtn" onclick="deleteItem(${i})">ลบ</button></td>
     </tr>`;
 
-    if(day <= 15) { p1Net += net; p1Deduct += (social + dOther); } 
-    else { p2Net += net; p2Deduct += (social + dOther); }
+    // คัดแยกตามงวด และ ตรวจสอบสถานะวันทำงาน/วันหยุด
+    if(day <= 15) { 
+        p1Net += net; 
+        p1Deduct += (social + dOther);
+        if(isHoliday) p1H++; else p1W++;
+    } 
+    else { 
+        p2Net += net; 
+        p2Deduct += (social + dOther);
+        if(isHoliday) p2H++; else p2W++;
+    }
     
     s+=dSalary; sh+=dShiftPay; o+=dOt; g+=dGmp; at+=dAtt; bn+=dBonus; ex+=dExtra; 
     sTotal+=social; oTotal+=dOther; gTotal+=gross; tt+=net;
@@ -545,8 +583,14 @@ function render(){
   document.getElementById("deduct25").innerText = p1Deduct.toLocaleString();
   document.getElementById("deduct10").innerText = p2Deduct.toLocaleString();
 
+  // อัปเดตจำนวนวันทำงาน/วันหยุดลงบนหน้าจอ
+  document.getElementById("p1Work").innerText = p1W;
+  document.getElementById("p1Holi").innerText = p1H;
+  document.getElementById("p2Work").innerText = p2W;
+  document.getElementById("p2Holi").innerText = p2H;
+
   // Trigger pop animation on all summary numbers
-  ['salary','shift','ot','gmp','attDisplay','bonusDisplay','extraDisplay','grossTotalDisplay','socialTotalDisplay','otherDeductTotalDisplay','total','pay25','pay10','deduct25','deduct10'].forEach(id => {
+  ['salary','shift','ot','gmp','attDisplay','bonusDisplay','extraDisplay','grossTotalDisplay','socialTotalDisplay','otherDeductTotalDisplay','total','pay25','pay10','deduct25','deduct10','p1Work','p1Holi','p2Work','p2Holi'].forEach(id => {
       animateElement(document.getElementById(id));
   });
 
@@ -605,7 +649,5 @@ function updateChart(){
 
 render();
 </script>
-<div class="runner-container"></div>
-
 </body>
 </html>
