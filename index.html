@@ -342,6 +342,12 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     box-sizing: border-box;
 }
 
+/* เพิ่มคลาสพิเศษขยายหน้าต่างกว้างขึ้นสำหรับแสดงตารางประวัติย้อนหลังให้สวยเด่นชัด */
+.modal-glass-content.wide {
+    max-width: 1200px;
+    width: 95%;
+}
+
 .modal-glass.show .modal-glass-content {
     transform: scale(1) translateY(0);
 }
@@ -396,9 +402,7 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
 }
 
 
-/* ========================================================
-   ===== สไตล์เพิ่มเติม: แถบเมนูด้านล่างสุดหรูมีมิติ (Bottom Nav) =====
-   ======================================================== */
+/* ===== แถบเมนูด้านล่างสุดหรูมีมิติ (Bottom Nav) ===== */
 .bottom-nav {
     position: fixed;
     bottom: 20px;
@@ -551,9 +555,13 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
   <div class="card"><canvas id="chart"></canvas></div>
 </div>
 
-<div id="tab-history" class="tab-content">
-  <div class="card">
-    <h3 style="margin-top:0">📊 การจัดการข้อมูล</h3>
+<div id="historyModal" class="modal-glass">
+  <div class="modal-glass-content wide">
+    <div class="modal-glass-header">
+      <h3>🗓️ ประวัติรายการทั้งหมด</h3>
+      <span class="close-glass" onclick="closeHistoryModal()">&times;</span>
+    </div>
+    
     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px;">
       <button class="excelBtn" onclick="exportToExcel()">📥 Excel</button>
       <button class="backupBtn" onclick="backupJSON()">💾 สำรอง</button>
@@ -561,7 +569,7 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     </div>
     <input type="file" id="fileInput" style="display:none" onchange="handleFile(event)">
 
-    <div class="period-header">🗓️ ประวัติรายการทั้งหมด</div>
+    <div class="period-header">📋 รายการย้อนหลังประจำงวด</div>
    
     <div class="table-container">
       <table>
@@ -630,7 +638,7 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     <span class="nav-icon">➕</span>
     <span class="nav-label">บันทึกรายการ</span>
   </div>
-  <div class="nav-item" onclick="switchTab(this, 'history')">
+  <div class="nav-item" onclick="openHistoryModal()">
     <span class="nav-icon">🗓️</span>
     <span class="nav-label">ประวัติทั้งหมด</span>
   </div>
@@ -639,38 +647,43 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
 <script>
 let data = JSON.parse(localStorage.getItem("income")) || [];
 
-/* ===== ฟังก์ชั่นเปิด/ปิด POPUP บันทึกรายการแบบใหม่ ===== */
+/* ===== ฟังก์ชั่นเปิด/ปิด POPUP ประวัติรายการทั้งหมดรูปแบบใหม่ (Glassmorphism Wide) ===== */
+function openHistoryModal() {
+  const modal = document.getElementById('historyModal');
+  modal.style.display = 'flex';
+  setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closeHistoryModal() {
+  const modal = document.getElementById('historyModal');
+  modal.classList.remove('show');
+  setTimeout(() => modal.style.display = 'none', 300);
+}
+
+/* ===== ฟังก์ชั่นเปิด/ปิด POPUP บันทึกรายการแบบเดิม ===== */
 function openAddModal() {
-  // ใส่ค่าวันที่ปัจจุบันเป็น Default ให้ผู้ใช้ทำงานง่ายขึ้น
   if(!document.getElementById('date').value) {
     document.getElementById('date').value = new Date().toISOString().split('T')[0];
   }
   const modal = document.getElementById('addModal');
   modal.style.display = 'flex';
-  // รอให้ element ทำการแสดงผลก่อนจะเริ่มยิงอนิเมชันเปิดขึ้นมาอย่างลื่นไหล
   setTimeout(() => modal.classList.add('show'), 10);
 }
 
 function closeAddModal() {
   const modal = document.getElementById('addModal');
   modal.classList.remove('show');
-  // ซ่อน element เมื่ออนิเมชันจางหายเสร็จแล้ว
   setTimeout(() => modal.style.display = 'none', 300);
 }
 
-/* ===== ฟังก์ชั่นสลับแท็บแบบ Smooth ===== */
+/* ===== ฟังก์ชั่นสลับแท็บแบบ Smooth คงเดิม ===== */
 function switchTab(element, tabId) {
-  // ซ่อนเนื้อหาทุกแท็บ
   document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-  // เปิดแท็บที่เลือก
   document.getElementById('tab-' + tabId).style.display = 'block';
   
-  // รีเซ็ตคลาส active ของเมนูทั้งหมด
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  // ใส่คลาส active ให้เมนูที่ถูกกด
   element.classList.add('active');
   
-  // หากกลับมาหน้าแรก ให้รีเรนเดอร์กราฟเพื่อป้องกันปัญหาแสดงผลขนาดผิดเพี้ยน
   if(tabId === 'dashboard') {
     updateChart();
   }
@@ -680,7 +693,7 @@ function switchTab(element, tabId) {
 function animateElement(el) {
     if (!el) return;
     el.classList.remove('pop-animate');
-    void el.offsetWidth; // trigger reflow
+    void el.offsetWidth; 
     el.classList.add('pop-animate');
 }
 
@@ -699,10 +712,7 @@ function addData(){
   render();
   ["salaryInput","shiftInput","otInput","gmpInput","attInput","bonusInput","extraInput","otherInput"].forEach(id=>document.getElementById(id).value="");
   
-  // บันทึกเสร็จให้ปิดหน้าต่าง Popup ลงโดยอัตโนมัติอย่างลื่นไหล
   closeAddModal();
-  
-  // สลับกลับไปโฟกัสหน้าสรุปรายได้เพื่ออัปเดตยอดแบบทันที
   switchTab(document.querySelector('.bottom-nav .nav-item:first-child'), 'dashboard');
 }
 
@@ -773,10 +783,11 @@ function openModal(period) {
 
 function closeModal() { document.getElementById("detailModal").style.display = "none"; }
 
-/* ===== แก้ไขการตรวจจับการกดพื้นที่ว่างด้านนอกเพื่อปิด Popup ทั้งคู่ให้ถูกต้องสุภาพเรียบร้อย ===== */
+/* ===== อัปเดตส่วนควบคุมคลิกพื้นที่ว่างด้านนอกเพื่อปิดหน้าต่างทำงานแยกแยะแม่นยำชัดเจน ===== */
 window.onclick = function(event) { 
     if (event.target == document.getElementById("detailModal")) closeModal(); 
     if (event.target == document.getElementById("addModal")) closeAddModal();
+    if (event.target == document.getElementById("historyModal")) closeHistoryModal();
 }
 
 function render(){
