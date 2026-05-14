@@ -26,29 +26,64 @@ body {
   border-bottom: 2px solid #00e5ff;
   padding-bottom: 2px;
   display: inline-block;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 @keyframes glow {
-  0%, 100% { text-shadow: 0 0 5px #fff, 0 0 10px #00e5ff; }
-  50% { text-shadow: 0 0 15px #fff, 0 0 25px #6a5af9; }
+  0%, 100% { 
+    text-shadow: 0 2px 10px rgba(255,255,255,0.6), 0 0 20px rgba(0,229,255,0.3); 
+    transform: translateY(0); 
+  }
+  50% { 
+    text-shadow: 0 4px 20px rgba(255,255,255,0.8), 0 0 35px rgba(106,90,249,0.6); 
+    transform: translateY(-2px); 
+  }
 }
 .title {
   color: #fff;
-  animation: glow 2s ease-in-out infinite;
-  font-size: 30px;
-  font-weight: bold;
-  letter-spacing: 5px;
+  animation: glow 3s ease-in-out infinite;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  margin: 0;
+  transition: all 0.3s ease;
 }
+
+/* ===== [ปรับปรุงใหม่] FLOATING AMBIENT HEADER BAR ===== */
 .header {
-  background: linear-gradient(135deg,#6a5af9,#00c6ff);
-  color:#fff;
-  padding:5px 20px;
-  border-radius:0 0 10px 10px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  box-shadow: 0 15px 35px rgba(0, 119, 255, 0.15);
-  margin-bottom: 10px;
+  background: linear-gradient(135deg, #6a5af9, #00c6ff);
+  color: #fff;
+  padding: 18px 20px;
+  border-radius: 24px;
+  margin: 15px 15px 20px 15px; /* ลอยตัวเว้นระยะเท่ากับความกว้างการ์ดล่าง */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 20px 35px -10px rgba(106, 90, 249, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.18) inset,
+    0 8px 16px -4px rgba(0, 198, 255, 0.2);
+  transition: all 0.4s ease;
+}
+/* เพิ่มเลเยอร์สะท้อนแสงกระจกด้านในส่วนหัว */
+.header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 65%);
+  pointer-events: none;
+}
+.header:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 25px 40px -8px rgba(106, 90, 249, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.25) inset;
 }
 
 /* ===== POP ANIMATION ===== */
@@ -296,14 +331,11 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
 .modal-footer-row { background: #2d3436 !important; color: white !important; font-weight: bold; }
 .modal-footer-row td { color: white !important; padding: 12px 8px; }
 
-
-/* ========================================================
-   ===== สไตล์ใหม่: FLOATING GLASSMORPHISM POPUP MODAL =====
-   ======================================================== */
+/* ===== FLOATING GLASSMORPHISM POPUP MODAL ===== */
 .modal-glass {
     display: none;
     position: fixed;
-    z-index: 2500; /* ทับทุกส่วนรวมถึง Bottom Nav ชั่วคราว */
+    z-index: 2500; 
     left: 0;
     top: 0;
     width: 100%;
@@ -340,6 +372,11 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     max-height: 82vh;
     overflow-y: auto;
     box-sizing: border-box;
+}
+
+.modal-glass-content.wide {
+    max-width: 1200px;
+    width: 95%;
 }
 
 .modal-glass.show .modal-glass-content {
@@ -395,10 +432,7 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     outline: none;
 }
 
-
-/* ========================================================
-   ===== สไตล์เพิ่มเติม: แถบเมนูด้านล่างสุดหรูมีมิติ (Bottom Nav) =====
-   ======================================================== */
+/* ===== แถบเมนูด้านล่างสุดหรูมีมิติ (Bottom Nav) ===== */
 .bottom-nav {
     position: fixed;
     bottom: 20px;
@@ -450,7 +484,6 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     transition: color 0.3s ease;
 }
 
-/* เอฟเฟกต์มิติตอนกดเปิดแท็บ (Active State) */
 .nav-item.active {
     color: #6a5af9;
     background: linear-gradient(135deg, rgba(106, 90, 249, 0.15), rgba(0, 198, 255, 0.08));
@@ -464,12 +497,10 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     transform: scale(1.25);
 }
 
-/* เอฟเฟกต์การกดแบบตอบสนองชั่วขณะ (Haptic Micro-interaction) */
 .nav-item:active {
     transform: scale(0.92) translateY(0px);
 }
 
-/* ซ่อนเนื้อหาแท็บที่ยังไม่ได้เลือก */
 .tab-content {
     display: none;
     animation: fadeInTab 0.4s ease-out;
@@ -479,14 +510,13 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="title">✓Record Income.</div>
-  <p style="font-size: 12px; margin-top: -2px; opacity: 0.9;">
+  <p style="font-size: 12px; margin-top: 4px; margin-bottom: 0; opacity: 0.95;">
     <span class="author-line">by Aonbordin</span>
   </p>
 </div>
@@ -551,9 +581,13 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
   <div class="card"><canvas id="chart"></canvas></div>
 </div>
 
-<div id="tab-history" class="tab-content">
-  <div class="card">
-    <h3 style="margin-top:0">📊 การจัดการข้อมูล</h3>
+<div id="historyModal" class="modal-glass">
+  <div class="modal-glass-content wide">
+    <div class="modal-glass-header">
+      <h3>🗓️ ประวัติรายการทั้งหมดและการจัดการ</h3>
+      <span class="close-glass" onclick="closeHistoryModal()">&times;</span>
+    </div>
+    
     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px;">
       <button class="excelBtn" onclick="exportToExcel()">📥 Excel</button>
       <button class="backupBtn" onclick="backupJSON()">💾 สำรอง</button>
@@ -561,7 +595,7 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     </div>
     <input type="file" id="fileInput" style="display:none" onchange="handleFile(event)">
 
-    <div class="period-header">🗓️ ประวัติรายการทั้งหมด</div>
+    <div class="period-header">📋 รายการย้อนหลังประจำงวด</div>
    
     <div class="table-container">
       <table>
@@ -630,7 +664,7 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     <span class="nav-icon">➕</span>
     <span class="nav-label">บันทึกรายการ</span>
   </div>
-  <div class="nav-item" onclick="switchTab(this, 'history')">
+  <div class="nav-item" onclick="openHistoryModal()">
     <span class="nav-icon">🗓️</span>
     <span class="nav-label">ประวัติทั้งหมด</span>
   </div>
@@ -639,38 +673,43 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
 <script>
 let data = JSON.parse(localStorage.getItem("income")) || [];
 
-/* ===== ฟังก์ชั่นเปิด/ปิด POPUP บันทึกรายการแบบใหม่ ===== */
+/* ===== ฟังก์ชั่นเปิด/ปิด POPUP ประวัติรายการทั้งหมดรูปแบบใหม่ (Glassmorphism Wide) ===== */
+function openHistoryModal() {
+  const modal = document.getElementById('historyModal');
+  modal.style.display = 'flex';
+  setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closeHistoryModal() {
+  const modal = document.getElementById('historyModal');
+  modal.classList.remove('show');
+  setTimeout(() => modal.style.display = 'none', 300);
+}
+
+/* ===== ฟังก์ชั่นเปิด/ปิด POPUP บันทึกรายการแบบเดิม ===== */
 function openAddModal() {
-  // ใส่ค่าวันที่ปัจจุบันเป็น Default ให้ผู้ใช้ทำงานง่ายขึ้น
   if(!document.getElementById('date').value) {
     document.getElementById('date').value = new Date().toISOString().split('T')[0];
   }
   const modal = document.getElementById('addModal');
   modal.style.display = 'flex';
-  // รอให้ element ทำการแสดงผลก่อนจะเริ่มยิงอนิเมชันเปิดขึ้นมาอย่างลื่นไหล
   setTimeout(() => modal.classList.add('show'), 10);
 }
 
 function closeAddModal() {
   const modal = document.getElementById('addModal');
   modal.classList.remove('show');
-  // ซ่อน element เมื่ออนิเมชันจางหายเสร็จแล้ว
   setTimeout(() => modal.style.display = 'none', 300);
 }
 
-/* ===== ฟังก์ชั่นสลับแท็บแบบ Smooth ===== */
+/* ===== ฟังก์ชั่นสลับแท็บแบบ Smooth คงเดิม ===== */
 function switchTab(element, tabId) {
-  // ซ่อนเนื้อหาทุกแท็บ
   document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-  // เปิดแท็บที่เลือก
   document.getElementById('tab-' + tabId).style.display = 'block';
   
-  // รีเซ็ตคลาส active ของเมนูทั้งหมด
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  // ใส่คลาส active ให้เมนูที่ถูกกด
   element.classList.add('active');
   
-  // หากกลับมาหน้าแรก ให้รีเรนเดอร์กราฟเพื่อป้องกันปัญหาแสดงผลขนาดผิดเพี้ยน
   if(tabId === 'dashboard') {
     updateChart();
   }
@@ -680,7 +719,7 @@ function switchTab(element, tabId) {
 function animateElement(el) {
     if (!el) return;
     el.classList.remove('pop-animate');
-    void el.offsetWidth; // trigger reflow
+    void el.offsetWidth; 
     el.classList.add('pop-animate');
 }
 
@@ -699,10 +738,7 @@ function addData(){
   render();
   ["salaryInput","shiftInput","otInput","gmpInput","attInput","bonusInput","extraInput","otherInput"].forEach(id=>document.getElementById(id).value="");
   
-  // บันทึกเสร็จให้ปิดหน้าต่าง Popup ลงโดยอัตโนมัติอย่างลื่นไหล
   closeAddModal();
-  
-  // สลับกลับไปโฟกัสหน้าสรุปรายได้เพื่ออัปเดตยอดแบบทันที
   switchTab(document.querySelector('.bottom-nav .nav-item:first-child'), 'dashboard');
 }
 
@@ -773,10 +809,11 @@ function openModal(period) {
 
 function closeModal() { document.getElementById("detailModal").style.display = "none"; }
 
-/* ===== แก้ไขการตรวจจับการกดพื้นที่ว่างด้านนอกเพื่อปิด Popup ทั้งคู่ให้ถูกต้องสุภาพเรียบร้อย ===== */
+/* ===== อัปเดตส่วนควบคุมคลิกพื้นที่ว่างด้านนอกเพื่อปิดหน้าต่างทำงานแยกแยะแม่นยำชัดเจน ===== */
 window.onclick = function(event) { 
     if (event.target == document.getElementById("detailModal")) closeModal(); 
     if (event.target == document.getElementById("addModal")) closeAddModal();
+    if (event.target == document.getElementById("historyModal")) closeHistoryModal();
 }
 
 function render(){
