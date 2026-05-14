@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ✓Record Income</title>
+    <style>
+        :root {
+            --primary: #6a5af9;
+            --secondary: #00c6ff;
+        }
+        body {
+            margin: 0; font-family: 'Segoe UI', sans-serif;
+            background: #FDFBF7;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh;
+        }
+        .login-card {
+            background: #fff; padding: 40px 30px; border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(106, 90, 249, 0.15);
+            width: 90%; max-width: 350px; text-align: center;
+        }
+        .logo { font-size: 50px; margin-bottom: 10px; }
+        h2 { color: var(--primary); margin-bottom: 25px; font-weight: 800; }
+        
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 12px; font-weight: bold; color: #888; margin-bottom: 5px; }
+        input {
+            width: 100%; padding: 12px; border-radius: 12px;
+            border: 1px solid #eee; box-sizing: border-box; outline: none;
+            background: #f9f9f9; font-size: 16px;
+        }
+        input:focus { border-color: var(--primary); background: #fff; }
+
+        .login-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff; border: none; width: 100%; padding: 15px;
+            border-radius: 15px; font-weight: bold; cursor: pointer;
+            margin-top: 10px; box-shadow: 0 10px 20px rgba(106, 90, 249, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="logo">🔐</div>
+    <h2>Admin Login</h2>
+    
+    <div class="input-group">
+        <label>Username</label>
+        <input type="text" id="user" placeholder="ชื่อผู้ใช้งาน">
+    </div>
+    
+    <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="pass" placeholder="รหัสผ่าน">
+    </div>
+
+    <button class="login-btn" onclick="checkLogin()">เข้าสู่ระบบจัดการ</button>
+    <p id="msg" style="color: red; font-size: 13px; margin-top: 15px;"></p>
+</div>
+
+<script>
+    function checkLogin() {
+        const u = document.getElementById("user").value;
+        const p = document.getElementById("pass").value;
+        
+        // --- คุณสามารถเปลี่ยน Username และ Password ตรงนี้ได้ ---
+        if(u === "admin" && p === "Aon16012536") {
+            // สร้าง Session จำลองว่า Login แล้ว (หมดอายุเมื่อปิด Browser)
+            sessionStorage.setItem("isAdmin", "true");
+            location.href = "admin.html";
+        } else {
+            document.getElementById("msg").innerText = "❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
+        }
+    }
+</script>
+
+</body>
+</html>
