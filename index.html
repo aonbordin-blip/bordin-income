@@ -656,19 +656,38 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
 </div>
 
 <div class="bottom-nav">
-  <div class="nav-item active" onclick="switchTab(this, 'dashboard')">
+  <div class="nav-item active" onclick="location.href='index.html'">
     <span class="nav-icon">📊</span>
     <span class="nav-label">สรุปรายได้</span>
   </div>
   <div class="nav-item" onclick="openAddModal()">
     <span class="nav-icon">➕</span>
-    <span class="nav-label">บันทึกรายการ</span>
+    <span class="nav-label">บันทึก</span>
   </div>
   <div class="nav-item" onclick="openHistoryModal()">
     <span class="nav-icon">🗓️</span>
-    <span class="nav-label">ประวัติทั้งหมด</span>
+    <span class="nav-label">ประวัติ</span>
+  </div>
+  <div class="nav-item" onclick="location.href='profile.html'">
+    <span class="nav-icon">👤</span>
+    <span class="nav-label">โปรไฟล์</span>
   </div>
 </div>
+
+<script>
+// เพิ่มส่วนนี้ไว้ท้ายสุดของ <script> ใน index.html 
+// เพื่อให้ลิงก์จากหน้า Profile สั่งเปิด Modal ได้
+window.addEventListener('load', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const action = urlParams.get('action');
+    if (action === 'history') {
+        openHistoryModal();
+    } else if (action === 'add') {
+        openAddModal();
+    }
+});
+</script>
+
 
 <script>
 let data = JSON.parse(localStorage.getItem("income")) || [];

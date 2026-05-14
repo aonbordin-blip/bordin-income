@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile - ✓Record Income</title>
+<style>
+/* ใช้ Style เดิมเพื่อให้ความรู้สึกต่อเนื่อง 100% */
+body {
+    margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #FDFBF7; color: #333; line-height: 1.6; padding-bottom: 100px;
+}
+.header {
+    background: linear-gradient(135deg, #6a5af9, #00c6ff); color: #fff;
+    padding: 18px 20px; border-radius: 24px; margin: 15px;
+    display: flex; flex-direction: column; align-items: center;
+    box-shadow: 0 20px 35px -10px rgba(106, 90, 249, 0.35);
+}
+.title { font-size: 24px; font-weight: 800; letter-spacing: 2px; }
+
+.card {
+    background: #ffffff; margin: 15px; padding: 20px; border-radius: 24px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(106, 90, 249, 0.07);
+}
+
+.profile-pic-container {
+    display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;
+}
+#profilePreview {
+    width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
+    border: 4px solid #fff; box-shadow: 0 10px 20px rgba(106, 90, 249, 0.2);
+    background: #eee; margin-bottom: 10px;
+}
+.upload-btn {
+    font-size: 12px; color: #6a5af9; cursor: pointer; font-weight: bold;
+    border: 1px solid #6a5af9; padding: 5px 15px; border-radius: 20px;
+}
+
+.info-group { margin-bottom: 15px; }
+.info-group label { display: block; font-size: 12px; color: #888; font-weight: bold; margin-bottom: 5px; }
+input {
+    width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e0e0e0;
+    box-sizing: border-box; font-size: 15px; background: #fafafa;
+}
+
+/* การจัดวางแบบ Grid สำหรับช่องเล็กๆ */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.section-title {
+    font-size: 14px; font-weight: 800; color: #6a5af9;
+    margin: 20px 0 10px 0; border-left: 4px solid #6a5af9; padding-left: 10px;
+}
+
+.bottom-nav {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    width: calc(100% - 30px); max-width: 460px; background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px); display: flex; justify-content: space-around;
+    padding: 8px 6px; border-radius: 28px; box-shadow: 0 15px 35px rgba(106, 90, 249, 0.2);
+    z-index: 1500; border: 1px solid rgba(106, 90, 249, 0.12);
+}
+.nav-item {
+    display: flex; flex-direction: column; align-items: center; flex: 1;
+    cursor: pointer; padding: 10px 0; color: #888; font-weight: 700; font-size: 11px;
+}
+.nav-item.active { color: #6a5af9; }
+.nav-icon { font-size: 22px; }
+
+button.save-btn {
+    background: linear-gradient(135deg, #6a5af9, #00c6ff); color: #fff;
+    border: none; padding: 15px; border-radius: 15px; width: 100%;
+    font-weight: bold; cursor: pointer; margin-top: 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="title">My Profile.</div>
+  <div style="font-size: 12px; opacity: 0.8;">จัดการข้อมูลพนักงาน</div>
+</div>
+
+<div class="card">
+    <div class="profile-pic-container">
+        <img id="profilePreview" src="https://via.placeholder.com/120" alt="Profile">
+        <label class="upload-btn" for="photoInput">เปลี่ยนรูปถ่าย</label>
+        <input type="file" id="photoInput" style="display:none" accept="image/*" onchange="previewImage(event)">
+    </div>
+
+    <div class="section-title">ข้อมูลส่วนตัว</div>
+    <div class="info-group">
+        <label>ชื่อ-นามสกุล (ตามบัตรประชาชน)</label>
+        <input type="text" id="fullName" placeholder="ชื่อ-นามสกุล">
+    </div>
+    
+    <div class="info-group">
+        <label>เลขประจำตัวประชาชน</label>
+        <input type="text" id="idCard" placeholder="x-xxxx-xxxxx-xx-x">
+    </div>
+
+    <div class="grid-2">
+        <div class="info-group">
+            <label>ตำแหน่ง</label>
+            <input type="text" id="position" placeholder="ตำแหน่ง">
+        </div>
+        <div class="info-group">
+            <label>แผนก</label>
+            <input type="text" id="department" placeholder="แผนก">
+        </div>
+    </div>
+
+    <div class="info-group">
+        <label>วันที่เริ่มทำงาน</label>
+        <input type="date" id="startDate">
+    </div>
+
+    <div class="section-title">ที่อยู่ปัจจุบัน</div>
+    
+    <div class="grid-2">
+        <div class="info-group">
+            <label>บ้านเลขที่</label>
+            <input type="text" id="addr_no" placeholder="เช่น 123/4">
+        </div>
+        <div class="info-group">
+            <label>หมู่บ้าน</label>
+            <input type="text" id="addr_village" placeholder="ชื่อหมู่บ้าน">
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="info-group">
+            <label>หมู่ที่</label>
+            <input type="text" id="addr_moo" placeholder="เช่น 5">
+        </div>
+        <div class="info-group">
+            <label>ซอย</label>
+            <input type="text" id="addr_soi" placeholder="ชื่อซอย">
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="info-group">
+            <label>ตำบล/แขวง</label>
+            <input type="text" id="addr_subdistrict" placeholder="ตำบล">
+        </div>
+        <div class="info-group">
+            <label>อำเภอ/เขต</label>
+            <input type="text" id="addr_district" placeholder="อำเภอ">
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="info-group">
+            <label>จังหวัด</label>
+            <input type="text" id="addr_province" placeholder="จังหวัด">
+        </div>
+        <div class="info-group">
+            <label>รหัสไปรษณีย์</label>
+            <input type="text" id="addr_zipcode" placeholder="xxxxx">
+        </div>
+    </div>
+
+    <button class="save-btn" onclick="saveProfile()">💾 บันทึกข้อมูลโปรไฟล์</button>
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-item" onclick="location.href='index.html'">
+    <span class="nav-icon">📊</span>
+    <span class="nav-label">สรุปรายได้</span>
+  </div>
+  <div class="nav-item" onclick="location.href='index.html?action=add'">
+    <span class="nav-icon">➕</span>
+    <span class="nav-label">บันทึก</span>
+  </div>
+  <div class="nav-item" onclick="location.href='index.html?action=history'">
+    <span class="nav-icon">🗓️</span>
+    <span class="nav-label">ประวัติ</span>
+  </div>
+  <div class="nav-item active">
+    <span class="nav-icon">👤</span>
+    <span class="nav-label">โปรไฟล์</span>
+  </div>
+</div>
+
+<script>
+window.onload = function() {
+    const savedProfile = JSON.parse(localStorage.getItem('employee_profile'));
+    if(savedProfile) {
+        document.getElementById('fullName').value = savedProfile.fullName || '';
+        document.getElementById('idCard').value = savedProfile.idCard || '';
+        document.getElementById('position').value = savedProfile.position || '';
+        document.getElementById('department').value = savedProfile.department || '';
+        document.getElementById('startDate').value = savedProfile.startDate || '';
+        
+        // โหลดข้อมูลที่อยู่ที่แยกช่อง
+        document.getElementById('addr_no').value = savedProfile.addr_no || '';
+        document.getElementById('addr_village').value = savedProfile.addr_village || '';
+        document.getElementById('addr_moo').value = savedProfile.addr_moo || '';
+        document.getElementById('addr_soi').value = savedProfile.addr_soi || '';
+        document.getElementById('addr_subdistrict').value = savedProfile.addr_subdistrict || '';
+        document.getElementById('addr_district').value = savedProfile.addr_district || '';
+        document.getElementById('addr_province').value = savedProfile.addr_province || '';
+        document.getElementById('addr_zipcode').value = savedProfile.addr_zipcode || '';
+
+        if(savedProfile.photo) {
+            document.getElementById('profilePreview').src = savedProfile.photo;
+        }
+    }
+};
+
+function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        document.getElementById('profilePreview').src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+
+function saveProfile() {
+    const profileData = {
+        fullName: document.getElementById('fullName').value,
+        idCard: document.getElementById('idCard').value,
+        position: document.getElementById('position').value,
+        department: document.getElementById('department').value,
+        startDate: document.getElementById('startDate').value,
+        
+        // บันทึกข้อมูลที่แยกช่อง
+        addr_no: document.getElementById('addr_no').value,
+        addr_village: document.getElementById('addr_village').value,
+        addr_moo: document.getElementById('addr_moo').value,
+        addr_soi: document.getElementById('addr_soi').value,
+        addr_subdistrict: document.getElementById('addr_subdistrict').value,
+        addr_district: document.getElementById('addr_district').value,
+        addr_province: document.getElementById('addr_province').value,
+        addr_zipcode: document.getElementById('addr_zipcode').value,
+        
+        photo: document.getElementById('profilePreview').src
+    };
+    
+    localStorage.setItem('employee_profile', JSON.stringify(profileData));
+    alert('✅ บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว!');
+}
+</script>
+
+</body>
+</html>
