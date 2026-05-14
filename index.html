@@ -20,6 +20,7 @@ body {
     background: #FDFBF7; 
     color: #333;
     line-height: 1.6;
+    padding-bottom: 100px; /* เพิ่มพื้นที่ด้านล่างเพื่อไม่ให้แถบเมนูบังเนื้อหา */
 }
 .author-line {
   border-bottom: 2px solid #00e5ff;
@@ -47,6 +48,7 @@ body {
   align-items:center;
   justify-content:center;
   box-shadow: 0 15px 35px rgba(0, 119, 255, 0.15);
+  margin-bottom: 10px;
 }
 
 /* ===== POP ANIMATION ===== */
@@ -131,7 +133,7 @@ body {
 .item-social { border-left: 5px solid #fab1a0; background: #fff9f8; grid-column: span 3; }
 .item-other-deduct { border-left: 5px solid #ff7675; background: #fff9f8; grid-column: span 3; }
 
-/* ===== ส่วนสรุปจำนวนวันทำงาน/วันหยุดประจำงวด ที่เพิ่มใหม่ให้เข้ากับดีไซน์เดิม ===== */
+/* ===== ส่วนสรุปจำนวนวันทำงาน/วันหยุดประจำงวด ===== */
 .work-days-summary {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -293,6 +295,91 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
 .modal-footer-row { background: #2d3436 !important; color: white !important; font-weight: bold; }
 .modal-footer-row td { color: white !important; padding: 12px 8px; }
 
+
+/* ========================================================
+   ===== สไตล์เพิ่มเติม: แถบเมนูด้านล่างสุดหรูมีมิติ (Bottom Nav) =====
+   ======================================================== */
+.bottom-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 30px);
+    max-width: 460px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 6px;
+    border-radius: 28px;
+    box-shadow: 
+        0 15px 35px rgba(106, 90, 249, 0.2),
+        0 1px 3px rgba(106, 90, 249, 0.05),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    z-index: 1500;
+    border: 1px solid rgba(106, 90, 249, 0.12);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    cursor: pointer;
+    padding: 10px 0;
+    border-radius: 22px;
+    color: #888888;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.nav-icon {
+    font-size: 22px;
+    margin-bottom: 2px;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.nav-label {
+    font-size: 11px;
+    font-weight: 700;
+    transition: color 0.3s ease;
+}
+
+/* เอฟเฟกต์มิติตอนกดเปิดแท็บ (Active State) */
+.nav-item.active {
+    color: #6a5af9;
+    background: linear-gradient(135deg, rgba(106, 90, 249, 0.15), rgba(0, 198, 255, 0.08));
+    box-shadow: 
+        inset 0 1px 3px rgba(106, 90, 249, 0.15),
+        0 4px 10px rgba(106, 90, 249, 0.05);
+    transform: translateY(-4px);
+}
+
+.nav-item.active .nav-icon {
+    transform: scale(1.25);
+}
+
+/* เอฟเฟกต์การกดแบบตอบสนองชั่วขณะ (Haptic Micro-interaction) */
+.nav-item:active {
+    transform: scale(0.92) translateY(0px);
+}
+
+/* ซ่อนเนื้อหาแท็บที่ยังไม่ได้เลือก */
+.tab-content {
+    display: none;
+    animation: fadeInTab 0.4s ease-out;
+}
+
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 </style>
 </head>
 <body>
@@ -304,102 +391,108 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
   </p>
 </div>
 
-<div class="card grid-summary">
-  <div class="item item-salary"><span>ค่าแรง</span><h3 id="salary">0</h3></div>
-  <div class="item item-shift"><span>ค่ากะ</span><h3 id="shift">0</h3></div>
-  <div class="item item-ot"><span>OT</span><h3 id="ot">0</h3></div>
-  
-  <div class="item item-gmp"><span>GMP</span><h3 id="gmp">0</h3></div>
-  <div class="item item-att"><span>เบี้ยขยัน</span><h3 id="attDisplay">0</h3></div>
-  <div class="item item-bonus"><span>โบนัส</span><h3 id="bonusDisplay">0</h3></div>
-  
-  <div class="item item-extra"><span>เงินพิเศษ</span><h3 id="extraDisplay">0</h3></div>
-  <div class="item item-gross"><span>รวมรายได้ก่อนหัก</span><h3 id="grossTotalDisplay">0</h3></div>
-
-  <div class="item item-social"><span>รวมหักจ่ายประกันสังคม</span><h3 id="socialTotalDisplay">0</h3></div>
-  <div class="item item-other-deduct"><span>หักจ่ายอื่นๆ</span><h3 id="otherDeductTotalDisplay">0</h3></div>
-</div>
-
-<div class="work-days-summary">
-  <div class="work-day-item">
-    <span>งวดวันที่ 25 (วันที่ 1-15)</span>
-    <div style="font-size: 14px;">วันทำงาน: <b id="p1Work" class="text-work">0</b> | วันหยุด: <b id="p1Holi" class="text-holiday">0</b></div>
+<div id="tab-dashboard" class="tab-content" style="display: block;">
+  <div class="card">
+    <h3 style="margin-top:0">📅 เลือกเดือน</h3>
+    <input type="month" id="monthFilter" onchange="render()">
   </div>
-  <div class="work-day-item">
-    <span>งวดวันที่ 10 (วันที่ 16-30)</span>
-    <div style="font-size: 14px;">วันทำงาน: <b id="p2Work" class="text-work">0</b> | วันหยุด: <b id="p2Holi" class="text-holiday">0</b></div>
-  </div>
-</div>
 
-<div class="payout-zone">
-  <div>
-    <div class="payout-card payout-25" onclick="openModal(1)">
-        <span>ยอดรับสุทธิ วันที่ 25 (คลิกดู)</span>
-        <h4 id="pay25">0</h4>
+  <div class="card grid-summary">
+    <div class="item item-salary"><span>ค่าแรง</span><h3 id="salary">0</h3></div>
+    <div class="item item-shift"><span>ค่ากะ</span><h3 id="shift">0</h3></div>
+    <div class="item item-ot"><span>OT</span><h3 id="ot">0</h3></div>
+    
+    <div class="item item-gmp"><span>GMP</span><h3 id="gmp">0</h3></div>
+    <div class="item item-att"><span>เบี้ยขยัน</span><h3 id="attDisplay">0</h3></div>
+    <div class="item item-bonus"><span>โบนัส</span><h3 id="bonusDisplay">0</h3></div>
+    
+    <div class="item item-extra"><span>เงินพิเศษ</span><h3 id="extraDisplay">0</h3></div>
+    <div class="item item-gross"><span>รวมรายได้ก่อนหัก</span><h3 id="grossTotalDisplay">0</h3></div>
+
+    <div class="item item-social"><span>รวมหักจ่ายประกันสังคม</span><h3 id="socialTotalDisplay">0</h3></div>
+    <div class="item item-other-deduct"><span>หักจ่ายอื่นๆ</span><h3 id="otherDeductTotalDisplay">0</h3></div>
+  </div>
+
+  <div class="work-days-summary">
+    <div class="work-day-item">
+      <span>งวดวันที่ 25 (วันที่ 1-15)</span>
+      <div style="font-size: 14px;">วันทำงาน: <b id="p1Work" class="text-work">0</b> | วันหยุด: <b id="p1Holi" class="text-holiday">0</b></div>
     </div>
-    <div class="deduct-card"><small>✓รวมหักจ่าย ∆</small><b id="deduct25">0</b></div>
-  </div>
-  <div>
-    <div class="payout-card payout-10" onclick="openModal(2)">
-        <span>ยอดรับสุทธิ วันที่ 10 (คลิกดู)</span>
-        <h4 id="pay10">0</h4>
+    <div class="work-day-item">
+      <span>งวดวันที่ 10 (วันที่ 16-30)</span>
+      <div style="font-size: 14px;">วันทำงาน: <b id="p2Work" class="text-work">0</b> | วันหยุด: <b id="p2Holi" class="text-holiday">0</b></div>
     </div>
-    <div class="deduct-card"><small>✓รวมหักจ่าย ∆</small><b id="deduct10">0</b></div>
+  </div>
+
+  <div class="payout-zone">
+    <div>
+      <div class="payout-card payout-25" onclick="openModal(1)">
+          <span>ยอดรับสุทธิ วันที่ 25 (คลิกดู)</span>
+          <h4 id="pay25">0</h4>
+      </div>
+      <div class="deduct-card"><small>✓รวมหักจ่าย ∆</small><b id="deduct25">0</b></div>
+    </div>
+    <div>
+      <div class="payout-card payout-10" onclick="openModal(2)">
+          <span>ยอดรับสุทธิ วันที่ 10 (คลิกดู)</span>
+          <h4 id="pay10">0</h4>
+      </div>
+      <div class="deduct-card"><small>✓รวมหักจ่าย ∆</small><b id="deduct10">0</b></div>
+    </div>
+  </div>
+
+  <div class="totalBox">
+    <span style="font-size: 20px; font-weight: bold; display: block; margin-bottom: 5px;">
+      รายได้สุทธิรวมประจำเดือน
+    </span>
+    <h2 id="total">0 บาท</h2>
+  </div>
+
+  <div class="card"><canvas id="chart"></canvas></div>
+</div>
+
+<div id="tab-add" class="tab-content">
+  <div class="card">
+    <h3 style="margin-top:0">➕ เพิ่มรายได้</h3>
+    <div class="grid-inputs">
+      <input type="date" id="date" class="full-width">
+      <select id="shiftType" class="full-width">
+        <option value="N">N (กะกลางคืน)</option>
+        <option value="M">M (กะเช้า)</option>
+        <option value="H" selected>H (วันหยุด)</option>
+        <option value="GH">GH (วันหยุดนักขัตฤกษ์)</option>
+      </select>
+      <input type="number" id="salaryInput" placeholder="ค่าแรง"><input type="number" id="shiftInput" placeholder="ค่ากะ">
+      <input type="number" id="otInput" placeholder="OT"><input type="number" id="gmpInput" placeholder="GMP">
+      <input type="number" id="attInput" placeholder="เบี้ยขยัน"><input type="number" id="bonusInput" placeholder="โบนัส">
+      <input type="number" id="extraInput" placeholder="เงินพิเศษ"><input type="number" id="otherInput" placeholder="หักอื่นๆ">
+      <div class="full-width"><button onclick="addData()">บันทึกรายการ</button></div>
+    </div>
   </div>
 </div>
 
-<div class="totalBox">
-  <span style="font-size: 20px; font-weight: bold; display: block; margin-bottom: 5px;">
-    รายได้สุทธิรวมประจำเดือน
-  </span>
-  <h2 id="total">0 บาท</h2>
-</div>
+<div id="tab-history" class="tab-content">
+  <div class="card">
+    <h3 style="margin-top:0">📊 การจัดการข้อมูล</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+      <button class="excelBtn" onclick="exportToExcel()">📥 Excel</button>
+      <button class="backupBtn" onclick="backupJSON()">💾 สำรอง</button>
+      <button class="restoreBtn" onclick="restoreJSON()">📂 ดึงข้อมูล</button>
+    </div>
+    <input type="file" id="fileInput" style="display:none" onchange="handleFile(event)">
 
-<div class="card"><canvas id="chart"></canvas></div>
-
-<div class="card">
-  <h3 style="margin-top:0">📅 เลือกเดือน</h3>
-  <input type="month" id="monthFilter" onchange="render()">
-</div>
-
-<div class="card">
-  <h3 style="margin-top:0">➕ เพิ่มรายได้</h3>
-  <div class="grid-inputs">
-    <input type="date" id="date" class="full-width">
-    <select id="shiftType" class="full-width">
-      <option value="N">N (กะกลางคืน)</option>
-      <option value="M">M (กะเช้า)</option>
-      <option value="H" selected>H (วันหยุด)</option>
-      <option value="GH">GH (วันหยุดนักขัตฤกษ์)</option>
-    </select>
-    <input type="number" id="salaryInput" placeholder="ค่าแรง"><input type="number" id="shiftInput" placeholder="ค่ากะ">
-    <input type="number" id="otInput" placeholder="OT"><input type="number" id="gmpInput" placeholder="GMP">
-    <input type="number" id="attInput" placeholder="เบี้ยขยัน"><input type="number" id="bonusInput" placeholder="โบนัส">
-    <input type="number" id="extraInput" placeholder="เงินพิเศษ"><input type="number" id="otherInput" placeholder="หักอื่นๆ">
-    <div class="full-width"><button onclick="addData()">บันทึกรายการ</button></div>
+    <div class="period-header">🗓️ ประวัติรายการทั้งหมด</div>
+   
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr><th>วันที่</th><th>กะ</th><th>ค่าแรง</th><th>ค่ากะ</th><th>OT</th><th>GMP</th><th>เบี้ยขยัน</th><th>โบนัส</th><th>พิเศษ</th><th>ก่อนหัก</th><th>ประกันสังคม</th><th>หักจ่ายอื่นๆ</th><th>สุทธิ</th><th>ลบ</th></tr>
+        </thead>
+        <tbody id="fullList").innerHTML></tbody>
+      </table>
+    </div>
+    <button onclick="clearData()" style="background:#ff7675; margin-top:10px;">ล้างรายการทั้งหมด</button>
   </div>
-</div>
-
-<div class="card">
-  <h3 style="margin-top:0">📊 การจัดการข้อมูล</h3>
-  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-    <button class="excelBtn" onclick="exportToExcel()">📥 Excel</button>
-    <button class="backupBtn" onclick="backupJSON()">💾 สำรอง</button>
-    <button class="restoreBtn" onclick="restoreJSON()">📂 ดึงข้อมูล</button>
-  </div>
-  <input type="file" id="fileInput" style="display:none" onchange="handleFile(event)">
-
-  <div class="period-header">🗓️ ประวัติรายการทั้งหมด</div>
- 
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr><th>วันที่</th><th>กะ</th><th>ค่าแรง</th><th>ค่ากะ</th><th>OT</th><th>GMP</th><th>เบี้ยขยัน</th><th>โบนัส</th><th>พิเศษ</th><th>ก่อนหัก</th><th>ประกันสังคม</th><th>หักจ่ายอื่นๆ</th><th>สุทธิ</th><th>ลบ</th></tr>
-      </thead>
-      <tbody id="fullList"></tbody>
-    </table>
-  </div>
-  <button onclick="clearData()" style="background:#ff7675; margin-top:10px;">ล้างรายการทั้งหมด</button>
 </div>
 
 <div id="detailModal" class="modal">
@@ -425,8 +518,41 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
   </div>
 </div>
 
+<div class="bottom-nav">
+  <div class="nav-item active" onclick="switchTab(this, 'dashboard')">
+    <span class="nav-icon">📊</span>
+    <span class="nav-label">สรุปรายได้</span>
+  </div>
+  <div class="nav-item" onclick="switchTab(this, 'add')">
+    <span class="nav-icon">➕</span>
+    <span class="nav-label">บันทึกรายการ</span>
+  </div>
+  <div class="nav-item" onclick="switchTab(this, 'history')">
+    <span class="nav-icon">🗓️</span>
+    <span class="nav-label">ประวัติทั้งหมด</span>
+  </div>
+</div>
+
 <script>
 let data = JSON.parse(localStorage.getItem("income")) || [];
+
+/* ===== ฟังก์ชั่นสลับแท็บแบบ Smooth + บังคับอัปเดตขนาดกราฟเมื่อกดแท็บสรุป ===== */
+function switchTab(element, tabId) {
+  // ซ่อนเนื้อหาทุกแท็บ
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  // เปิดแท็บที่เลือก
+  document.getElementById('tab-' + tabId).style.display = 'block';
+  
+  // รีเซ็ตคลาส active ของเมนูทั้งหมด
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  // ใส่คลาส active ให้เมนูที่ถูกกด
+  element.classList.add('active');
+  
+  // หากกลับมาหน้าแรก ให้รีเรนเดอร์กราฟเพื่อป้องกันปัญหาแสดงผลขนาดผิดเพี้ยน
+  if(tabId === 'dashboard') {
+    updateChart();
+  }
+}
 
 /* ===== POP ANIMATION HELPER ===== */
 function animateElement(el) {
@@ -450,6 +576,9 @@ function addData(){
   localStorage.setItem("income",JSON.stringify(data));
   render();
   ["salaryInput","shiftInput","otInput","gmpInput","attInput","bonusInput","extraInput","otherInput"].forEach(id=>document.getElementById(id).value="");
+  
+  // บันทึกเสร็จแล้วให้สลับกลับไปหน้าสรุปโดยอัตโนมัติ เพื่อดูยอดเงินที่เปลี่ยนไป
+  switchTab(document.querySelector('.bottom-nav .nav-item:first-child'), 'dashboard');
 }
 
 function deleteItem(i){ 
@@ -523,7 +652,7 @@ window.onclick = function(event) { if (event.target == document.getElementById("
 function render(){
   let s=0, sh=0, o=0, g=0, at=0, bn=0, ex=0, tt=0, sTotal=0, oTotal=0, gTotal=0;
   let p1Net = 0, p1Deduct = 0, p2Net = 0, p2Deduct = 0;
-  let p1W = 0, p1H = 0, p2W = 0, p2H = 0; // เพิ่มตัวแปรนับวันแบ่งตามงวด
+  let p1W = 0, p1H = 0, p2W = 0, p2H = 0; 
   
   let month = monthFilter.value;
   document.getElementById("fullList").innerHTML="";
@@ -550,7 +679,6 @@ function render(){
       <td><button class="deleteBtn" onclick="deleteItem(${i})">ลบ</button></td>
     </tr>`;
 
-    // คัดแยกตามงวด และ ตรวจสอบสถานะวันทำงาน/วันหยุด
     if(day <= 15) { 
         p1Net += net; 
         p1Deduct += (social + dOther);
@@ -566,7 +694,6 @@ function render(){
     sTotal+=social; oTotal+=dOther; gTotal+=gross; tt+=net;
   });
 
-  // Update summary texts
   document.getElementById("salary").innerText = s.toLocaleString();
   document.getElementById("shift").innerText = sh.toLocaleString();
   document.getElementById("ot").innerText = o.toLocaleString();
@@ -583,13 +710,11 @@ function render(){
   document.getElementById("deduct25").innerText = p1Deduct.toLocaleString();
   document.getElementById("deduct10").innerText = p2Deduct.toLocaleString();
 
-  // อัปเดตจำนวนวันทำงาน/วันหยุดลงบนหน้าจอ
   document.getElementById("p1Work").innerText = p1W;
   document.getElementById("p1Holi").innerText = p1H;
   document.getElementById("p2Work").innerText = p2W;
   document.getElementById("p2Holi").innerText = p2H;
 
-  // Trigger pop animation on all summary numbers
   ['salary','shift','ot','gmp','attDisplay','bonusDisplay','extraDisplay','grossTotalDisplay','socialTotalDisplay','otherDeductTotalDisplay','total','pay25','pay10','deduct25','deduct10','p1Work','p1Holi','p2Work','p2Holi'].forEach(id => {
       animateElement(document.getElementById(id));
   });
