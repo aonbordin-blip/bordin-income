@@ -1,9 +1,17 @@
+<script>
+    // ตรวจสอบสิทธิ์ก่อนแสดงผลหน้าเว็บ
+    if (sessionStorage.getItem("isAdmin") !== "true") {
+        alert("กรุณาเข้าสู่ระบบก่อนใช้งานหน้า Admin");
+        location.href = "login.html";
+    }
+</script>
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - ✓Record Income</title>
+    <title>Admin Management - ✓Record Income</title>
     <style>
         :root {
             --primary: #6a5af9;
@@ -12,242 +20,208 @@
             --glass: rgba(255, 255, 255, 0.8);
         }
 
-        body { 
-            margin: 0; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            background: var(--bg); 
-            color: #333;
-        }
-
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #333; }
+        
         .header { 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-            color: #fff; 
-            padding: 40px 20px; 
-            text-align: center;
-            border-radius: 0 0 40px 40px;
-            box-shadow: 0 10px 30px rgba(106, 90, 249, 0.2);
+            color: #fff; padding: 30px 20px; text-align: center;
+            border-radius: 0 0 30px 30px;
         }
 
-        .header h1 { margin: 0; font-size: 28px; letter-spacing: 1px; }
-        .header p { opacity: 0.9; font-size: 14px; margin-top: 5px; }
-
-        /* Search Section - Glassmorphism Design */
         .search-container {
-            margin: -30px 20px 20px 20px;
-            padding: 25px;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            margin: -20px 15px 15px; padding: 20px;
+            background: var(--glass); backdrop-filter: blur(10px);
+            border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid #fff;
         }
 
-        .search-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
+        input[type="text"], input[type="month"] {
+            width: 100%; padding: 12px; border-radius: 12px;
+            border: 1px solid rgba(106, 90, 249, 0.2); box-sizing: border-box;
+            margin-top: 5px; outline: none;
         }
 
-        @media (min-width: 768px) {
-            .search-grid { grid-template-columns: 1fr 1fr 1fr; }
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-group label {
-            font-size: 12px;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 8px;
-            margin-left: 5px;
-        }
-
-        input {
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(106, 90, 249, 0.2);
-            background: #fff;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(106, 90, 249, 0.1);
-        }
-
-        /* Table Design */
-        .card { 
-            background: #fff; 
-            margin: 20px; 
-            padding: 20px; 
-            border-radius: 24px; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.02);
-        }
-
-        .table-container { overflow-x: auto; border-radius: 15px; }
-
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        .card { background: #fff; margin: 15px; padding: 15px; border-radius: 20px; overflow-x: auto; }
         
-        th { 
-            background: #f8f9fa; 
-            padding: 15px; 
-            font-size: 13px; 
-            color: #888; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { text-align: left; padding: 12px; color: #888; font-size: 12px; text-transform: uppercase; }
+        td { padding: 15px 12px; border-bottom: 1px solid #f1f1f1; }
+
+        .emp-row { cursor: pointer; transition: background 0.2s; }
+        .emp-row:hover { background: #f9f8ff; }
+        .emp-name { font-weight: bold; color: var(--primary); text-decoration: underline; }
+        
+        /* Modal Style */
+        .modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: #fff; margin: 5% auto; padding: 25px;
+            width: 90%; max-width: 500px; border-radius: 30px;
+            max-height: 85vh; overflow-y: auto; position: relative;
+        }
+        .close-btn { position: absolute; right: 20px; top: 15px; font-size: 24px; cursor: pointer; }
+
+        .profile-img-view {
+            width: 100px; height: 100px; border-radius: 50%;
+            object-fit: cover; display: block; margin: 0 auto 15px;
+            border: 3px solid var(--primary);
         }
 
-        td { 
-            padding: 15px; 
-            border-bottom: 1px solid #f1f1f1; 
-            text-align: center;
-            font-size: 15px;
-        }
+        .info-edit-group { margin-bottom: 15px; }
+        .info-edit-group label { display: block; font-size: 12px; color: #999; font-weight: bold; }
+        .info-edit-group input { background: #fcfcfc; border: 1px solid #eee; }
 
-        .emp-info { text-align: left; }
-        .emp-name { font-weight: bold; color: #333; }
-        .emp-meta { font-size: 11px; color: #999; margin-top: 3px; }
-
-        .btn-edit { 
-            background: #fff; color: #f39c12; border: 1.5px solid #f39c12;
-            padding: 6px 15px; border-radius: 10px; cursor: pointer; font-weight: bold;
-            transition: all 0.2s;
-        }
-        .btn-edit:hover { background: #f39c12; color: #fff; }
-
-        .btn-delete { 
-            background: #fff; color: #e74c3c; border: 1.5px solid #e74c3c;
-            padding: 6px 15px; border-radius: 10px; cursor: pointer; font-weight: bold;
-            transition: all 0.2s;
-        }
-        .btn-delete:hover { background: #e74c3c; color: #fff; }
-
-        .status-pill {
-            background: rgba(106, 90, 249, 0.1);
-            color: var(--primary);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
+        .save-all-btn {
+            background: var(--primary); color: #fff; border: none;
+            width: 100%; padding: 15px; border-radius: 15px;
+            font-weight: bold; cursor: pointer; margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>Management Panel</h1>
-    <p>สืบค้นและจัดการข้อมูลพนักงานเชิงลึก</p>
+    <h1>Admin Panel</h1>
+    <p>แตะที่ชื่อพนักงานเพื่อดูหรือแก้ไขข้อมูล</p>
 </div>
 
 <div class="search-container">
-    <div class="search-grid">
-        <div class="input-group">
-            <label>🔎 ค้นหาด้วย รหัส/เลขบัตร/ชื่อ</label>
-            <input type="text" id="mainSearch" placeholder="ระบุข้อมูลที่ต้องการค้นหา..." onkeyup="loadAdminData()">
-        </div>
-        <div class="input-group">
-            <label>📅 เลือกเดือนที่บันทึก</label>
-            <input type="month" id="adminMonthFilter" onchange="loadAdminData()">
-        </div>
-        <div class="input-group">
-            <label>🏢 กรองตามแผนก</label>
-            <input type="text" id="deptFilter" placeholder="ระบุแผนก..." onkeyup="loadAdminData()">
-        </div>
-    </div>
+    <label style="font-size: 12px; font-weight: bold; color: var(--primary);">🔎 ค้นหา (รหัส/ชื่อ/เลขบัตร)</label>
+    <input type="text" id="mainSearch" placeholder="พิมพ์เพื่อค้นหา..." onkeyup="renderTable()">
 </div>
 
 <div class="card">
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th style="text-align: left;">ข้อมูลพนักงาน</th>
-                    <th>วันที่บันทึก</th>
-                    <th>รายได้สุทธิ</th>
-                    <th>สถานะ</th>
-                    <th>จัดการ</th>
-                </tr>
-            </thead>
-            <tbody id="adminTableBody">
-                </tbody>
-        </table>
+    <table>
+        <thead>
+            <tr>
+                <th>พนักงาน</th>
+                <th>แผนก</th>
+                <th>รหัสพนักงาน</th>
+            </tr>
+        </thead>
+        <tbody id="adminTableBody"></tbody>
+    </table>
+</div>
+
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h3 style="text-align: center; color: var(--primary);">ข้อมูลพนักงาน</h3>
+        
+        <img id="viewPhoto" src="" class="profile-img-view">
+        
+        <div class="info-edit-group">
+            <label>รหัสพนักงาน</label>
+            <input type="text" id="editEmpId">
+        </div>
+        <div class="info-edit-group">
+            <label>ชื่อ-นามสกุล</label>
+            <input type="text" id="editName">
+        </div>
+        <div class="info-edit-group">
+            <label>เลขประจำตัวประชาชน</label>
+            <input type="text" id="editIdCard">
+        </div>
+        <div class="info-edit-group">
+            <label>เบอร์โทรศัพท์</label>
+            <input type="text" id="editPhone">
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="info-edit-group">
+                <label>ตำแหน่ง</label>
+                <input type="text" id="editPos">
+            </div>
+            <div class="info-edit-group">
+                <label>แผนก</label>
+                <input type="text" id="editDept">
+            </div>
+        </div>
+
+        <h4 style="border-bottom: 1px solid #eee; padding-bottom: 5px; color: var(--primary);">ที่อยู่ปัจจุบัน</h4>
+        <div class="info-edit-group">
+            <input type="text" id="editAddrNo" placeholder="บ้านเลขที่">
+            <input type="text" id="editAddrVillage" placeholder="หมู่บ้าน" style="margin-top:5px;">
+            <input type="text" id="editAddrProv" placeholder="จังหวัด" style="margin-top:5px;">
+        </div>
+
+        <button class="save-all-btn" onclick="updateStaffInfo()">💾 บันทึกการแก้ไข</button>
     </div>
 </div>
 
 <script>
-    // ดึงข้อมูลรายได้ทั้งหมด
-    let incomeData = JSON.parse(localStorage.getItem("income")) || [];
-    // ดึงข้อมูลโปรไฟล์ (เพื่อเอาเลขบัตรและรหัสพนักงานมาเปรียบเทียบ)
-    let staffProfile = JSON.parse(localStorage.getItem("employee_profile")) || {};
+    // ดึงข้อมูลพนักงานจาก LocalStorage
+    let staff = JSON.parse(localStorage.getItem("employee_profile")) || {};
 
-    function loadAdminData() {
-        const tableBody = document.getElementById("adminTableBody");
-        const searchTerm = document.getElementById("mainSearch").value.toLowerCase();
-        const monthTerm = document.getElementById("adminMonthFilter").value;
-        const deptTerm = document.getElementById("deptFilter").value.toLowerCase();
-        
-        tableBody.innerHTML = "";
-        
-        // ในระบบจริง ข้อมูล incomeData ควรมีฟิลด์ staffId หรือ idCard พ่วงมาด้วยทุก Record
-        // ตัวอย่างการจำลองการค้นหาแบบครอบคลุม:
-        incomeData.forEach((item, index) => {
-            // เช็คเงื่อนไขการค้นหา (ชื่อพนักงาน, รหัสพนักงาน, หรือเลขบัตร)
-            const matchesSearch = 
-                (staffProfile.fullName && staffProfile.fullName.toLowerCase().includes(searchTerm)) ||
-                (staffProfile.employeeId && staffProfile.employeeId.toLowerCase().includes(searchTerm)) ||
-                (staffProfile.idCard && staffProfile.idCard.includes(searchTerm));
-            
-            const matchesMonth = !monthTerm || item.date.startsWith(monthTerm);
-            const matchesDept = !deptTerm || (staffProfile.department && staffProfile.department.toLowerCase().includes(deptTerm));
+    function renderTable() {
+        const tbody = document.getElementById("adminTableBody");
+        const search = document.getElementById("mainSearch").value.toLowerCase();
+        tbody.innerHTML = "";
 
-            if (matchesSearch && matchesMonth && matchesDept) {
-                // คำนวณรายได้สุทธิ (ใช้สูตรเดิมจากหน้าหลัก)
-                let soc = Math.min(750, Math.ceil(((item.salary||0) + (item.shiftPay||0) + (item.gmp||0)) * 0.05));
-                let net = (item.salary||0)+(item.shiftPay||0)+(item.ot||0)+(item.gmp||0)+(item.att||0)+(item.bonus||0)+(item.extra||0)-soc-(item.other||0);
+        // ตรวจสอบเงื่อนไขค้นหา (ชื่อ หรือ รหัส หรือ เลขบัตร)
+        const matches = 
+            (staff.fullName && staff.fullName.toLowerCase().includes(search)) ||
+            (staff.employeeId && staff.employeeId.toLowerCase().includes(search)) ||
+            (staff.idCard && staff.idCard.includes(search));
 
-                let row = `<tr>
-                    <td class="emp-info">
-                        <div class="emp-name">${staffProfile.fullName || 'ไม่ระบุชื่อ'}</div>
-                        <div class="emp-meta">ID: ${staffProfile.employeeId || '-'} | ID Card: ${staffProfile.idCard || '-'}</div>
-                    </td>
-                    <td>${item.date}</td>
-                    <td><strong style="color: #2ecc71;">฿${net.toLocaleString()}</strong></td>
-                    <td><span class="status-pill">${staffProfile.department || 'ทั่วไป'}</span></td>
-                    <td>
-                        <button class="btn-edit" onclick="editData(${index})">แก้ไข</button>
-                        <button class="btn-delete" onclick="deleteData(${index})">ลบ</button>
-                    </td>
-                </tr>`;
-                tableBody.innerHTML += row;
-            }
-        });
-
-        if(tableBody.innerHTML === "") {
-            tableBody.innerHTML = `<tr><td colspan="5" style="padding: 40px; color: #999;">ไม่พบข้อมูลที่ค้นหา</td></tr>`;
+        if (staff.fullName && matches) {
+            let row = `<tr class="emp-row" onclick="openModal()">
+                <td><span class="emp-name">${staff.fullName}</span></td>
+                <td>${staff.department || '-'}</td>
+                <td>${staff.employeeId || '-'}</td>
+            </tr>`;
+            tbody.innerHTML = row;
+        } else {
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:30px; color:#ccc;">ไม่พบข้อมูล</td></tr>`;
         }
     }
 
-    function editData(index) {
-        // สามารถต่อยอดไปเปิด Modal เพื่อแก้ไขข้อมูลได้
-        alert("กำลังเปิดหน้าแก้ไขรายการวันที่: " + incomeData[index].date);
+    function openModal() {
+        document.getElementById("editModal").style.display = "block";
+        // โหลดค่าปัจจุบันเข้า Input
+        document.getElementById("viewPhoto").src = staff.photo || 'https://via.placeholder.com/100';
+        document.getElementById("editEmpId").value = staff.employeeId || '';
+        document.getElementById("editName").value = staff.fullName || '';
+        document.getElementById("editIdCard").value = staff.idCard || '';
+        document.getElementById("editPhone").value = staff.phone || '';
+        document.getElementById("editPos").value = staff.position || '';
+        document.getElementById("editDept").value = staff.department || '';
+        document.getElementById("editAddrNo").value = staff.addr_no || '';
+        document.getElementById("editAddrVillage").value = staff.addr_village || '';
+        document.getElementById("editAddrProv").value = staff.addr_province || '';
     }
 
-    function deleteData(index) {
-        if(confirm("ยืนยันการลบรายการนี้?")) {
-            incomeData.splice(index, 1);
-            localStorage.setItem("income", JSON.stringify(incomeData));
-            loadAdminData();
-        }
+    function closeModal() {
+        document.getElementById("editModal").style.display = "none";
     }
 
-    window.onload = loadAdminData;
+    function updateStaffInfo() {
+        // อัปเดต Object ข้อมูล
+        staff.employeeId = document.getElementById("editEmpId").value;
+        staff.fullName = document.getElementById("editName").value;
+        staff.idCard = document.getElementById("editIdCard").value;
+        staff.phone = document.getElementById("editPhone").value;
+        staff.position = document.getElementById("editPos").value;
+        staff.department = document.getElementById("editDept").value;
+        staff.addr_no = document.getElementById("editAddrNo").value;
+        staff.addr_village = document.getElementById("editAddrVillage").value;
+        staff.addr_province = document.getElementById("editAddrProv").value;
+
+        // บันทึกกลับลง LocalStorage
+        localStorage.setItem("employee_profile", JSON.stringify(staff));
+        alert("✅ แก้ไขข้อมูลเรียบร้อยแล้ว");
+        closeModal();
+        renderTable();
+    }
+
+    window.onclick = function(event) {
+        if (event.target == document.getElementById("editModal")) closeModal();
+    }
+
+    window.onload = renderTable;
 </script>
 </body>
 </html>
