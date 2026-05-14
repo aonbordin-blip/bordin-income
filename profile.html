@@ -5,257 +5,293 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profile - ✓Record Income</title>
 <style>
-/* Style เดิมเพื่อความต่อเนื่อง 100% */
-body {
-    margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #FDFBF7; color: #333; line-height: 1.6; padding-bottom: 100px;
+/* --- Style เดิมผสมลูกเล่นใหม่ --- */
+:root {
+    --primary: #6a5af9;
+    --secondary: #00c6ff;
+    --bg: #FDFBF7;
+    --white: #ffffff;
+    --success: #00b894;
+    --warning: #f1c40f;
+    --danger: #ff7675;
 }
-.header {
-    background: linear-gradient(135deg, #6a5af9, #00c6ff); color: #fff;
-    padding: 18px 20px; border-radius: 24px; margin: 15px;
-    display: flex; flex-direction: column; align-items: center;
-    box-shadow: 0 20px 35px -10px rgba(106, 90, 249, 0.35);
-}
-.title { font-size: 24px; font-weight: 800; letter-spacing: 2px; }
 
-.card {
-    background: #ffffff; margin: 15px; padding: 20px; border-radius: 24px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(106, 90, 249, 0.07);
+body {
+    margin: 0; font-family: 'Segoe UI', sans-serif;
+    background: var(--bg); color: #333; padding-bottom: 100px;
+}
+
+.header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff;
+    /* เพิ่ม Padding ด้านบนและล่างเพื่อให้ข้อความอยู่สูงกว่ารูป */
+    padding: 50px 20px 70px; border-radius: 0 0 35px 35px; text-align: center;
+    box-shadow: 0 15px 35px rgba(106, 90, 249, 0.3);
 }
 
 .profile-pic-container {
-    display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;
+    display: flex; flex-direction: column; align-items: center; 
+    /* ลดระยะการดึงรูปขึ้นไปทับ (จาก -50px เหลือ -45px) เพื่อไม่ให้บังตัวหนังสือ */
+    margin: -45px 0 20px; 
 }
 #profilePreview {
-    width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
-    border: 4px solid #fff; box-shadow: 0 10px 20px rgba(106, 90, 249, 0.2);
-    background: #eee; margin-bottom: 10px;
-}
-.upload-btn {
-    font-size: 12px; color: #6a5af9; cursor: pointer; font-weight: bold;
-    border: 1px solid #6a5af9; padding: 5px 15px; border-radius: 20px;
+    width: 110px; height: 110px; border-radius: 50%; object-fit: cover;
+    border: 4px solid #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.12); 
+    background: #f0f0f0; 
 }
 
-.info-group { margin-bottom: 15px; }
-.info-group label { display: block; font-size: 12px; color: #888; font-weight: bold; margin-bottom: 5px; }
-input {
-    width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e0e0e0;
-    box-sizing: border-box; font-size: 15px; background: #fafafa;
+/* Accordion Design */
+.acc-card {
+    background: var(--white); margin: 15px; border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04); overflow: hidden; border: 1px solid rgba(106, 90, 249, 0.1);
 }
+.acc-header {
+    padding: 15px 20px; background: #fff; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    font-weight: bold; color: var(--primary);
+}
+.acc-content { 
+    padding: 0 20px 20px; display: block; 
+}
+.acc-content.collapsed { display: none; }
+
+.section-title {
+    font-size: 13px; font-weight: 800; color: var(--primary);
+    margin: 15px 0 10px 0; display: flex; align-items: center; gap: 8px;
+}
+
+.info-group { margin-bottom: 12px; }
+.info-group label { display: block; font-size: 11px; color: #888; font-weight: bold; margin-bottom: 4px; }
+input {
+    width: 100%; padding: 10px; border-radius: 12px; border: 1px solid #eee;
+    box-sizing: border-box; font-size: 14px; background: #fafafa; transition: 0.3s;
+}
+input:disabled { background: #f0f0f0; border-color: #ddd; color: #666; cursor: not-allowed; }
 
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-.section-title {
-    font-size: 14px; font-weight: 800; color: #6a5af9;
-    margin: 20px 0 10px 0; border-left: 4px solid #6a5af9; padding-left: 10px;
+/* Buttons */
+.btn {
+    border: none; padding: 14px; border-radius: 15px; font-weight: bold;
+    cursor: pointer; transition: 0.3s; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
+.save-btn { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; }
+.leave-btn { background: #fff; border: 2px solid var(--primary); color: var(--primary); }
+.history-btn { background: #f0edff; color: var(--primary); }
 
-.bottom-nav {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-    width: calc(100% - 30px); max-width: 460px; background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px); display: flex; justify-content: space-around;
-    padding: 8px 6px; border-radius: 28px; box-shadow: 0 15px 35px rgba(106, 90, 249, 0.2);
-    z-index: 1500; border: 1px solid rgba(106, 90, 249, 0.12);
+/* Modal */
+.modal {
+    display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+    width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
 }
-.nav-item {
-    display: flex; flex-direction: column; align-items: center; flex: 1;
-    cursor: pointer; padding: 10px 0; color: #888; font-weight: 700; font-size: 11px;
+.modal-content {
+    background: #fff; margin: 20% auto; padding: 25px; width: 80%;
+    max-width: 320px; border-radius: 30px; text-align: center;
 }
-.nav-item.active { color: #6a5af9; }
-.nav-icon { font-size: 22px; }
+.leave-opt {
+    padding: 12px; margin: 8px 0; border-radius: 12px; background: #f8f9ff;
+    font-weight: bold; cursor: pointer; border: 1px solid #eee;
+}
+.leave-opt:hover { background: var(--primary); color: #fff; }
 
-button.save-btn {
-    background: linear-gradient(135deg, #6a5af9, #00c6ff); color: #fff;
-    border: none; padding: 15px; border-radius: 15px; width: 100%;
-    font-weight: bold; cursor: pointer; margin-top: 10px;
-}
+.status-badge { padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; }
+.pending { background: #fff4de; color: #ffa800; }
+.approved { background: #c9f7f5; color: #1bc5bd; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="title">My Profile.</div>
-  <div style="font-size: 12px; opacity: 0.8;">จัดการข้อมูลพนักงาน</div>
+  <div style="font-size: 26px; font-weight: 800; letter-spacing: 0.5px;">My Profile.</div>
+  <div style="font-size: 11px; opacity: 0.8; margin-top: 5px;">ระบบพนักงานอัจฉริยะ</div>
 </div>
 
-<div class="card">
-    <div class="profile-pic-container">
-        <img id="profilePreview" src="https://via.placeholder.com/120" alt="Profile">
-        <label class="upload-btn" for="photoInput">เปลี่ยนรูปถ่าย</label>
-        <input type="file" id="photoInput" style="display:none" accept="image/*" onchange="previewImage(event)">
-    </div>
-
-    <div class="section-title">ข้อมูลส่วนตัว</div>
-    
-    <div class="info-group">
-        <label>รหัสพนักงาน</label>
-        <input type="text" id="employeeId" placeholder="เช่น EMP001">
-    </div>
-
-    <div class="info-group">
-        <label>ชื่อ-นามสกุล (ตามบัตรประชาชน)</label>
-        <input type="text" id="fullName" placeholder="ชื่อ-นามสกุล">
-    </div>
-    
-    <div class="grid-2">
-        <div class="info-group">
-            <label>เลขประจำตัวประชาชน</label>
-            <input type="text" id="idCard" placeholder="x-xxxx-xxxxx-xx-x">
-        </div>
-        <div class="info-group">
-            <label>เบอร์โทรศัพท์</label>
-            <input type="tel" id="phone" placeholder="08x-xxx-xxxx">
-        </div>
-    </div>
-
-    <div class="grid-2">
-        <div class="info-group">
-            <label>ตำแหน่ง</label>
-            <input type="text" id="position" placeholder="ตำแหน่ง">
-        </div>
-        <div class="info-group">
-            <label>แผนก</label>
-            <input type="text" id="department" placeholder="แผนก">
-        </div>
-    </div>
-
-    <div class="info-group">
-        <label>วันที่เริ่มทำงาน</label>
-        <input type="date" id="startDate">
-    </div>
-
-    <div class="section-title">ที่อยู่ปัจจุบัน</div>
-    <div class="grid-2">
-        <div class="info-group">
-            <label>บ้านเลขที่</label>
-            <input type="text" id="addr_no" placeholder="เช่น 123/4">
-        </div>
-        <div class="info-group">
-            <label>หมู่บ้าน</label>
-            <input type="text" id="addr_village" placeholder="ชื่อหมู่บ้าน">
-        </div>
-    </div>
-
-    <div class="grid-2">
-        <div class="info-group">
-            <label>หมู่ที่</label>
-            <input type="text" id="addr_moo" placeholder="เช่น 5">
-        </div>
-        <div class="info-group">
-            <label>ซอย</label>
-            <input type="text" id="addr_soi" placeholder="ชื่อซอย">
-        </div>
-    </div>
-
-    <div class="grid-2">
-        <div class="info-group">
-            <label>ตำบล/แขวง</label>
-            <input type="text" id="addr_subdistrict" placeholder="ตำบล">
-        </div>
-        <div class="info-group">
-            <label>อำเภอ/เขต</label>
-            <input type="text" id="addr_district" placeholder="อำเภอ">
-        </div>
-    </div>
-
-    <div class="grid-2">
-        <div class="info-group">
-            <label>จังหวัด</label>
-            <input type="text" id="addr_province" placeholder="จังหวัด">
-        </div>
-        <div class="info-group">
-            <label>รหัสไปรษณีย์</label>
-            <input type="text" id="addr_zipcode" placeholder="xxxxx">
-        </div>
-    </div>
-
-    <button class="save-btn" onclick="saveProfile()">💾 บันทึกข้อมูลโปรไฟล์</button>
+<div class="profile-pic-container">
+    <img id="profilePreview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23bbbbbb'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>">
+    <input type="file" id="photoInput" style="display:none" accept="image/*" onchange="previewImage(event)">
+    <label id="uploadLabel" class="upload-btn" for="photoInput" style="font-size: 11px; color: var(--primary); margin-top: 8px; cursor: pointer; font-weight: bold;">[ เปลี่ยนรูปถ่าย ]</label>
 </div>
 
-<div class="bottom-nav">
-  <div class="nav-item" onclick="location.href='index.html'">
-    <span class="nav-icon">📊</span>
-    <span class="nav-label">สรุปรายได้</span>
-  </div>
-  <div class="nav-item" onclick="location.href='index.html?action=add'">
-    <span class="nav-icon">➕</span>
-    <span class="nav-label">บันทึก</span>
-  </div>
-  <div class="nav-item" onclick="location.href='index.html?action=history'">
-    <span class="nav-icon">🗓️</span>
-    <span class="nav-label">ประวัติ</span>
-  </div>
-  <div class="nav-item active">
-    <span class="nav-icon">👤</span>
-    <span class="nav-label">โปรไฟล์</span>
-  </div>
-    <div class="nav-item" onclick="location.href='login.html'"> <span class="nav-icon">🔑</span>
-    <span class="nav-label">จัดการ</span>
-  </div>
+<div class="acc-card">
+    <div class="acc-header" onclick="toggleAcc('personalAcc')">
+        <span>👤 ข้อมูลพนักงาน</span> <span id="personalIcon">▼</span>
+    </div>
+    <div id="personalAcc" class="acc-content">
+        <div class="info-group"><label>รหัสพนักงาน</label><input type="text" id="employeeId"></div>
+        <div class="info-group"><label>ชื่อ-นามสกุล</label><input type="text" id="fullName"></div>
+        <div class="grid-2">
+            <div class="info-group"><label>ตำแหน่ง</label><input type="text" id="position"></div>
+            <div class="info-group"><label>แผนก</label><input type="text" id="department"></div>
+        </div>
+        <div class="info-group"><label>เลขประจำตัวประชาชน</label><input type="text" id="idCard"></div>
+        <div class="info-group"><label>เบอร์โทรศัพท์</label><input type="tel" id="phone"></div>
+    </div>
+</div>
 
+<div class="acc-card">
+    <div class="acc-header" onclick="toggleAcc('addressAcc')">
+        <span>📍 ที่อยู่ปัจจุบัน</span> <span id="addressIcon">▼</span>
+    </div>
+    <div id="addressAcc" class="acc-content">
+        <div class="grid-2">
+            <div class="info-group"><label>บ้านเลขที่</label><input type="text" id="addr_no"></div>
+            <div class="info-group"><label>หมู่ที่</label><input type="text" id="addr_moo"></div>
+        </div>
+        <div class="grid-2">
+            <div class="info-group"><label>หมู่บ้าน</label><input type="text" id="addr_village"></div>
+            <div class="info-group"><label>ซอย</label><input type="text" id="addr_soi"></div>
+        </div>
+        <div class="grid-2">
+            <div class="info-group"><label>ตำบล</label><input type="text" id="addr_subdistrict"></div>
+            <div class="info-group"><label>อำเภอ</label><input type="text" id="addr_district"></div>
+        </div>
+        <div class="grid-2">
+            <div class="info-group"><label>จังหวัด</label><input type="text" id="addr_province"></div>
+            <div class="info-group"><label>รหัสไปรษณีย์</label><input type="text" id="addr_zipcode"></div>
+        </div>
+    </div>
+</div>
+
+<div style="padding: 0 15px;">
+    <button id="saveBtn" class="btn save-btn" onclick="saveProfile()">💾 บันทึกและยืนยันข้อมูล</button>
+    
+    <div id="leaveActions" style="display:none;">
+        <div class="grid-2">
+            <button class="btn leave-btn" onclick="showLeaveModal()">📅 แจ้งลา</button>
+            <button class="btn history-btn" onclick="toggleAcc('historyAcc')">📜 ประวัติการลา</button>
+        </div>
+    </div>
+</div>
+
+<div id="historyAcc" class="acc-card acc-content collapsed" style="margin-top: 15px;">
+    <h4 style="color: var(--primary); margin-bottom: 10px;">📊 สิทธิการลาคงเหลือ</h4>
+    <div id="leaveQuotaInfo" style="font-size: 11px; background: #f9f8ff; padding: 10px; border-radius: 10px; margin-bottom: 15px;">
+        </div>
+    <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+        <thead><tr style="text-align: left; color: #999; border-bottom: 1px solid #eee;">
+            <th style="padding: 5px;">ประเภท</th><th style="padding: 5px;">วันที่</th><th style="padding: 5px;">สถานะ</th>
+        </tr></thead>
+        <tbody id="leaveHistoryBody"></tbody>
+    </table>
+</div>
+
+<div id="leaveModal" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-top:0; color: var(--primary);">แจ้งลาหยุด</h3>
+        <div class="leave-opt" onclick="submitLeave('ลาป่วย')">🤒 ลาป่วย</div>
+        <div class="leave-opt" onclick="submitLeave('ลากิจ')">💼 ลากิจ</div>
+        <div class="leave-opt" onclick="submitLeave('ลาพักร้อน')">🏖️ ลาพักร้อน</div>
+        <div class="leave-opt" onclick="submitLeave('ลาไม่รับค่าจ้าง')">🚫 ลาไม่รับค่าจ้าง</div>
+        <p onclick="closeModal()" style="margin-top:15px; font-size:12px; color:#999; cursor:pointer;">ยกเลิก</p>
+    </div>
 </div>
 
 <script>
-window.onload = function() {
-    const savedProfile = JSON.parse(localStorage.getItem('employee_profile'));
-    if(savedProfile) {
-        document.getElementById('employeeId').value = savedProfile.employeeId || '';
-        document.getElementById('fullName').value = savedProfile.fullName || '';
-        document.getElementById('idCard').value = savedProfile.idCard || '';
-        document.getElementById('phone').value = savedProfile.phone || '';
-        document.getElementById('position').value = savedProfile.position || '';
-        document.getElementById('department').value = savedProfile.department || '';
-        document.getElementById('startDate').value = savedProfile.startDate || '';
-        
-        document.getElementById('addr_no').value = savedProfile.addr_no || '';
-        document.getElementById('addr_village').value = savedProfile.addr_village || '';
-        document.getElementById('addr_moo').value = savedProfile.addr_moo || '';
-        document.getElementById('addr_soi').value = savedProfile.addr_soi || '';
-        document.getElementById('addr_subdistrict').value = savedProfile.addr_subdistrict || '';
-        document.getElementById('addr_district').value = savedProfile.addr_district || '';
-        document.getElementById('addr_province').value = savedProfile.addr_province || '';
-        document.getElementById('addr_zipcode').value = savedProfile.addr_zipcode || '';
+let isLocked = false;
 
-        if(savedProfile.photo) {
-            document.getElementById('profilePreview').src = savedProfile.photo;
+window.onload = function() {
+    const saved = JSON.parse(localStorage.getItem('employee_profile'));
+    if(saved) {
+        Object.keys(saved).forEach(key => {
+            const el = document.getElementById(key);
+            if(el) el.value = saved[key];
+        });
+        if(saved.photo) document.getElementById('profilePreview').src = saved.photo;
+        
+        if(saved.isLocked) {
+            applyLock();
         }
     }
+    renderLeaveHistory();
 };
 
-function previewImage(event) {
-    const reader = new FileReader();
-    reader.onload = function() {
-        document.getElementById('profilePreview').src = reader.result;
-    };
-    reader.readAsDataURL(event.target.files[0]);
+function toggleAcc(id) {
+    document.getElementById(id).classList.toggle('collapsed');
+}
+
+function applyLock() {
+    isLocked = true;
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => input.disabled = true);
+    document.getElementById('uploadLabel').style.display = 'none';
+    document.getElementById('saveBtn').style.display = 'none';
+    document.getElementById('leaveActions').style.display = 'block';
+    
+    // หุบรายการข้อมูล
+    document.getElementById('personalAcc').classList.add('collapsed');
+    document.getElementById('addressAcc').classList.add('collapsed');
 }
 
 function saveProfile() {
-    const profileData = {
+    const data = {
         employeeId: document.getElementById('employeeId').value,
         fullName: document.getElementById('fullName').value,
-        idCard: document.getElementById('idCard').value,
-        phone: document.getElementById('phone').value,
         position: document.getElementById('position').value,
         department: document.getElementById('department').value,
-        startDate: document.getElementById('startDate').value,
-        
+        idCard: document.getElementById('idCard').value,
+        phone: document.getElementById('phone').value,
         addr_no: document.getElementById('addr_no').value,
-        addr_village: document.getElementById('addr_village').value,
         addr_moo: document.getElementById('addr_moo').value,
+        addr_village: document.getElementById('addr_village').value,
         addr_soi: document.getElementById('addr_soi').value,
         addr_subdistrict: document.getElementById('addr_subdistrict').value,
         addr_district: document.getElementById('addr_district').value,
         addr_province: document.getElementById('addr_province').value,
         addr_zipcode: document.getElementById('addr_zipcode').value,
-        
-        photo: document.getElementById('profilePreview').src
+        photo: document.getElementById('profilePreview').src,
+        isLocked: true
     };
+    localStorage.setItem('employee_profile', JSON.stringify(data));
+    alert('✅ บันทึกข้อมูลสำเร็จ! ข้อมูลถูกล็อคแล้ว');
+    location.reload();
+}
+
+function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = () => document.getElementById('profilePreview').src = reader.result;
+    reader.readAsDataURL(event.target.files[0]);
+}
+
+// --- ระบบลา ---
+function showLeaveModal() { document.getElementById('leaveModal').style.display = 'block'; }
+function closeModal() { document.getElementById('leaveModal').style.display = 'none'; }
+
+function submitLeave(type) {
+    let requests = JSON.parse(localStorage.getItem('leave_requests')) || [];
+    const newReq = {
+        id: Date.now(),
+        empId: document.getElementById('employeeId').value,
+        name: document.getElementById('fullName').value,
+        type: type,
+        date: new Date().toLocaleDateString('th-TH'),
+        status: 'รอการอนุมัติ'
+    };
+    requests.push(newReq);
+    localStorage.setItem('leave_requests', JSON.stringify(requests));
+    alert('ส่งคำขอลาเรียบร้อยแล้ว');
+    closeModal();
+    renderLeaveHistory();
+}
+
+function renderLeaveHistory() {
+    const requests = JSON.parse(localStorage.getItem('leave_requests')) || [];
+    const empId = document.getElementById('employeeId').value;
+    const body = document.getElementById('leaveHistoryBody');
     
-    localStorage.setItem('employee_profile', JSON.stringify(profileData));
-    alert('✅ บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว!');
+    // กรองเฉพาะของตัวเอง
+    const myLeaves = requests.filter(r => r.empId === empId);
+    body.innerHTML = myLeaves.map(r => `
+        <tr style="border-bottom: 1px solid #f9f9f9;">
+            <td style="padding:10px 5px;">${r.type}</td>
+            <td style="padding:10px 5px;">${r.date}</td>
+            <td style="padding:10px 5px;"><span class="status-badge ${r.status === 'อนุมัติ' ? 'approved' : 'pending'}">${r.status}</span></td>
+        </tr>
+    `).join('');
+
+    // ตัวอย่างโควตาลา (สามารถให้ Admin แก้ไขค่าเหล่านี้ใน localStorage ได้)
+    document.getElementById('leaveQuotaInfo').innerHTML = `
+        พักร้อน: เหลือ 6/6 วัน | ลาป่วย: 30/30 วัน | ลากิจ: 3/3 วัน
+    `;
 }
 </script>
-
 </body>
 </html>
