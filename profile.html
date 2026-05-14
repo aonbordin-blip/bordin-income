@@ -86,6 +86,12 @@ button.save-btn {
     </div>
 
     <div class="section-title">ข้อมูลส่วนตัว</div>
+    
+    <div class="info-group">
+        <label>รหัสพนักงาน</label>
+        <input type="text" id="employeeId" placeholder="เช่น EMP001">
+    </div>
+
     <div class="info-group">
         <label>ชื่อ-นามสกุล (ตามบัตรประชาชน)</label>
         <input type="text" id="fullName" placeholder="ชื่อ-นามสกุล">
@@ -189,6 +195,7 @@ button.save-btn {
 window.onload = function() {
     const savedProfile = JSON.parse(localStorage.getItem('employee_profile'));
     if(savedProfile) {
+        document.getElementById('employeeId').value = savedProfile.employeeId || '';
         document.getElementById('fullName').value = savedProfile.fullName || '';
         document.getElementById('idCard').value = savedProfile.idCard || '';
         document.getElementById('phone').value = savedProfile.phone || '';
@@ -221,6 +228,7 @@ function previewImage(event) {
 
 function saveProfile() {
     const profileData = {
+        employeeId: document.getElementById('employeeId').value,
         fullName: document.getElementById('fullName').value,
         idCard: document.getElementById('idCard').value,
         phone: document.getElementById('phone').value,
