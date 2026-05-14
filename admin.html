@@ -35,22 +35,34 @@
             border: 1px solid #fff;
         }
 
-        input[type="text"], input[type="month"] {
+        input[type="text"] {
             width: 100%; padding: 12px; border-radius: 12px;
             border: 1px solid rgba(106, 90, 249, 0.2); box-sizing: border-box;
-            margin-top: 5px; outline: none;
+            margin-top: 5px; outline: none; font-size: 14px;
         }
 
-        .card { background: #fff; margin: 15px; padding: 15px; border-radius: 20px; overflow-x: auto; }
+        .card { background: #fff; margin: 15px; padding: 10px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
         
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { text-align: left; padding: 12px; color: #888; font-size: 12px; text-transform: uppercase; }
-        td { padding: 15px 12px; border-bottom: 1px solid #f1f1f1; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { text-align: left; padding: 10px 5px; color: #888; font-size: 11px; text-transform: uppercase; border-bottom: 2px solid #f9f9f9; }
+        td { padding: 12px 5px; border-bottom: 1px solid #f1f1f1; vertical-align: middle; }
+
+        /* ปรับสัดส่วนคอลัมน์ให้พอดีหน้าจอ */
+        .col-emp { width: 65%; }
+        .col-dept { width: 35%; }
 
         .emp-row { cursor: pointer; transition: background 0.2s; }
         .emp-row:hover { background: #f9f8ff; }
-        .emp-name { font-weight: bold; color: var(--primary); text-decoration: underline; }
         
+        .emp-name { font-weight: bold; color: var(--primary); font-size: 14px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .emp-sub-info { font-size: 11px; color: #999; display: block; margin-top: 2px; }
+        
+        .dept-badge {
+            background: #f0edff; color: var(--primary);
+            padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: bold;
+            display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+
         /* Modal Style */
         .modal {
             display: none; position: fixed; z-index: 2000; left: 0; top: 0;
@@ -59,7 +71,7 @@
         }
         .modal-content {
             background: #fff; margin: 5% auto; padding: 25px;
-            width: 90%; max-width: 500px; border-radius: 30px;
+            width: 85%; max-width: 450px; border-radius: 30px;
             max-height: 85vh; overflow-y: auto; position: relative;
         }
         .close-btn { position: absolute; right: 20px; top: 15px; font-size: 24px; cursor: pointer; }
@@ -67,39 +79,38 @@
         .profile-img-view {
             width: 100px; height: 100px; border-radius: 50%;
             object-fit: cover; display: block; margin: 0 auto 15px;
-            border: 3px solid var(--primary);
+            border: 3px solid var(--primary); box-shadow: 0 5px 15px rgba(106, 90, 249, 0.2);
         }
 
         .info-edit-group { margin-bottom: 15px; }
-        .info-edit-group label { display: block; font-size: 12px; color: #999; font-weight: bold; }
-        .info-edit-group input { background: #fcfcfc; border: 1px solid #eee; }
+        .info-edit-group label { display: block; font-size: 11px; color: #999; font-weight: bold; margin-bottom: 4px; }
+        .info-edit-group input { background: #fafafa; border: 1px solid #eee; width: 100%; padding: 10px; border-radius: 10px; box-sizing: border-box; }
 
         .save-all-btn {
-            background: var(--primary); color: #fff; border: none;
-            width: 100%; padding: 15px; border-radius: 15px;
-            font-weight: bold; cursor: pointer; margin-top: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff; border: none; width: 100%; padding: 15px; border-radius: 15px;
+            font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 10px 20px rgba(106, 90, 249, 0.2);
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>Admin Panel</h1>
-    <p>แตะที่ชื่อพนักงานเพื่อดูหรือแก้ไขข้อมูล</p>
+    <h1 style="font-size: 24px; margin: 0;">Admin Management</h1>
+    <p style="font-size: 12px; margin-top: 5px; opacity: 0.9;">จัดการและแก้ไขข้อมูลพนักงาน</p>
 </div>
 
 <div class="search-container">
-    <label style="font-size: 12px; font-weight: bold; color: var(--primary);">🔎 ค้นหา (รหัส/ชื่อ/เลขบัตร)</label>
-    <input type="text" id="mainSearch" placeholder="พิมพ์เพื่อค้นหา..." onkeyup="renderTable()">
+    <label style="font-size: 11px; font-weight: bold; color: var(--primary);">🔎 ค้นหาพนักงาน</label>
+    <input type="text" id="mainSearch" placeholder="ระบุชื่อ, รหัส หรือเลขบัตร..." onkeyup="renderTable()">
 </div>
 
 <div class="card">
     <table>
         <thead>
             <tr>
-                <th>พนักงาน</th>
-                <th>แผนก</th>
-                <th>รหัสพนักงาน</th>
+                <th class="col-emp">พนักงาน / รหัส</th>
+                <th class="col-dept">แผนก</th>
             </tr>
         </thead>
         <tbody id="adminTableBody"></tbody>
@@ -109,7 +120,7 @@
 <div id="editModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
-        <h3 style="text-align: center; color: var(--primary);">ข้อมูลพนักงาน</h3>
+        <h3 style="text-align: center; color: var(--primary); margin-bottom: 20px;">ข้อมูลพนักงาน</h3>
         
         <img id="viewPhoto" src="" class="profile-img-view">
         
@@ -141,19 +152,18 @@
             </div>
         </div>
 
-        <h4 style="border-bottom: 1px solid #eee; padding-bottom: 5px; color: var(--primary);">ที่อยู่ปัจจุบัน</h4>
+        <h4 style="border-bottom: 1px solid #eee; padding-bottom: 5px; color: var(--primary); font-size: 14px;">ที่อยู่ปัจจุบัน</h4>
         <div class="info-edit-group">
-            <input type="text" id="editAddrNo" placeholder="บ้านเลขที่">
-            <input type="text" id="editAddrVillage" placeholder="หมู่บ้าน" style="margin-top:5px;">
-            <input type="text" id="editAddrProv" placeholder="จังหวัด" style="margin-top:5px;">
+            <input type="text" id="editAddrNo" placeholder="บ้านเลขที่" style="margin-bottom: 8px;">
+            <input type="text" id="editAddrVillage" placeholder="หมู่บ้าน/ซอย" style="margin-bottom: 8px;">
+            <input type="text" id="editAddrProv" placeholder="จังหวัด">
         </div>
 
-        <button class="save-all-btn" onclick="updateStaffInfo()">💾 บันทึกการแก้ไข</button>
+        <button class="save-all-btn" onclick="updateStaffInfo()">💾 บันทึกการแก้ไขข้อมูล</button>
     </div>
 </div>
 
 <script>
-    // ดึงข้อมูลพนักงานจาก LocalStorage
     let staff = JSON.parse(localStorage.getItem("employee_profile")) || {};
 
     function renderTable() {
@@ -161,7 +171,6 @@
         const search = document.getElementById("mainSearch").value.toLowerCase();
         tbody.innerHTML = "";
 
-        // ตรวจสอบเงื่อนไขค้นหา (ชื่อ หรือ รหัส หรือ เลขบัตร)
         const matches = 
             (staff.fullName && staff.fullName.toLowerCase().includes(search)) ||
             (staff.employeeId && staff.employeeId.toLowerCase().includes(search)) ||
@@ -169,19 +178,22 @@
 
         if (staff.fullName && matches) {
             let row = `<tr class="emp-row" onclick="openModal()">
-                <td><span class="emp-name">${staff.fullName}</span></td>
-                <td>${staff.department || '-'}</td>
-                <td>${staff.employeeId || '-'}</td>
+                <td class="col-emp">
+                    <span class="emp-name">${staff.fullName}</span>
+                    <span class="emp-sub-info">ID: ${staff.employeeId || '-'}</span>
+                </td>
+                <td class="col-dept">
+                    <span class="dept-badge">${staff.department || 'ทั่วไป'}</span>
+                </td>
             </tr>`;
             tbody.innerHTML = row;
         } else {
-            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:30px; color:#ccc;">ไม่พบข้อมูล</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="2" style="text-align:center; padding:30px; color:#ccc; font-size: 13px;">ไม่พบข้อมูลพนักงาน</td></tr>`;
         }
     }
 
     function openModal() {
         document.getElementById("editModal").style.display = "block";
-        // โหลดค่าปัจจุบันเข้า Input
         document.getElementById("viewPhoto").src = staff.photo || 'https://via.placeholder.com/100';
         document.getElementById("editEmpId").value = staff.employeeId || '';
         document.getElementById("editName").value = staff.fullName || '';
@@ -199,7 +211,6 @@
     }
 
     function updateStaffInfo() {
-        // อัปเดต Object ข้อมูล
         staff.employeeId = document.getElementById("editEmpId").value;
         staff.fullName = document.getElementById("editName").value;
         staff.idCard = document.getElementById("editIdCard").value;
@@ -210,7 +221,6 @@
         staff.addr_village = document.getElementById("editAddrVillage").value;
         staff.addr_province = document.getElementById("editAddrProv").value;
 
-        // บันทึกกลับลง LocalStorage
         localStorage.setItem("employee_profile", JSON.stringify(staff));
         alert("✅ แก้ไขข้อมูลเรียบร้อยแล้ว");
         closeModal();
