@@ -47,7 +47,6 @@
         th { text-align: left; padding: 10px 5px; color: #888; font-size: 11px; text-transform: uppercase; border-bottom: 2px solid #f9f9f9; }
         td { padding: 12px 5px; border-bottom: 1px solid #f1f1f1; vertical-align: middle; }
 
-        /* ปรับสัดส่วนคอลัมน์ให้พอดีหน้าจอ */
         .col-emp { width: 65%; }
         .col-dept { width: 35%; }
 
@@ -77,27 +76,30 @@
         .close-btn { position: absolute; right: 20px; top: 15px; font-size: 24px; cursor: pointer; }
 
         .profile-img-view {
-            width: 100px; height: 100px; border-radius: 50%;
+            width: 90px; height: 90px; border-radius: 50%;
             object-fit: cover; display: block; margin: 0 auto 15px;
             border: 3px solid var(--primary); box-shadow: 0 5px 15px rgba(106, 90, 249, 0.2);
         }
 
-        .info-edit-group { margin-bottom: 15px; }
-        .info-edit-group label { display: block; font-size: 11px; color: #999; font-weight: bold; margin-bottom: 4px; }
-        .info-edit-group input { background: #fafafa; border: 1px solid #eee; width: 100%; padding: 10px; border-radius: 10px; box-sizing: border-box; }
+        .info-edit-group { margin-bottom: 12px; }
+        .info-edit-group label { display: block; font-size: 11px; color: #999; font-weight: bold; margin-bottom: 3px; }
+        .info-edit-group input { background: #fafafa; border: 1px solid #eee; width: 100%; padding: 9px; border-radius: 10px; box-sizing: border-box; font-size: 13px; }
+
+        /* Grid for Address */
+        .address-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
         .save-all-btn {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #fff; border: none; width: 100%; padding: 15px; border-radius: 15px;
-            font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 10px 20px rgba(106, 90, 249, 0.2);
+            font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 10px 20px rgba(106, 90, 249, 0.2);
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1 style="font-size: 24px; margin: 0;">Admin Management</h1>
-    <p style="font-size: 12px; margin-top: 5px; opacity: 0.9;">จัดการและแก้ไขข้อมูลพนักงาน</p>
+    <h1 style="font-size: 22px; margin: 0;">Admin Management</h1>
+    <p style="font-size: 11px; margin-top: 5px; opacity: 0.9;">จัดการและแก้ไขข้อมูลพนักงาน</p>
 </div>
 
 <div class="search-container">
@@ -120,7 +122,7 @@
 <div id="editModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
-        <h3 style="text-align: center; color: var(--primary); margin-bottom: 20px;">ข้อมูลพนักงาน</h3>
+        <h3 style="text-align: center; color: var(--primary); margin: 0 0 15px 0; font-size: 18px;">ข้อมูลพนักงาน</h3>
         
         <img id="viewPhoto" src="" class="profile-img-view">
         
@@ -132,16 +134,19 @@
             <label>ชื่อ-นามสกุล</label>
             <input type="text" id="editName">
         </div>
-        <div class="info-edit-group">
-            <label>เลขประจำตัวประชาชน</label>
-            <input type="text" id="editIdCard">
-        </div>
-        <div class="info-edit-group">
-            <label>เบอร์โทรศัพท์</label>
-            <input type="text" id="editPhone">
+        
+        <div class="address-grid">
+            <div class="info-edit-group">
+                <label>เลขบัตรประชาชน</label>
+                <input type="text" id="editIdCard">
+            </div>
+            <div class="info-edit-group">
+                <label>เบอร์โทรศัพท์</label>
+                <input type="text" id="editPhone">
+            </div>
         </div>
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="address-grid">
             <div class="info-edit-group">
                 <label>ตำแหน่ง</label>
                 <input type="text" id="editPos">
@@ -152,11 +157,26 @@
             </div>
         </div>
 
-        <h4 style="border-bottom: 1px solid #eee; padding-bottom: 5px; color: var(--primary); font-size: 14px;">ที่อยู่ปัจจุบัน</h4>
-        <div class="info-edit-group">
-            <input type="text" id="editAddrNo" placeholder="บ้านเลขที่" style="margin-bottom: 8px;">
-            <input type="text" id="editAddrVillage" placeholder="หมู่บ้าน/ซอย" style="margin-bottom: 8px;">
-            <input type="text" id="editAddrProv" placeholder="จังหวัด">
+        <h4 style="border-bottom: 2px solid #f9f9f9; padding-bottom: 5px; color: var(--primary); font-size: 13px; margin: 10px 0 10px 0;">📍 ที่อยู่ปัจจุบัน</h4>
+        
+        <div class="address-grid">
+            <div class="info-edit-group"><label>บ้านเลขที่</label><input type="text" id="editAddrNo"></div>
+            <div class="info-edit-group"><label>หมู่ที่</label><input type="text" id="editAddrMoo"></div>
+        </div>
+        
+        <div class="address-grid">
+            <div class="info-edit-group"><label>หมู่บ้าน/อาคาร</label><input type="text" id="editAddrVillage"></div>
+            <div class="info-edit-group"><label>ตรอก/ซอย</label><input type="text" id="editAddrSoi"></div>
+        </div>
+
+        <div class="address-grid">
+            <div class="info-edit-group"><label>ตำบล/แขวง</label><input type="text" id="editAddrSub"></div>
+            <div class="info-edit-group"><label>อำเภอ/เขต</label><input type="text" id="editAddrDist"></div>
+        </div>
+
+        <div class="address-grid">
+            <div class="info-edit-group"><label>จังหวัด</label><input type="text" id="editAddrProv"></div>
+            <div class="info-edit-group"><label>รหัสไปรษณีย์</label><input type="text" id="editAddrZip"></div>
         </div>
 
         <button class="save-all-btn" onclick="updateStaffInfo()">💾 บันทึกการแก้ไขข้อมูล</button>
@@ -201,9 +221,16 @@
         document.getElementById("editPhone").value = staff.phone || '';
         document.getElementById("editPos").value = staff.position || '';
         document.getElementById("editDept").value = staff.department || '';
+        
+        // ข้อมูลที่อยู่ครบชุด
         document.getElementById("editAddrNo").value = staff.addr_no || '';
+        document.getElementById("editAddrMoo").value = staff.addr_moo || '';
         document.getElementById("editAddrVillage").value = staff.addr_village || '';
+        document.getElementById("editAddrSoi").value = staff.addr_soi || '';
+        document.getElementById("editAddrSub").value = staff.addr_subdistrict || '';
+        document.getElementById("editAddrDist").value = staff.addr_district || '';
         document.getElementById("editAddrProv").value = staff.addr_province || '';
+        document.getElementById("editAddrZip").value = staff.addr_zipcode || '';
     }
 
     function closeModal() {
@@ -217,9 +244,15 @@
         staff.phone = document.getElementById("editPhone").value;
         staff.position = document.getElementById("editPos").value;
         staff.department = document.getElementById("editDept").value;
+        
         staff.addr_no = document.getElementById("editAddrNo").value;
+        staff.addr_moo = document.getElementById("editAddrMoo").value;
         staff.addr_village = document.getElementById("editAddrVillage").value;
+        staff.addr_soi = document.getElementById("editAddrSoi").value;
+        staff.addr_subdistrict = document.getElementById("editAddrSub").value;
+        staff.addr_district = document.getElementById("editAddrDist").value;
         staff.addr_province = document.getElementById("editAddrProv").value;
+        staff.addr_zipcode = document.getElementById("editAddrZip").value;
 
         localStorage.setItem("employee_profile", JSON.stringify(staff));
         alert("✅ แก้ไขข้อมูลเรียบร้อยแล้ว");
