@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profile - ✓Record Income</title>
 <style>
-/* ใช้ Style เดิมเพื่อให้ความรู้สึกต่อเนื่อง 100% */
+/* Style เดิมเพื่อความต่อเนื่อง 100% */
 body {
     margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #FDFBF7; color: #333; line-height: 1.6; padding-bottom: 100px;
@@ -43,7 +43,6 @@ input {
     box-sizing: border-box; font-size: 15px; background: #fafafa;
 }
 
-/* การจัดวางแบบ Grid สำหรับช่องเล็กๆ */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 .section-title {
@@ -92,9 +91,15 @@ button.save-btn {
         <input type="text" id="fullName" placeholder="ชื่อ-นามสกุล">
     </div>
     
-    <div class="info-group">
-        <label>เลขประจำตัวประชาชน</label>
-        <input type="text" id="idCard" placeholder="x-xxxx-xxxxx-xx-x">
+    <div class="grid-2">
+        <div class="info-group">
+            <label>เลขประจำตัวประชาชน</label>
+            <input type="text" id="idCard" placeholder="x-xxxx-xxxxx-xx-x">
+        </div>
+        <div class="info-group">
+            <label>เบอร์โทรศัพท์</label>
+            <input type="tel" id="phone" placeholder="08x-xxx-xxxx">
+        </div>
     </div>
 
     <div class="grid-2">
@@ -114,7 +119,6 @@ button.save-btn {
     </div>
 
     <div class="section-title">ที่อยู่ปัจจุบัน</div>
-    
     <div class="grid-2">
         <div class="info-group">
             <label>บ้านเลขที่</label>
@@ -187,11 +191,11 @@ window.onload = function() {
     if(savedProfile) {
         document.getElementById('fullName').value = savedProfile.fullName || '';
         document.getElementById('idCard').value = savedProfile.idCard || '';
+        document.getElementById('phone').value = savedProfile.phone || '';
         document.getElementById('position').value = savedProfile.position || '';
         document.getElementById('department').value = savedProfile.department || '';
         document.getElementById('startDate').value = savedProfile.startDate || '';
         
-        // โหลดข้อมูลที่อยู่ที่แยกช่อง
         document.getElementById('addr_no').value = savedProfile.addr_no || '';
         document.getElementById('addr_village').value = savedProfile.addr_village || '';
         document.getElementById('addr_moo').value = savedProfile.addr_moo || '';
@@ -219,11 +223,11 @@ function saveProfile() {
     const profileData = {
         fullName: document.getElementById('fullName').value,
         idCard: document.getElementById('idCard').value,
+        phone: document.getElementById('phone').value,
         position: document.getElementById('position').value,
         department: document.getElementById('department').value,
         startDate: document.getElementById('startDate').value,
         
-        // บันทึกข้อมูลที่แยกช่อง
         addr_no: document.getElementById('addr_no').value,
         addr_village: document.getElementById('addr_village').value,
         addr_moo: document.getElementById('addr_moo').value,
