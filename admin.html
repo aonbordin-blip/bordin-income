@@ -24,7 +24,6 @@
             --shadow: 0 8px 32px rgba(31, 38, 135, 0.08);
         }
 
-        /* เพิ่มส่วนนี้เพื่อให้การกำหนดความกว้าง 100% ไม่ล้นขอบจอ */
         * { box-sizing: border-box; }
 
         body { 
@@ -95,7 +94,6 @@
         .status-approved { background: #d4edda; color: #155724; }
         .status-rejected { background: #f8d7da; color: #721c24; }
 
-        /* Modal Styles */
         .modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0;
             width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);
@@ -105,7 +103,7 @@
             background: #fff; margin: 5% auto; padding: 25px;
             border-radius: 25px; width: 90%; max-width: 600px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            max-height: 80vh; overflow-y: auto;
+            max-height: 85vh; overflow-y: auto;
         }
         .close {
             color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;
@@ -117,6 +115,17 @@
             width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px;
             box-sizing: border-box; margin-bottom: 15px; font-family: inherit;
         }
+
+        /* Stats Card in Popup */
+        .stat-box {
+            background: #fff; padding: 15px 10px; border-radius: 20px; 
+            text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #f0f0f0; transition: 0.3s;
+        }
+        .stat-box:hover { transform: scale(1.02); }
+        .stat-label { font-size: 11px; font-weight: 800; margin-bottom: 8px; }
+        .stat-used { font-size: 20px; font-weight: 800; }
+        .stat-rem { font-size: 11px; padding: 4px; border-radius: 10px; font-weight: bold; margin-top: 8px; }
     </style>
 </head>
 <body>
@@ -218,10 +227,24 @@
                         <input type="number" id="q_vacation" style="width: 100%; border: none; background: transparent; text-align: center; font-size: 20px; font-weight: 800; color: #155724; padding: 0; outline: none;">
                     </div>
                 </div>
-                
-                <div class="input-group">
-                    <label>🕒 วันที่ทำรายการ</label>
-                    <input type="date" id="editUpdateDate">
+
+                <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 10px; font-size: 16px; color: #555;">📊 สถิติการใช้ลาล่าสุด</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 10px; margin-bottom: 25px;">
+                    <div class="stat-box" style="border-color: #e0f2fe;">
+                        <div class="stat-label" style="color: #7dd3fc;">🤒 ลาป่วย</div>
+                        <div><span class="stat-used" style="color: #0369a1;" id="showSickUsed">0</span> <span style="font-size: 10px; color: #94a3b8;">/ ใช้</span></div>
+                        <div class="stat-rem" style="background: #f0f9ff; color: #0369a1;">เหลือ <span id="showSickRem">0</span></div>
+                    </div>
+                    <div class="stat-box" style="border-color: #fef3c7;">
+                        <div class="stat-label" style="color: #fbbf24;">💼 ลากิจ</div>
+                        <div><span class="stat-used" style="color: #92400e;" id="showPerUsed">0</span> <span style="font-size: 10px; color: #94a3b8;">/ ใช้</span></div>
+                        <div class="stat-rem" style="background: #fffbeb; color: #92400e;">เหลือ <span id="showPerRem">0</span></div>
+                    </div>
+                    <div class="stat-box" style="border-color: #dcfce7;">
+                        <div class="stat-label" style="color: #4ade80;">🏖️ พักร้อน</div>
+                        <div><span class="stat-used" style="color: #166534;" id="showVacUsed">0</span> <span style="font-size: 10px; color: #94a3b8;">/ ใช้</span></div>
+                        <div class="stat-rem" style="background: #f0fdf4; color: #166534;">เหลือ <span id="showVacRem">0</span></div>
+                    </div>
                 </div>
             </div>
 
@@ -264,8 +287,6 @@
     </div>
 
 <script>
-    let currentStaffObj = {};
-
     function formatTimestamp(timestamp) {
         if(!timestamp) return '-';
         const d = new Date(parseInt(timestamp));
@@ -292,10 +313,6 @@
             }
         }
 
-        const sick = staff.q_sick || 30;
-        const personal = staff.q_personal || 6;
-        const vacation = staff.q_vacation || 10;
-
         container.innerHTML = `
             <div class="card">
                 <div style="display:flex; align-items:center; gap: 15px; margin-bottom: 15px;">
@@ -308,7 +325,7 @@
                 <div style="font-size: 14px; color: #444; margin-bottom: 5px;">📞 เบอร์โทร: <strong>${staff.phone || '-'}</strong></div>
                 <div style="font-size: 14px; color: #444; margin-bottom: 15px;">💼 ตำแหน่ง: ${staff.position || '-'}</div>
                 <div style="font-size: 12px; background:#f0f2f5; padding:8px; border-radius:8px; margin-bottom:15px; color:#555;">
-                    <strong>โควตา:</strong> ป่วย ${sick} | กิจ ${personal} | พักร้อน ${vacation}
+                    <strong>โควตา:</strong> ป่วย ${staff.q_sick||30} | กิจ ${staff.q_personal||6} | พักร้อน ${staff.q_vacation||10}
                 </div>
                 <button class="btn-action btn-edit" style="width:100%; padding:10px;" onclick="openEditModal()">✏️ จัดการข้อมูล & โควตา</button>
             </div>
@@ -350,7 +367,6 @@
             `;
         }).join('');
     }
-
     function openLeaveEditPopup(reqId, empId) {
         const requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
         const req = requests.find(r => r.id === reqId);
@@ -369,14 +385,14 @@
         const requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
         const myLeaves = requests.filter(r => r.empId === empId);
 
-        const sickUsed = myLeaves.filter(r => r.type === 'ลาป่วย' && r.status === 'อนุมัติ').reduce((sum, r) => sum + parseFloat(r.days||0), 0);
-        const perUsed = myLeaves.filter(r => r.type === 'ลากิจ' && r.status === 'อนุมัติ').reduce((sum, r) => sum + parseFloat(r.days||0), 0);
-        const vacUsed = myLeaves.filter(r => r.type === 'ลาพักร้อน' && r.status === 'อนุมัติ').reduce((sum, r) => sum + parseFloat(r.days||0), 0);
+        const sUsed = myLeaves.filter(r => r.type === 'ลาป่วย' && r.status === 'อนุมัติ').reduce((sum, r) => sum + parseFloat(r.days||0), 0);
+        const pUsed = myLeaves.filter(r => r.type === 'ลากิจ' && r.status === 'อนุมัติ').reduce((sum, r) => sum + parseFloat(r.days||0), 0);
+        const vUsed = myLeaves.filter(r => r.type === 'ลาพักร้อน' && r.status === 'อนุมัติ').reduce((sum, r) => sum + parseFloat(r.days||0), 0);
 
         document.getElementById("modalLeaveStats").innerHTML = `
-            <div style="flex:1; background:#e8f4f8; padding:10px; border-radius:10px; text-align:center; font-size:12px;"><strong>ป่วย</strong><br>ใช้ ${sickUsed}/${profile.q_sick||30}</div>
-            <div style="flex:1; background:#fff3cd; padding:10px; border-radius:10px; text-align:center; font-size:12px;"><strong>กิจ</strong><br>ใช้ ${perUsed}/${profile.q_personal||6}</div>
-            <div style="flex:1; background:#d4edda; padding:10px; border-radius:10px; text-align:center; font-size:12px;"><strong>พักร้อน</strong><br>ใช้ ${vacUsed}/${profile.q_vacation||10}</div>
+            <div style="flex:1; background:#e8f4f8; padding:10px; border-radius:10px; text-align:center; font-size:12px;"><strong>ป่วย</strong><br>ใช้ ${sUsed}/${profile.q_sick||30}</div>
+            <div style="flex:1; background:#fff3cd; padding:10px; border-radius:10px; text-align:center; font-size:12px;"><strong>กิจ</strong><br>ใช้ ${pUsed}/${profile.q_personal||6}</div>
+            <div style="flex:1; background:#d4edda; padding:10px; border-radius:10px; text-align:center; font-size:12px;"><strong>พักร้อน</strong><br>ใช้ ${vUsed}/${profile.q_vacation||10}</div>
         `;
 
         const historyDiv = document.getElementById("modalLeaveHistory");
@@ -427,13 +443,31 @@
         document.getElementById("editAddrSubdistrict").value = staff.addr_subdistrict || '';
         document.getElementById("editAddrDistrict").value = staff.addr_district || '';
         document.getElementById("editAddrProvince").value = staff.addr_province || '';
-        document.getElementById("q_sick").value = staff.q_sick || 30;
-        document.getElementById("q_personal").value = staff.q_personal || 6;
-        document.getElementById("q_vacation").value = staff.q_vacation || 10;
         
-        // ดึงวันที่ล่าสุดมาแสดง หากไม่มีใช้ปัจจุบัน
-        document.getElementById("editUpdateDate").value = staff.updateDate || new Date().toISOString().split('T')[0];
+        const qSick = staff.q_sick || 30;
+        const qPersonal = staff.q_personal || 6;
+        const qVacation = staff.q_vacation || 10;
         
+        document.getElementById("q_sick").value = qSick;
+        document.getElementById("q_personal").value = qPersonal;
+        document.getElementById("q_vacation").value = qVacation;
+
+        // คำนวณสถิติ
+        const requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
+        const myApproved = requests.filter(r => r.empId === staff.employeeId && r.status === 'อนุมัติ');
+
+        const sickUsed = myApproved.filter(r => r.type === 'ลาป่วย').reduce((sum, r) => sum + parseFloat(r.days||0), 0);
+        const perUsed = myApproved.filter(r => r.type === 'ลากิจ').reduce((sum, r) => sum + parseFloat(r.days||0), 0);
+        const vacUsed = myApproved.filter(r => r.type === 'ลาพักร้อน').reduce((sum, r) => sum + parseFloat(r.days||0), 0);
+
+        document.getElementById("showSickUsed").innerText = sickUsed;
+        document.getElementById("showPerUsed").innerText = perUsed;
+        document.getElementById("showVacUsed").innerText = vacUsed;
+
+        document.getElementById("showSickRem").innerText = qSick - sickUsed;
+        document.getElementById("showPerRem").innerText = qPersonal - perUsed;
+        document.getElementById("showVacRem").innerText = qVacation - vacUsed;
+
         document.getElementById("editModal").style.display = "block";
     }
 
@@ -454,9 +488,6 @@
         staff.q_personal = document.getElementById("q_personal").value;
         staff.q_vacation = document.getElementById("q_vacation").value;
         
-        // บันทึกวันที่ทำรายการ
-        staff.updateDate = document.getElementById("editUpdateDate").value;
-
         localStorage.setItem("employee_profile", JSON.stringify(staff));
         alert("✅ อัปเดตข้อมูลพนักงานเรียบร้อยแล้ว");
         closeModal('editModal');
