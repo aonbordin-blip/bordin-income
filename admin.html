@@ -174,6 +174,7 @@
         }
     }
 
+    // --- จุดที่แก้ไข: เปลี่ยนการอ้างอิงเป็น req.id เพื่อความแม่นยำ ---
     function renderLeaveRequests() {
         let requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
         const grid = document.getElementById("leaveRequestGrid");
@@ -183,7 +184,7 @@
             return;
         }
 
-        grid.innerHTML = requests.map((req, index) => `
+        grid.innerHTML = requests.map(req => `
             <div class="leave-card">
                 <span class="badge ${req.status === 'รอการอนุมัติ' ? 'badge-pending' : (req.status === 'อนุมัติ' ? 'badge-approved' : 'badge-rejected')}">
                     ${req.status}
@@ -197,22 +198,25 @@
                 
                 ${req.status === 'รอการอนุมัติ' ? `
                     <div style="display:flex; gap:10px; margin-top:15px; border-top:1px solid #f5f5f5; padding-top:15px;">
-                        <button class="btn btn-approve" style="flex:1;" onclick="handleLeave(${index}, 'อนุมัติ')">✔️ อนุมัติ</button>
-                        <button class="btn btn-reject" style="flex:1;" onclick="handleLeave(${index}, 'ไม่อนุมัติ')">❌ ปฏิเสธ</button>
+                        <button class="btn btn-approve" style="flex:1;" onclick="handleLeave(${req.id}, 'อนุมัติ')">✔️ อนุมัติ</button>
+                        <button class="btn btn-reject" style="flex:1;" onclick="handleLeave(${req.id}, 'ไม่อนุมัติ')">❌ ปฏิเสธ</button>
                     </div>
                 ` : ''}
             </div>
-        `).reverse().join(''); // reverse เพื่อให้อันใหม่ขึ้นก่อน
+        `).reverse().join('');
     }
 
-    function handleLeave(index, status) {
+    function handleLeave(reqId, status) {
         let requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
-        // เนื่องจากเราแสดงผลแบบ reverse() ลำดับ index ใน requests ต้องคำนวณใหม่
-        const realIndex = requests.length - 1 - index; 
-        requests[realIndex].status = status;
-        localStorage.setItem("leave_requests", JSON.stringify(requests));
-        renderLeaveRequests();
+        // ค้นหาตำแหน่งโดยใช้ id ป้องกันความคลาดเคลื่อนเมื่อมีการ reverse ข้อมูล
+        const index = requests.findIndex(r => r.id === reqId);
+        if (index !== -1) {
+            requests[index].status = status;
+            localStorage.setItem("leave_requests", JSON.stringify(requests));
+            renderLeaveRequests();
+        }
     }
+    // --- สิ้นสุดจุดที่แก้ไข ---
 
     function openEditModal() {
         document.getElementById("editModal").style.display = "block";
@@ -222,7 +226,6 @@
         document.getElementById("editDept").value = staff.department || '';
         document.getElementById("editPhone").value = staff.phone || '';
         
-        // แยกฟิลด์ที่อยู่
         document.getElementById("editAddrNo").value = staff.addr_no || '';
         document.getElementById("editAddrSub").value = staff.addr_subdistrict || '';
         document.getElementById("editAddrDist").value = staff.addr_district || '';
@@ -232,7 +235,6 @@
         document.getElementById("q_personal").value = staff.q_personal || 6;
         document.getElementById("q_vacation").value = staff.q_vacation || 10;
 
-        // ดึงสถิติการลา
         const allLeaves = JSON.parse(localStorage.getItem("leave_requests")) || [];
         const empLeaves = allLeaves.filter(l => l.empId === staff.employeeId);
         const statsDiv = document.getElementById("employeeStats");
@@ -258,7 +260,6 @@
         staff.department = document.getElementById("editDept").value;
         staff.phone = document.getElementById("editPhone").value;
         
-        // บันทึกฟิลด์ที่อยู่ที่แยกไว้
         staff.addr_no = document.getElementById("editAddrNo").value;
         staff.addr_subdistrict = document.getElementById("editAddrSub").value;
         staff.addr_district = document.getElementById("editAddrDist").value;
