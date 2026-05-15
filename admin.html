@@ -14,116 +14,78 @@
     <title>Admin Management - ✓Record Income</title>
     <style>
         :root {
-            --primary: #6a5af9;
-            --secondary: #00c6ff;
-            --bg: #F8F9FD;
-            --white: #ffffff;
-            --success: #2ecc71;
-            --danger: #ff7675;
-            --warning: #f1c40f;
-            --text: #2d3436;
+            --primary: #6a5af9; --secondary: #00c6ff; --bg: #F8F9FD;
+            --success: #2ecc71; --danger: #ff7675; --warning: #f1c40f;
         }
 
-        body { 
-            margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; 
-            background: var(--bg); color: var(--text); padding-bottom: 50px;
-        }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #333; padding-bottom: 50px; }
         
-        /* Header & Navigation */
         .header { 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-            color: #fff; padding: 40px 20px; text-align: center;
-            border-radius: 0 0 40px 40px; box-shadow: 0 15px 30px rgba(106, 90, 249, 0.2);
+            color: #fff; padding: 40px 20px 60px; text-align: center;
+            border-radius: 0 0 40px 40px;
         }
-        .header h1 { margin: 0; font-size: 26px; font-weight: 800; }
 
-        /* Container & Cards */
-        .container { max-width: 1000px; margin: -20px auto 0; padding: 0 15px; }
+        .container { max-width: 1000px; margin: -40px auto 0; padding: 0 15px; }
         
         .section-card {
-            background: var(--white); border-radius: 25px; padding: 25px;
+            background: #fff; border-radius: 25px; padding: 25px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 25px;
-            border: 1px solid rgba(106, 90, 249, 0.05);
-        }
-        
-        .section-title {
-            font-size: 18px; font-weight: 800; color: var(--primary);
-            margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
         }
 
-        /* Table Design */
-        .table-responsive { overflow-x: auto; }
+        /* Search Input */
+        .search-box {
+            width: 100%; padding: 14px 20px; border-radius: 15px; border: 1px solid #ddd;
+            box-sizing: border-box; font-size: 14px; margin-bottom: 20px; outline: none;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .search-box:focus { border-color: var(--primary); }
+
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
         th { background: #f0edff; color: var(--primary); padding: 12px; text-align: left; }
         td { padding: 15px 12px; border-bottom: 1px solid #f1f1f1; }
         
-        /* Leave Request Cards */
         .leave-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .leave-card {
-            background: #fff; border-radius: 20px; padding: 20px;
-            border: 1px solid #eee; transition: 0.3s; position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
-        }
-        .leave-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+        .leave-card { background: #fff; border-radius: 20px; padding: 20px; border: 1px solid #eee; position: relative; }
         
-        /* Badges */
         .badge { padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; }
         .badge-pending { background: #fff4de; color: #ffa800; }
         .badge-approved { background: #c9f7f5; color: #1bc5bd; }
         .badge-rejected { background: #ffe2e5; color: #f64e60; }
 
-        /* Buttons */
-        .btn {
-            border: none; padding: 10px 18px; border-radius: 12px;
-            font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 13px;
-        }
+        .btn { border: none; padding: 10px 18px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 13px; }
         .btn-edit { background: #f0edff; color: var(--primary); }
         .btn-approve { background: var(--success); color: #fff; }
-        .btn-reject { background: #f1f1f1; color: #777; }
+        .btn-reject { background: #ffe2e5; color: var(--danger); }
 
-        /* Modal Layout */
-        .modal {
-            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-        }
-        .modal-content {
-            background: #fff; margin: 5% auto; padding: 30px; width: 90%;
-            max-width: 600px; border-radius: 30px; max-height: 85vh; overflow-y: auto;
-        }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+        .modal-content { background: #fff; margin: 5% auto; padding: 30px; width: 90%; max-width: 650px; border-radius: 30px; max-height: 85vh; overflow-y: auto; }
+        
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 12px; color: #888; font-weight: bold; margin-bottom: 5px; }
-        input {
-            width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee;
-            box-sizing: border-box; background: #fafafa;
-        }
-        .save-btn {
-            background: var(--primary); color: #fff; width: 100%; padding: 15px;
-            font-size: 16px; margin-top: 20px; box-shadow: 0 10px 20px rgba(106, 90, 249, 0.3);
-        }
-
-        .quota-box { background: #f8f9ff; padding: 15px; border-radius: 15px; margin-top: 10px; border: 1px dashed var(--primary); }
+        input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee; box-sizing: border-box; background: #fafafa; }
+        
+        .stats-box { background: #f9f9f9; border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 1px dashed #ccc; }
+        .stats-list { max-height: 150px; overflow-y: auto; font-size: 12px; }
+        .stats-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>Admin Management</h1>
-    <p style="opacity: 0.8; font-size: 13px; margin-top: 5px;">จัดการข้อมูลพนักงานและอนุมัติการลา</p>
+    <h1 style="margin: 0; font-size: 26px;">Admin Management</h1>
 </div>
 
 <div class="container">
     <div class="section-card">
-        <div class="section-title">👥 จัดการข้อมูลพนักงาน</div>
-        <div class="table-responsive">
+        <div style="font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 15px;">👥 จัดการข้อมูลพนักงาน</div>
+        <input type="text" id="searchInput" class="search-box" placeholder="🔍 ค้นหาชื่อพนักงาน หรือตำแหน่ง..." onkeyup="renderTable()">
+        
+        <div style="overflow-x: auto;">
             <table>
                 <thead>
-                    <tr>
-                        <th>พนักงาน</th>
-                        <th>ตำแหน่ง/แผนก</th>
-                        <th>ติดต่อ</th>
-                        <th>จัดการ</th>
-                    </tr>
+                    <tr><th>พนักงาน</th><th>ตำแหน่ง/แผนก</th><th>ติดต่อ</th><th>จัดการ</th></tr>
                 </thead>
                 <tbody id="staffTableBody"></tbody>
             </table>
@@ -131,7 +93,7 @@
     </div>
 
     <div class="section-card">
-        <div class="section-title">📅 รายการแจ้งลาหยุด</div>
+        <div style="font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 15px;">📅 รายการแจ้งลาหยุด</div>
         <div id="leaveRequestGrid" class="leave-grid"></div>
     </div>
 </div>
@@ -139,36 +101,39 @@
 <div id="editModal" class="modal">
     <div class="modal-content">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="margin:0; color: var(--primary);">แก้ไขข้อมูลพนักงาน</h2>
+            <h2 style="margin:0; color: var(--primary);">แก้ไขข้อมูลและประวัติการลา</h2>
             <span onclick="closeModal()" style="cursor:pointer; font-size: 24px; color: #ccc;">&times;</span>
         </div>
         
+        <div class="stats-box">
+            <h4 style="margin: 0 0 10px 0; color: var(--primary);">📈 สถิติ/ประวัติการลาที่ผ่านมา</h4>
+            <div id="employeeStats" class="stats-list"></div>
+        </div>
+
         <div class="form-grid">
             <div class="form-group"><label>รหัสพนักงาน</label><input type="text" id="editEmpId"></div>
             <div class="form-group"><label>ชื่อ-นามสกุล</label><input type="text" id="editName"></div>
             <div class="form-group"><label>ตำแหน่ง</label><input type="text" id="editPos"></div>
             <div class="form-group"><label>แผนก</label><input type="text" id="editDept"></div>
-            <div class="form-group"><label>เลขบัตรประชาชน</label><input type="text" id="editIdCard"></div>
             <div class="form-group"><label>เบอร์โทรศัพท์</label><input type="text" id="editPhone"></div>
         </div>
 
-        <h4 style="color: var(--primary); margin: 20px 0 10px 0; border-top: 1px solid #eee; padding-top: 15px;">📍 ข้อมูลที่อยู่</h4>
+        <h4 style="color: var(--primary); margin: 20px 0 10px 0; border-top: 1px solid #eee; padding-top: 15px;">📍 ข้อมูลที่อยู่ (แยกชัดเจน)</h4>
         <div class="form-grid">
             <div class="form-group"><label>บ้านเลขที่/หมู่</label><input type="text" id="editAddrNo"></div>
-            <div class="form-group"><label>ตำบล/อำเภอ</label><input type="text" id="editAddrDist"></div>
-            <div class="form-group"><label>จังหวัด/รหัสไปรษณีย์</label><input type="text" id="editAddrProv"></div>
+            <div class="form-group"><label>ตำบล</label><input type="text" id="editAddrSub"></div>
+            <div class="form-group"><label>อำเภอ</label><input type="text" id="editAddrDist"></div>
+            <div class="form-group"><label>จังหวัด</label><input type="text" id="editAddrProv"></div>
         </div>
 
         <h4 style="color: var(--primary); margin: 20px 0 10px 0; border-top: 1px solid #eee; padding-top: 15px;">📊 จัดการโควตาการลา (วันคงเหลือ)</h4>
-        <div class="quota-box">
-            <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-                <div class="form-group"><label>ป่วยคงเหลือ</label><input type="number" id="q_sick"></div>
-                <div class="form-group"><label>กิจคงเหลือ</label><input type="number" id="q_personal"></div>
-                <div class="form-group"><label>พักร้อนคงเหลือ</label><input type="number" id="q_vacation"></div>
-            </div>
+        <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+            <div class="form-group"><label>ป่วย</label><input type="number" id="q_sick"></div>
+            <div class="form-group"><label>กิจ</label><input type="number" id="q_personal"></div>
+            <div class="form-group"><label>พักร้อน</label><input type="number" id="q_vacation"></div>
         </div>
 
-        <button class="btn save-btn" onclick="updateStaffInfo()">💾 บันทึกการเปลี่ยนแปลง</button>
+        <button class="btn" style="background: var(--primary); color: #fff; width: 100%; padding: 15px; margin-top: 10px;" onclick="updateStaffInfo()">💾 บันทึกการเปลี่ยนแปลง</button>
     </div>
 </div>
 
@@ -177,25 +142,36 @@
 
     function renderTable() {
         const tableBody = document.getElementById("staffTableBody");
+        const searchText = document.getElementById("searchInput").value.toLowerCase();
+        
+        tableBody.innerHTML = '';
         if(!staff.fullName) {
             tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:#999;">ยังไม่มีข้อมูลพนักงาน</td></tr>`;
             return;
         }
 
-        tableBody.innerHTML = `
-            <tr>
-                <td>
-                    <div style="font-weight:bold;">${staff.fullName}</div>
-                    <div style="font-size:11px; color:#888;">ID: ${staff.employeeId || '-'}</div>
-                </td>
-                <td>
-                    <div>${staff.position || '-'}</div>
-                    <div style="font-size:11px; color:var(--primary);">${staff.department || '-'}</div>
-                </td>
-                <td>${staff.phone || '-'}</td>
-                <td><button class="btn btn-edit" onclick="openEditModal()">⚙️ แก้ไข/โควตา</button></td>
-            </tr>
-        `;
+        // ระบบค้นหา
+        const matchName = staff.fullName.toLowerCase().includes(searchText);
+        const matchPos = (staff.position || '').toLowerCase().includes(searchText);
+        
+        if(matchName || matchPos) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td>
+                        <div style="font-weight:bold;">${staff.fullName}</div>
+                        <div style="font-size:11px; color:#888;">ID: ${staff.employeeId || '-'}</div>
+                    </td>
+                    <td>
+                        <div>${staff.position || '-'}</div>
+                        <div style="font-size:11px; color:var(--primary);">${staff.department || '-'}</div>
+                    </td>
+                    <td>${staff.phone || '-'}</td>
+                    <td><button class="btn btn-edit" onclick="openEditModal()">⚙️ จัดการ/สถิติ</button></td>
+                </tr>
+            `;
+        } else {
+            tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:#999;">ไม่พบพนักงานที่ค้นหา</td></tr>`;
+        }
     }
 
     function renderLeaveRequests() {
@@ -213,24 +189,28 @@
                     ${req.status}
                 </span>
                 <div style="font-weight:800; font-size:16px; margin-top:10px; color:var(--primary);">${req.name}</div>
-                <div style="font-size:13px; margin: 8px 0;">ประเภท: <strong>${req.type}</strong></div>
-                <div style="font-size:11px; color:#888;">วันที่แจ้ง: ${req.date}</div>
+                <div style="font-size:13px; margin: 8px 0;">ประเภท: <strong>${req.type}</strong> (${req.days || '-'} วัน)</div>
+                <div style="font-size:12px; color:#555;">📅 ${req.startDate || '-'} ถึง ${req.endDate || '-'}</div>
+                <div style="font-size:12px; color:#444; margin-top:8px; background:#f9f9f9; padding:8px; border-radius:8px;">
+                    <strong>สาเหตุ:</strong> ${req.reason || 'ไม่ระบุ'}
+                </div>
                 
                 ${req.status === 'รอการอนุมัติ' ? `
                     <div style="display:flex; gap:10px; margin-top:15px; border-top:1px solid #f5f5f5; padding-top:15px;">
-                        <button class="btn btn-approve" style="flex:1;" onclick="handleLeave(${index}, 'อนุมัติ')">อนุมัติ</button>
-                        <button class="btn btn-reject" style="flex:1;" onclick="handleLeave(${index}, 'ไม่อนุมัติ')">ปฏิเสธ</button>
+                        <button class="btn btn-approve" style="flex:1;" onclick="handleLeave(${index}, 'อนุมัติ')">✔️ อนุมัติ</button>
+                        <button class="btn btn-reject" style="flex:1;" onclick="handleLeave(${index}, 'ไม่อนุมัติ')">❌ ปฏิเสธ</button>
                     </div>
                 ` : ''}
             </div>
-        `).join('');
+        `).reverse().join(''); // reverse เพื่อให้อันใหม่ขึ้นก่อน
     }
 
     function handleLeave(index, status) {
         let requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
-        requests[index].status = status;
+        // เนื่องจากเราแสดงผลแบบ reverse() ลำดับ index ใน requests ต้องคำนวณใหม่
+        const realIndex = requests.length - 1 - index; 
+        requests[realIndex].status = status;
         localStorage.setItem("leave_requests", JSON.stringify(requests));
-        alert("ดำเนินการเรียบร้อยแล้ว");
         renderLeaveRequests();
     }
 
@@ -240,48 +220,61 @@
         document.getElementById("editName").value = staff.fullName || '';
         document.getElementById("editPos").value = staff.position || '';
         document.getElementById("editDept").value = staff.department || '';
-        document.getElementById("editIdCard").value = staff.idCard || '';
         document.getElementById("editPhone").value = staff.phone || '';
+        
+        // แยกฟิลด์ที่อยู่
         document.getElementById("editAddrNo").value = staff.addr_no || '';
+        document.getElementById("editAddrSub").value = staff.addr_subdistrict || '';
         document.getElementById("editAddrDist").value = staff.addr_district || '';
         document.getElementById("editAddrProv").value = staff.addr_province || '';
         
-        // ดึงโควตาการลา (ถ้าไม่มีให้ตั้งค่าเริ่มต้น)
         document.getElementById("q_sick").value = staff.q_sick || 30;
         document.getElementById("q_personal").value = staff.q_personal || 6;
         document.getElementById("q_vacation").value = staff.q_vacation || 10;
+
+        // ดึงสถิติการลา
+        const allLeaves = JSON.parse(localStorage.getItem("leave_requests")) || [];
+        const empLeaves = allLeaves.filter(l => l.empId === staff.employeeId);
+        const statsDiv = document.getElementById("employeeStats");
+        
+        if(empLeaves.length > 0) {
+            statsDiv.innerHTML = empLeaves.map(l => `
+                <div class="stats-item">
+                    <span>${l.type} (${l.days} วัน) - ${l.status}</span>
+                    <span style="color:#888;">${l.startDate}</span>
+                </div>
+            `).join('');
+        } else {
+            statsDiv.innerHTML = `<div style="text-align:center; color:#999; padding:10px;">ไม่พบประวัติการลา</div>`;
+        }
     }
 
-    function closeModal() {
-        document.getElementById("editModal").style.display = "none";
-    }
+    function closeModal() { document.getElementById("editModal").style.display = "none"; }
 
     function updateStaffInfo() {
         staff.employeeId = document.getElementById("editEmpId").value;
         staff.fullName = document.getElementById("editName").value;
         staff.position = document.getElementById("editPos").value;
         staff.department = document.getElementById("editDept").value;
-        staff.idCard = document.getElementById("editIdCard").value;
         staff.phone = document.getElementById("editPhone").value;
+        
+        // บันทึกฟิลด์ที่อยู่ที่แยกไว้
         staff.addr_no = document.getElementById("editAddrNo").value;
+        staff.addr_subdistrict = document.getElementById("editAddrSub").value;
         staff.addr_district = document.getElementById("editAddrDist").value;
         staff.addr_province = document.getElementById("editAddrProv").value;
         
-        // บันทึกโควตาการลาลงใน Object พนักงาน
         staff.q_sick = document.getElementById("q_sick").value;
         staff.q_personal = document.getElementById("q_personal").value;
         staff.q_vacation = document.getElementById("q_vacation").value;
 
         localStorage.setItem("employee_profile", JSON.stringify(staff));
-        alert("✅ อัปเดตข้อมูลและโควตาการลาเรียบร้อยแล้ว");
+        alert("✅ อัปเดตข้อมูลและโควตาเรียบร้อยแล้ว");
         closeModal();
         renderTable();
     }
 
-    window.onload = () => {
-        renderTable();
-        renderLeaveRequests();
-    };
+    window.onload = () => { renderTable(); renderLeaveRequests(); };
 </script>
 </body>
 </html>

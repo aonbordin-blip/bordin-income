@@ -17,23 +17,25 @@ body {
     background: var(--bg); color: #333; padding-bottom: 100px;
 }
 
-/* ปรับ Header ให้กระชับ ไม่ทับซ้อน */
+/* จัดวาง Header และรูปโปรไฟล์รวมกันให้สวยงาม */
 .header {
     background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff;
-    padding: 25px 20px 20px; text-align: center;
+    padding: 30px 20px; text-align: center;
+    border-radius: 0 0 35px 35px;
     box-shadow: 0 10px 25px rgba(106, 90, 249, 0.2);
+    display: flex; flex-direction: column; align-items: center;
 }
 
 .profile-pic-container {
     display: flex; flex-direction: column; align-items: center; 
-    margin-top: 20px; /* เปลี่ยนจากค่าติดลบเป็นบวกเพื่อให้ไม่ทับ Header */
     margin-bottom: 15px;
 }
 #profilePreview {
-    width: 90px; height: 90px; border-radius: 50%; object-fit: cover;
-    border: 3px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+    width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
+    border: 3px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
     background: #eee; 
 }
+.upload-label { font-size: 11px; color: #fff; margin-top: 8px; cursor: pointer; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 10px; font-weight: bold; backdrop-filter: blur(5px); }
 
 .acc-card {
     background: var(--white); margin: 15px; border-radius: 20px;
@@ -49,11 +51,11 @@ body {
 
 .info-group { margin-bottom: 12px; }
 .info-group label { display: block; font-size: 11px; color: #888; font-weight: bold; margin-bottom: 4px; }
-input {
+input, textarea, select {
     width: 100%; padding: 10px; border-radius: 12px; border: 1px solid #eee;
-    box-sizing: border-box; font-size: 14px; background: #fafafa;
+    box-sizing: border-box; font-size: 14px; background: #fafafa; font-family: inherit;
 }
-input:disabled { background: #f0f0f0; color: #666; }
+input:disabled, textarea:disabled, select:disabled { background: #f0f0f0; color: #666; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 .btn {
@@ -64,6 +66,7 @@ input:disabled { background: #f0f0f0; color: #666; }
 .status-badge { padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; }
 .pending { background: #fff4de; color: #ffa800; }
 .approved { background: #c9f7f5; color: #1bc5bd; }
+.rejected { background: #ffe2e5; color: #f64e60; }
 
 /* Modal */
 .modal {
@@ -71,26 +74,21 @@ input:disabled { background: #f0f0f0; color: #666; }
     width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
 }
 .modal-content {
-    background: #fff; margin: 20% auto; padding: 25px; width: 80%;
-    max-width: 320px; border-radius: 30px; text-align: center;
-}
-.leave-opt {
-    padding: 12px; margin: 8px 0; border-radius: 12px; background: #f8f9ff;
-    font-weight: bold; cursor: pointer; border: 1px solid #eee;
+    background: #fff; margin: 10% auto; padding: 25px; width: 85%;
+    max-width: 350px; border-radius: 30px; max-height: 80vh; overflow-y: auto;
 }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div style="font-size: 22px; font-weight: 800;">My Profile.</div>
-  <div style="font-size: 11px; opacity: 0.8;">ระบบพนักงานอัจฉริยะ</div>
-</div>
-
-<div class="profile-pic-container">
-    <img id="profilePreview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cccccc'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>">
-    <input type="file" id="photoInput" style="display:none" accept="image/*" onchange="previewImage(event)">
-    <label id="uploadLabel" for="photoInput" style="font-size: 11px; color: var(--primary); margin-top: 8px; cursor: pointer; font-weight: bold;">[ เปลี่ยนรูปถ่าย ]</label>
+    <div class="profile-pic-container">
+        <img id="profilePreview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cccccc'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>">
+        <input type="file" id="photoInput" style="display:none" accept="image/*" onchange="previewImage(event)">
+        <label id="uploadLabel" class="upload-label" for="photoInput">[ เปลี่ยนรูปถ่าย ]</label>
+    </div>
+    <div style="font-size: 22px; font-weight: 800;">My Profile.</div>
+    <div style="font-size: 12px; opacity: 0.9;">ระบบพนักงานอัจฉริยะ</div>
 </div>
 
 <div class="acc-card">
@@ -145,11 +143,27 @@ input:disabled { background: #f0f0f0; color: #666; }
 
 <div id="leaveModal" class="modal">
     <div class="modal-content">
-        <h3 style="margin-top:0; color: var(--primary);">แจ้งลาหยุด</h3>
-        <div class="leave-opt" onclick="submitLeave('ลาป่วย')">🤒 ลาป่วย</div>
-        <div class="leave-opt" onclick="submitLeave('ลากิจ')">💼 ลากิจ</div>
-        <div class="leave-opt" onclick="submitLeave('ลาพักร้อน')">🏖️ ลาพักร้อน</div>
-        <p onclick="closeModal()" style="margin-top:15px; font-size:12px; color:#999; cursor:pointer;">ยกเลิก</p>
+        <h3 style="margin-top:0; color: var(--primary); text-align:center;">ฟอร์มแจ้งลาหยุด</h3>
+        
+        <div class="info-group">
+            <label>ประเภทการลา</label>
+            <select id="leaveType">
+                <option value="ลาป่วย">🤒 ลาป่วย</option>
+                <option value="ลากิจ">💼 ลากิจ</option>
+                <option value="ลาพักร้อน">🏖️ ลาพักร้อน</option>
+            </select>
+        </div>
+        
+        <div class="grid-2">
+            <div class="info-group"><label>ตั้งแต่วันที่</label><input type="date" id="leaveStart"></div>
+            <div class="info-group"><label>ถึงวันที่</label><input type="date" id="leaveEnd"></div>
+        </div>
+        
+        <div class="info-group"><label>จำนวนวัน (วัน)</label><input type="number" id="leaveDays" placeholder="เช่น 1, 2, 0.5" step="0.5"></div>
+        <div class="info-group"><label>สาเหตุการลา</label><textarea id="leaveReason" rows="3" placeholder="ระบุเหตุผล..."></textarea></div>
+        
+        <button class="btn save-btn" style="margin-top:10px;" onclick="submitLeave()">🚀 ส่งคำขอลา</button>
+        <div onclick="closeModal()" style="margin-top:15px; font-size:12px; color:#999; cursor:pointer; text-align:center; font-weight:bold;">ยกเลิก</div>
     </div>
 </div>
 
@@ -173,7 +187,7 @@ function toggleAcc(id) { document.getElementById(id).classList.toggle('collapsed
 
 function applyLock() {
     isLocked = true;
-    document.querySelectorAll('input').forEach(i => i.disabled = true);
+    document.querySelectorAll('#personalAcc input, #addressAcc input').forEach(i => i.disabled = true);
     document.getElementById('uploadLabel').style.display = 'none';
     document.getElementById('saveBtn').style.display = 'none';
     document.getElementById('leaveActions').style.display = 'block';
@@ -196,6 +210,13 @@ function saveProfile() {
         photo: document.getElementById('profilePreview').src,
         isLocked: true
     };
+    
+    // ดึงโควตาเดิมมาเพื่อไม่ให้โดนทับหายไป
+    const existing = JSON.parse(localStorage.getItem('employee_profile')) || {};
+    data.q_sick = existing.q_sick || 30;
+    data.q_personal = existing.q_personal || 6;
+    data.q_vacation = existing.q_vacation || 10;
+
     localStorage.setItem('employee_profile', JSON.stringify(data));
     alert('✅ บันทึกสำเร็จ!');
     location.reload();
@@ -210,18 +231,38 @@ function previewImage(event) {
 function showLeaveModal() { document.getElementById('leaveModal').style.display = 'block'; }
 function closeModal() { document.getElementById('leaveModal').style.display = 'none'; }
 
-function submitLeave(type) {
+function submitLeave() {
+    const lStart = document.getElementById('leaveStart').value;
+    const lEnd = document.getElementById('leaveEnd').value;
+    const lDays = document.getElementById('leaveDays').value;
+    const lReason = document.getElementById('leaveReason').value;
+
+    if(!lStart || !lDays || !lReason) {
+        alert("กรุณากรอกข้อมูลให้ครบถ้วน"); return;
+    }
+
     let requests = JSON.parse(localStorage.getItem('leave_requests')) || [];
     requests.push({
         id: Date.now(),
         empId: document.getElementById('employeeId').value,
         name: document.getElementById('fullName').value,
-        type: type,
+        type: document.getElementById('leaveType').value,
+        startDate: lStart,
+        endDate: lEnd,
+        days: lDays,
+        reason: lReason,
         date: new Date().toLocaleDateString('th-TH'),
         status: 'รอการอนุมัติ'
     });
     localStorage.setItem('leave_requests', JSON.stringify(requests));
-    alert('ส่งคำขอแล้ว');
+    
+    // รีเซ็ตฟอร์ม
+    document.getElementById('leaveStart').value = '';
+    document.getElementById('leaveEnd').value = '';
+    document.getElementById('leaveDays').value = '';
+    document.getElementById('leaveReason').value = '';
+    
+    alert('ส่งคำขอลาเรียบร้อยแล้ว');
     closeModal();
     renderLeaveHistory();
 }
@@ -238,11 +279,16 @@ function renderLeaveHistory() {
     const requests = JSON.parse(localStorage.getItem('leave_requests')) || [];
     const empId = document.getElementById('employeeId').value;
     const myLeaves = requests.filter(r => r.empId === empId);
+    
     document.getElementById('leaveHistoryBody').innerHTML = myLeaves.map(r => `
         <tr style="border-bottom: 1px solid #f9f9f9;">
-            <td style="padding:10px 5px;">${r.type}</td>
-            <td style="padding:10px 5px;">${r.date}</td>
-            <td style="padding:10px 5px;"><span class="status-badge ${r.status === 'อนุมัติ' ? 'approved' : 'pending'}">${r.status}</span></td>
+            <td style="padding:10px 5px;">
+                <strong>${r.type}</strong> (${r.days} วัน)<br>
+                <span style="font-size:10px; color:#888;">${r.startDate} ถึง ${r.endDate}</span>
+            </td>
+            <td style="padding:10px 5px; text-align:right;">
+                <span class="status-badge ${r.status === 'อนุมัติ' ? 'approved' : (r.status === 'ไม่อนุมัติ' ? 'rejected' : 'pending')}">${r.status}</span>
+            </td>
         </tr>
     `).join('');
 }
