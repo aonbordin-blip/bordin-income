@@ -249,6 +249,7 @@
             </div>
 
             <button onclick="updateStaffInfo()" style="width: 100%; padding: 15px; background: var(--success); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top:10px;">💾 บันทึกข้อมูลพนักงาน</button>
+            <button onclick="deleteEmployee()" style="width: 100%; padding: 15px; background: var(--danger); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top:10px;">🗑️ ลบข้อมูลพนักงาน (ลาออก)</button>
         </div>
     </div>
 
@@ -359,7 +360,7 @@
                     <div style="font-weight:bold; color:var(--primary);">${req.name}</div>
                     <span class="status-badge ${statusClass}">${req.status}</span>
                 </div>
-                <div style="font-size:14px; color:#555; margin-bottom:5px;">ประเภท: <strong>${req.type}</strong> (${req.days} วัน)</div>
+               <div style="font-size:14px; color:#555; margin-bottom:5px;">ประเภท: <strong>${req.type}</strong> (${req.days} วัน)</div>
                 <div style="font-size:12px; color:#777; margin-bottom:5px;">📅 ลาวันที่: ${req.startDate} ถึง ${req.endDate}</div>
                 <div style="font-size:11px; color:#999; margin-bottom:15px; border-top: 1px dashed #eee; padding-top: 5px;">🕒 ทำรายการ: ${formatTimestamp(req.id)}</div>
                 <button class="btn-action btn-manage" style="width:100%;" onclick="openLeaveEditPopup(${req.id}, '${req.empId}')">⚙️ จัดการรายการนี้</button>
@@ -367,6 +368,7 @@
             `;
         }).join('');
     }
+
     function openLeaveEditPopup(reqId, empId) {
         const requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
         const req = requests.find(r => r.id === reqId);
@@ -492,6 +494,17 @@
         alert("✅ อัปเดตข้อมูลพนักงานเรียบร้อยแล้ว");
         closeModal('editModal');
         renderStaffSection();
+    }
+
+    // --- ฟังก์ชันใหม่สำหรับลบพนักงาน ---
+    function deleteEmployee() {
+        if (confirm("⚠️ คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลพนักงานคนนี้ออกจากระบบ? \n(การดำเนินการนี้จะไม่สามารถย้อนกลับได้)")) {
+            localStorage.removeItem("employee_profile");
+            alert("✅ ลบข้อมูลพนักงานเรียบร้อยแล้ว");
+            closeModal('editModal');
+            renderStaffSection();
+            renderDailyLeaves();
+        }
     }
 
     function closeModal(mId) { document.getElementById(mId).style.display = "none"; }
