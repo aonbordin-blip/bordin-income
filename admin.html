@@ -204,19 +204,24 @@
                 </div>
                 
                 <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 20px; font-size: 16px; color: #555;">📅 ตั้งค่าโควตาการลา (วัน/ปี)</h3>
-                <div style="display:flex; gap:10px;">
-                    <div style="flex:1;">
-                        <label>ลาป่วย</label>
-                        <input type="number" id="q_sick">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
+                    <div style="background: #e8f4f8; padding: 12px; border-radius: 18px; text-align: center; border: 1px solid #d1e9f0;">
+                        <label style="color: #2980b9; font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">🤒 ป่วย</label>
+                        <input type="number" id="q_sick" style="width: 100%; border: none; background: transparent; text-align: center; font-size: 20px; font-weight: 800; color: #2980b9; padding: 0; outline: none;">
                     </div>
-                    <div style="flex:1;">
-                        <label>ลากิจ</label>
-                        <input type="number" id="q_personal">
+                    <div style="background: #fff3cd; padding: 12px; border-radius: 18px; text-align: center; border: 1px solid #ffeeba;">
+                        <label style="color: #856404; font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">💼 กิจ</label>
+                        <input type="number" id="q_personal" style="width: 100%; border: none; background: transparent; text-align: center; font-size: 20px; font-weight: 800; color: #856404; padding: 0; outline: none;">
                     </div>
-                    <div style="flex:1;">
-                        <label>พักร้อน</label>
-                        <input type="number" id="q_vacation">
+                    <div style="background: #d4edda; padding: 12px; border-radius: 18px; text-align: center; border: 1px solid #c3e6cb;">
+                        <label style="color: #155724; font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px;">🏖️ พักร้อน</label>
+                        <input type="number" id="q_vacation" style="width: 100%; border: none; background: transparent; text-align: center; font-size: 20px; font-weight: 800; color: #155724; padding: 0; outline: none;">
                     </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>🕒 วันที่ทำรายการ</label>
+                    <input type="date" id="editUpdateDate">
                 </div>
             </div>
 
@@ -425,6 +430,10 @@
         document.getElementById("q_sick").value = staff.q_sick || 30;
         document.getElementById("q_personal").value = staff.q_personal || 6;
         document.getElementById("q_vacation").value = staff.q_vacation || 10;
+        
+        // ดึงวันที่ล่าสุดมาแสดง หากไม่มีใช้ปัจจุบัน
+        document.getElementById("editUpdateDate").value = staff.updateDate || new Date().toISOString().split('T')[0];
+        
         document.getElementById("editModal").style.display = "block";
     }
 
@@ -444,6 +453,10 @@
         staff.q_sick = document.getElementById("q_sick").value;
         staff.q_personal = document.getElementById("q_personal").value;
         staff.q_vacation = document.getElementById("q_vacation").value;
+        
+        // บันทึกวันที่ทำรายการ
+        staff.updateDate = document.getElementById("editUpdateDate").value;
+
         localStorage.setItem("employee_profile", JSON.stringify(staff));
         alert("✅ อัปเดตข้อมูลพนักงานเรียบร้อยแล้ว");
         closeModal('editModal');
