@@ -194,33 +194,32 @@ function applyLock() {
     document.getElementById('personalAcc').classList.add('collapsed');
 }
 
+// ค้นหาส่วนฟังก์ชัน saveProfile() ในไฟล์ profile.html แล้วแทนที่ด้วยส่วนนี้
 function saveProfile() {
-    const data = {
+    const profileData = {
         employeeId: document.getElementById('employeeId').value,
         fullName: document.getElementById('fullName').value,
-        position: document.getElementById('position').value,
-        department: document.getElementById('department').value,
         idCard: document.getElementById('idCard').value,
         phone: document.getElementById('phone').value,
+        position: document.getElementById('position').value,
+        department: document.getElementById('department').value,
+        startDate: document.getElementById('startDate').value, // เพิ่มวันเริ่มทำงาน
+        
+        // ข้อมูลที่อยู่แบบละเอียด
         addr_no: document.getElementById('addr_no').value,
         addr_moo: document.getElementById('addr_moo').value,
         addr_subdistrict: document.getElementById('addr_subdistrict').value,
         addr_district: document.getElementById('addr_district').value,
         addr_province: document.getElementById('addr_province').value,
-        photo: document.getElementById('profilePreview').src,
-        isLocked: true
+        addr_zipcode: document.getElementById('addr_zipcode').value,
+        
+        photo: document.getElementById('profilePreview').src
     };
     
-    // ดึงโควตาเดิมมาเพื่อไม่ให้โดนทับหายไป
-    const existing = JSON.parse(localStorage.getItem('employee_profile')) || {};
-    data.q_sick = existing.q_sick || 30;
-    data.q_personal = existing.q_personal || 6;
-    data.q_vacation = existing.q_vacation || 10;
-
-    localStorage.setItem('employee_profile', JSON.stringify(data));
-    alert('✅ บันทึกสำเร็จ!');
-    location.reload();
+    localStorage.setItem('employee_profile', JSON.stringify(profileData));
+    alert('✅ บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว!');
 }
+
 
 function previewImage(event) {
     const reader = new FileReader();
