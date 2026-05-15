@@ -57,9 +57,7 @@ body {
     background: #f0f2f5; padding: 15px; border-radius: 15px;
     display: flex; justify-content: space-between; align-items: center;
     cursor: pointer; font-weight: bold; color: var(--primary); margin-bottom: 10px;
-    transition: 0.3s;
 }
-.section-toggle-btn:hover { background: #e9ecef; }
 .collapsible-content { display: none; padding: 10px 5px; }
 
 .btn-primary {
@@ -98,9 +96,9 @@ body {
 <body>
 
 <div class="header">
-    <div class="profile-pic-container" onclick="document.getElementById('fileInput').click()">
+    <div class="profile-pic-container" id="picUploadArea" onclick="document.getElementById('fileInput').click()">
         <img id="profilePreview" src="https://via.placeholder.com/100" alt="Profile">
-        <div class="change-pic-hint">📷 แตะเพื่อเปลี่ยนรูป</div>
+        <div class="change-pic-hint" id="picHint">📷 แตะเพื่อเปลี่ยนรูป</div>
         <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
     </div>
     <h2 id="displayName" style="margin:0; font-size: 20px;">ชื่อพนักงาน</h2>
@@ -109,7 +107,7 @@ body {
 
 <div class="container">
     <div class="info-card">
-        <!-- ส่วนข้อมูลส่วนตัวแบบพับได้ -->
+        <!-- ส่วนข้อมูลส่วนตัว -->
         <div class="section-toggle-btn" onclick="toggleSection('personalContent', 'personalArrow')">
             <span>👤 ข้อมูลส่วนตัว</span>
             <span id="personalArrow">▼</span>
@@ -117,33 +115,33 @@ body {
         <div id="personalContent" class="collapsible-content">
             <div class="input-group">
                 <label>รหัสพนักงาน</label>
-                <input type="text" id="employeeId" placeholder="เช่น 66001">
+                <input type="text" id="employeeId" class="profile-input" placeholder="เช่น 66001">
             </div>
             <div class="input-group">
                 <label>เลขประจำตัวประชาชน</label>
-                <input type="text" id="idCard" placeholder="ระบุเลขบัตรประชาชน">
+                <input type="text" id="idCard" class="profile-input" placeholder="ระบุเลขบัตรประชาชน">
             </div>
             <div class="input-group">
                 <label>ชื่อ-นามสกุล</label>
-                <input type="text" id="fullName" placeholder="ชื่อ และ นามสกุล">
+                <input type="text" id="fullName" class="profile-input" placeholder="ชื่อ และ นามสกุล">
             </div>
             <div style="display: flex; gap: 10px;">
                 <div class="input-group" style="flex:1;">
                     <label>ตำแหน่ง</label>
-                    <input type="text" id="position">
+                    <input type="text" id="position" class="profile-input">
                 </div>
                 <div class="input-group" style="flex:1;">
                     <label>แผนก</label>
-                    <input type="text" id="department">
+                    <input type="text" id="department" class="profile-input">
                 </div>
             </div>
             <div class="input-group">
                 <label>เบอร์โทรศัพท์</label>
-                <input type="tel" id="phone">
+                <input type="tel" id="phone" class="profile-input">
             </div>
         </div>
 
-        <!-- ส่วนที่อยู่แบบพับได้ -->
+        <!-- ส่วนที่อยู่ -->
         <div class="section-toggle-btn" onclick="toggleSection('addressContent', 'addressArrow')">
             <span>📍 ข้อมูลที่อยู่ปัจจุบัน</span>
             <span id="addressArrow">▼</span>
@@ -152,28 +150,28 @@ body {
             <div style="display: flex; gap: 10px;">
                 <div class="input-group" style="flex:1;">
                     <label>บ้านเลขที่</label>
-                    <input type="text" id="addr_no">
+                    <input type="text" id="addr_no" class="profile-input">
                 </div>
                 <div class="input-group" style="flex:1;">
                     <label>หมู่ที่</label>
-                    <input type="text" id="addr_moo">
+                    <input type="text" id="addr_moo" class="profile-input">
                 </div>
             </div>
             <div class="input-group">
                 <label>ตำบล/แขวง</label>
-                <input type="text" id="addr_subdistrict">
+                <input type="text" id="addr_subdistrict" class="profile-input">
             </div>
             <div class="input-group">
                 <label>อำเภอ/เขต</label>
-                <input type="text" id="addr_district">
+                <input type="text" id="addr_district" class="profile-input">
             </div>
             <div class="input-group">
                 <label>จังหวัด</label>
-                <input type="text" id="addr_province">
+                <input type="text" id="addr_province" class="profile-input">
             </div>
         </div>
 
-        <button class="btn-primary" onclick="saveProfile()">💾 บันทึกข้อมูลทั้งหมด</button>
+        <button id="saveBtn" class="btn-primary" onclick="saveProfile()">💾 บันทึกข้อมูลทั้งหมด</button>
     </div>
 
     <button class="btn-leave" onclick="openModal()">📅 แจ้งลาหยุดงาน / ลาพักร้อน</button>
@@ -252,6 +250,21 @@ function handleImageUpload(event) {
     }
 }
 
+// ฟังก์ชันสำหรับล็อคช่องกรอกข้อมูล
+function lockInputs(isLocked) {
+    const inputs = document.querySelectorAll('.profile-input');
+    const saveBtn = document.getElementById('saveBtn');
+    const picHint = document.getElementById('picHint');
+    const picUploadArea = document.getElementById('picUploadArea');
+
+    if (isLocked) {
+        inputs.forEach(input => input.readOnly = true);
+        if(saveBtn) saveBtn.style.display = 'none';
+        if(picHint) picHint.style.display = 'none';
+        if(picUploadArea) picUploadArea.onclick = null; // ปิดการเปลี่ยนรูป
+    }
+}
+
 function saveProfile() {
     const profile = {
         employeeId: document.getElementById('employeeId').value,
@@ -271,8 +284,13 @@ function saveProfile() {
         q_vacation: (JSON.parse(localStorage.getItem('employee_profile')) || {}).q_vacation || 10
     };
     
+    if(!profile.fullName || !profile.employeeId) {
+        alert('กรุณากรอกชื่อและรหัสพนักงานให้ครบถ้วน');
+        return;
+    }
+
     localStorage.setItem('employee_profile', JSON.stringify(profile));
-    alert('✅ บันทึกข้อมูลสำเร็จ');
+    alert('✅ บันทึกข้อมูลสำเร็จ ข้อมูลถูกล็อคแล้ว');
     loadProfile();
 }
 
@@ -294,6 +312,11 @@ function loadProfile() {
         if(saved.photo) document.getElementById('profilePreview').src = saved.photo;
         document.getElementById('displayName').innerText = saved.fullName || 'ชื่อพนักงาน';
         document.getElementById('displayId').innerText = 'ID: ' + (saved.employeeId || '-');
+
+        // ตรวจสอบว่าถ้ามีข้อมูลแล้ว ให้ล็อคทันที
+        if(saved.fullName && saved.employeeId) {
+            lockInputs(true);
+        }
     }
     renderLeaveHistory();
 }
@@ -368,7 +391,7 @@ function renderLeaveHistory() {
                 <span style="font-size:10px; color:#aaa;">🕒 ทำรายการ: ${transDate}</span>
             </td>
             <td style="padding:15px 5px; text-align:right;">
-                <span class="status-badge ${r.status === 'อนุมัติ' ? 'status-approved' : (r.status === 'ไม่นุมัติ' ? 'status-rejected' : 'status-pending')}">${r.status}</span>
+                <span class="status-badge ${r.status === 'อนุมัติ' ? 'status-approved' : (r.status === 'ไม่อนุมัติ' ? 'status-rejected' : 'status-pending')}">${r.status}</span>
             </td>
         </tr>
     `}).join('');
