@@ -143,17 +143,59 @@
             <h2 style="color: var(--primary); text-align: center; margin-top:0;">จัดการข้อมูลพนักงาน</h2>
             
             <div class="input-group">
-                <input type="hidden" id="editEmpId">
-                <label>ชื่อ-นามสกุล</label>
-                <input type="text" id="editName">
-                <label>เบอร์โทรศัพท์</label>
-                <input type="tel" id="editPhone">
-                <label>ตำแหน่ง</label>
-                <input type="text" id="editPos">
+                <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; font-size: 16px; color: #555;">👤 ข้อมูลทั่วไป</h3>
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <label>รหัสพนักงาน</label>
+                        <input type="text" id="editEmpId">
+                    </div>
+                    <div style="flex:2;">
+                        <label>ชื่อ-นามสกุล</label>
+                        <input type="text" id="editName">
+                    </div>
+                </div>
+                
+                <label>เลขประจำตัวประชาชน</label>
+                <input type="text" id="editIdCard">
+                
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <label>เบอร์โทรศัพท์</label>
+                        <input type="tel" id="editPhone">
+                    </div>
+                    <div style="flex:1;">
+                        <label>ตำแหน่ง</label>
+                        <input type="text" id="editPos">
+                    </div>
+                </div>
                 <label>แผนก</label>
                 <input type="text" id="editDept">
+
+                <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 20px; font-size: 16px; color: #555;">📍 ที่อยู่ปัจจุบัน</h3>
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <label>บ้านเลขที่</label>
+                        <input type="text" id="editAddrNo">
+                    </div>
+                    <div style="flex:1;">
+                        <label>หมู่ที่</label>
+                        <input type="text" id="editAddrMoo">
+                    </div>
+                </div>
+                <label>ตำบล</label>
+                <input type="text" id="editAddrSubdistrict">
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <label>อำเภอ</label>
+                        <input type="text" id="editAddrDistrict">
+                    </div>
+                    <div style="flex:1;">
+                        <label>จังหวัด</label>
+                        <input type="text" id="editAddrProvince">
+                    </div>
+                </div>
                 
-                <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 20px;">ตั้งค่าโควตาการลา (วัน/ปี)</h3>
+                <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 20px; font-size: 16px; color: #555;">📅 ตั้งค่าโควตาการลา (วัน/ปี)</h3>
                 <div style="display:flex; gap:10px;">
                     <div style="flex:1;">
                         <label>ลาป่วย</label>
@@ -395,25 +437,53 @@
         }
     }
 
+    // ฟังก์ชันเปิด Modal แก้ไขข้อมูลพนักงาน (ปรับปรุงใหม่ดึงข้อมูลทั้งหมด)
     function openEditModal() {
         const staff = JSON.parse(localStorage.getItem("employee_profile")) || {};
+        
+        // ข้อมูลส่วนตัว
         document.getElementById("editEmpId").value = staff.employeeId || '';
         document.getElementById("editName").value = staff.fullName || '';
+        document.getElementById("editIdCard").value = staff.idCard || '';
         document.getElementById("editPhone").value = staff.phone || '';
         document.getElementById("editPos").value = staff.position || '';
         document.getElementById("editDept").value = staff.department || '';
+        
+        // ข้อมูลที่อยู่
+        document.getElementById("editAddrNo").value = staff.addr_no || '';
+        document.getElementById("editAddrMoo").value = staff.addr_moo || '';
+        document.getElementById("editAddrSubdistrict").value = staff.addr_subdistrict || '';
+        document.getElementById("editAddrDistrict").value = staff.addr_district || '';
+        document.getElementById("editAddrProvince").value = staff.addr_province || '';
+
+        // ข้อมูลโควตา
         document.getElementById("q_sick").value = staff.q_sick || 30;
         document.getElementById("q_personal").value = staff.q_personal || 6;
         document.getElementById("q_vacation").value = staff.q_vacation || 10;
+        
         document.getElementById("editModal").style.display = "block";
     }
 
+    // ฟังก์ชันบันทึกข้อมูลพนักงานจาก Admin (ปรับปรุงใหม่บันทึกข้อมูลทั้งหมด)
     function updateStaffInfo() {
         const staff = JSON.parse(localStorage.getItem("employee_profile")) || {};
+        
+        // บันทึกข้อมูลส่วนตัว
+        staff.employeeId = document.getElementById("editEmpId").value;
         staff.fullName = document.getElementById("editName").value;
+        staff.idCard = document.getElementById("editIdCard").value;
         staff.phone = document.getElementById("editPhone").value;
         staff.position = document.getElementById("editPos").value;
         staff.department = document.getElementById("editDept").value;
+        
+        // บันทึกข้อมูลที่อยู่
+        staff.addr_no = document.getElementById("editAddrNo").value;
+        staff.addr_moo = document.getElementById("editAddrMoo").value;
+        staff.addr_subdistrict = document.getElementById("editAddrSubdistrict").value;
+        staff.addr_district = document.getElementById("editAddrDistrict").value;
+        staff.addr_province = document.getElementById("editAddrProvince").value;
+
+        // บันทึกข้อมูลโควตา
         staff.q_sick = document.getElementById("q_sick").value;
         staff.q_personal = document.getElementById("q_personal").value;
         staff.q_vacation = document.getElementById("q_vacation").value;
