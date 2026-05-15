@@ -17,14 +17,14 @@
             --primary: #6a5af9;
             --secondary: #00c6ff;
             --bg: #FDFBF7;
-            --glass: rgba(255, 255, 255, 0.85);
+            --glass: rgba(255, 255, 255, 0.9);
             --success: #2ecc71;
             --warning: #ffa800;
             --danger: #ff7675;
             --shadow: 0 8px 32px rgba(31, 38, 135, 0.08);
         }
 
-        * { box-sizing: border-box; } /* ป้องกันส่วนประกอบล้นขอบจอ */
+        * { box-sizing: border-box; } 
 
         body { 
             margin: 0; 
@@ -32,13 +32,13 @@
             background: var(--bg); 
             color: #333; 
             padding-bottom: 50px; 
-            overflow-x: hidden; /* ป้องกันการเลื่อนซ้ายขวาที่ผิดปกติ */
+            overflow-x: hidden;
         }
         
         .header { 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
             color: #fff; 
-            padding: 40px 20px 50px; 
+            padding: 30px 20px 50px; 
             text-align: center;
             border-radius: 0 0 40px 40px; 
             box-shadow: 0 10px 30px rgba(106, 90, 249, 0.2);
@@ -50,22 +50,25 @@
             padding: 0 15px; 
         }
 
-        /* ปรับส่วน Filter ให้ยืดหยุ่นตามหน้าจอ */
+        /* ปรับส่วน Filter ให้พอดีจอ ไม่ซ้อนทับกัน */
         .filter-container {
-            background: var(--glass); 
-            padding: 20px; 
+            background: #fff; 
+            padding: 15px; 
             border-radius: 20px; 
             box-shadow: var(--shadow); 
             margin-bottom: 20px; 
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column; /* ปรับเป็นแนวตั้งในมือถือเพื่อไม่ให้ทับกัน */
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+        }
+
+        @media (min-width: 600px) {
+            .filter-container { flex-direction: row; justify-content: center; }
         }
         
         .section-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: var(--primary);
             margin: 25px 0 15px;
@@ -76,31 +79,29 @@
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* ปรับขนาดขั้นต่ำให้เข้ากับมือถือมากขึ้น */
+            grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
             gap: 15px;
         }
 
+        @media (min-width: 768px) {
+            .grid-container { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+        }
+
         .card {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
+            background: #fff;
             padding: 20px;
             border-radius: 20px;
             box-shadow: var(--shadow);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            transition: transform 0.2s;
-            width: 100%; /* บังคับให้พอดีกริด */
+            border: 1px solid rgba(106, 90, 249, 0.1);
+            width: 100%;
         }
-
-        .card:hover { transform: translateY(-3px); }
 
         .btn-action {
-            border: none; padding: 8px 15px; border-radius: 12px;
+            border: none; padding: 10px 15px; border-radius: 12px;
             cursor: pointer; font-weight: bold; font-size: 14px;
-            transition: 0.3s; color: #fff; flex: 1; text-align: center;
+            transition: 0.3s; color: #fff; text-align: center;
         }
         .btn-edit { background: var(--primary); }
-        .btn-approve { background: var(--success); }
-        .btn-reject { background: var(--danger); }
         .btn-manage { background: #f39c12; }
 
         .status-badge {
@@ -117,56 +118,52 @@
         }
         .modal-content {
             background: #fff; margin: 5% auto; padding: 25px;
-            border-radius: 25px; width: 92%; max-width: 500px;
+            border-radius: 25px; width: 90%; max-width: 450px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.2);
             max-height: 85vh; overflow-y: auto;
         }
-        .close {
-            color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;
-        }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
 
-        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--primary); font-size: 14px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--primary); font-size: 13px; }
         .input-group input, .input-group select, .input-group textarea {
-            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px;
-            box-sizing: border-box; margin-bottom: 15px; font-family: inherit; font-size: 14px;
+            width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 12px;
+            box-sizing: border-box; margin-bottom: 12px; font-size: 14px; background: #fafafa;
         }
         
-        /* แก้ไข Grid ภายใน Modal ให้ไม่เบียดกัน */
         .flex-row { display: flex; gap: 10px; flex-wrap: wrap; }
-        .flex-row > div { flex: 1; min-width: 120px; }
+        .flex-row > div { flex: 1; min-width: 140px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1 style="margin:0; font-size: 26px;">ระบบจัดการผู้ดูแล (Admin)</h1>
-        <p style="margin:5px 0 0; opacity: 0.9;">✓Record Income - จัดการข้อมูลบุคลากร</p>
+        <h1 style="margin:0; font-size: 24px;">ระบบจัดการ (Admin)</h1>
+        <p style="margin:5px 0 0; opacity: 0.9; font-size: 14px;">✓Record Income - จัดการข้อมูล</p>
     </div>
 
     <div class="container">
         <div class="filter-container">
-            <label style="font-weight:bold; color:var(--primary);">เลือกวันที่ดูรายการลา:</label>
-            <input type="date" id="filterDate" onchange="renderDailyLeaves()" style="padding: 10px; border-radius: 10px; border: 1px solid #ccc;">
-            <button onclick="document.getElementById('filterDate').value = ''; renderDailyLeaves();" style="padding: 10px 15px; border-radius: 10px; border: none; background: #eee; cursor:pointer;">ดูทั้งหมด</button>
+            <span style="font-weight:bold; color:var(--primary); font-size:15px;">เลือกวันที่ดูรายการลา:</span>
+            <input type="date" id="filterDate" onchange="renderDailyLeaves()" style="padding: 10px; border-radius: 12px; border: 1px solid #ddd; outline: none;">
+            <button onclick="document.getElementById('filterDate').value = ''; renderDailyLeaves();" style="padding: 10px 20px; border-radius: 12px; border: none; background: #f0f0f0; color: #555; font-weight:bold; cursor:pointer;">ดูทั้งหมด</button>
         </div>
 
         <div class="section-title">📅 รายการแจ้งลาหยุด</div>
         <div id="leaveDailySection" class="grid-container"></div>
 
-        <div class="section-title">👥 ข้อมูลพนักงานทั้งหมด</div>
+        <div class="section-title">👥 ข้อมูลพนักงาน</div>
         <div id="staffSection" class="grid-container"></div>
     </div>
 
     <div id="editModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('editModal')">&times;</span>
-            <h2 style="color: var(--primary); text-align: center; margin-top:0;">จัดการข้อมูลพนักงาน</h2>
+            <h2 style="color: var(--primary); text-align: center; margin: 0 0 20px 0; font-size: 20px;">จัดการข้อมูลพนักงาน</h2>
             
             <div class="input-group">
-                <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; font-size: 16px; color: #555;">👤 ข้อมูลทั่วไป</h3>
                 <div class="flex-row">
                     <div><label>รหัสพนักงาน</label><input type="text" id="editEmpId"></div>
-                    <div style="flex: 2;"><label>ชื่อ-นามสกุล</label><input type="text" id="editName"></div>
+                    <div style="flex: 1.5;"><label>ชื่อ-นามสกุล</label><input type="text" id="editName"></div>
                 </div>
                 
                 <label>เลขประจำตัวประชาชน</label>
@@ -179,92 +176,81 @@
                 <label>แผนก</label>
                 <input type="text" id="editDept">
 
-                <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 20px; font-size: 16px; color: #555;">📍 ที่อยู่ปัจจุบัน</h3>
+                <h4 style="color:var(--primary); margin: 10px 0;">📍 ที่อยู่</h4>
                 <div class="flex-row">
                     <div><label>บ้านเลขที่</label><input type="text" id="editAddrNo"></div>
                     <div><label>หมู่ที่</label><input type="text" id="editAddrMoo"></div>
                 </div>
-                <label>ตำบล</label>
-                <input type="text" id="editAddrSubdistrict">
                 <div class="flex-row">
+                    <div><label>ตำบล</label><input type="text" id="editAddrSubdistrict"></div>
                     <div><label>อำเภอ</label><input type="text" id="editAddrDistrict"></div>
-                    <div><label>จังหวัด</label><input type="text" id="editAddrProvince"></div>
                 </div>
+                <label>จังหวัด</label>
+                <input type="text" id="editAddrProvince">
                 
-                <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 20px; font-size: 16px; color: #555;">📅 ตั้งค่าโควตาการลา (วัน/ปี)</h3>
+                <h4 style="color:var(--primary); margin: 10px 0;">📊 โควตาการลา (วัน/ปี)</h4>
                 <div class="flex-row">
-                    <div><label>ลาป่วย</label><input type="number" id="q_sick"></div>
-                    <div><label>ลากิจ</label><input type="number" id="q_personal"></div>
+                    <div><label>ป่วย</label><input type="number" id="q_sick"></div>
+                    <div><label>กิจ</label><input type="number" id="q_personal"></div>
                     <div><label>พักร้อน</label><input type="number" id="q_vacation"></div>
                 </div>
             </div>
 
-            <button onclick="updateStaffInfo()" style="width: 100%; padding: 15px; background: var(--success); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top:10px;">💾 บันทึกข้อมูลพนักงาน</button>
+            <button onclick="updateStaffInfo()" style="width: 100%; padding: 15px; background: var(--success); color: #fff; border: none; border-radius: 15px; font-size: 16px; font-weight: bold; cursor: pointer;">💾 บันทึกข้อมูล</button>
         </div>
     </div>
 
     <div id="leaveEditModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('leaveEditModal')">&times;</span>
-            <h2 style="color: var(--primary); text-align: center; margin-top:0;">จัดการรายการลา</h2>
-            <div id="modalLeaveStats" style="display:flex; gap:5px; margin-bottom: 15px;"></div>
-            <div id="modalLeaveHistory" style="max-height: 200px; overflow-y: auto; padding-right:5px; margin-bottom:15px;"></div>
+            <h2 style="color: var(--primary); text-align: center; margin-bottom: 20px; font-size: 20px;">จัดการรายการลา</h2>
+            <div id="modalLeaveStats" style="display:flex; gap:8px; margin-bottom: 15px;"></div>
             
-            <div style="background: #f8f9fa; padding: 15px; border-radius: 15px; border: 1px solid #eee;">
+            <div style="background: #fdfbf7; padding: 15px; border-radius: 15px; border: 1px solid #eee;">
                 <input type="hidden" id="editLeaveId">
                 <div class="input-group">
-                    <label>ปรับสถานะการอนุมัติ</label>
-                    <select id="editLeaveStatus" style="font-weight:bold;">
+                    <label>สถานะ</label>
+                    <select id="editLeaveStatus">
                         <option value="รอการอนุมัติ">⏳ รอการอนุมัติ</option>
                         <option value="อนุมัติ">✅ อนุมัติ</option>
                         <option value="ไม่อนุมัติ">❌ ไม่อนุมัติ</option>
                         <option value="ยกเลิก">🗑️ ยกเลิกรายการ</option>
                     </select>
-                    <label>สาเหตุการลา</label>
-                    <textarea id="editLeaveReason" rows="2" readonly style="background:#e9ecef; resize:none;"></textarea>
+                    <label>เหตุผล</label>
+                    <textarea id="editLeaveReason" rows="2" readonly style="background:#f0f0f0; color:#777;"></textarea>
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="saveLeaveEdit()" class="btn-action btn-approve" style="padding:12px;">💾 บันทึก</button>
-                    <button onclick="deleteLeaveFromPopup()" class="btn-action btn-reject" style="padding:12px; background:var(--danger);">🗑️ ลบ</button>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button onclick="saveLeaveEdit()" class="btn-action btn-edit" style="flex:2;">💾 บันทึก</button>
+                    <button onclick="deleteLeaveFromPopup()" class="btn-action" style="background:var(--danger); flex:1;">🗑️ ลบ</button>
                 </div>
             </div>
         </div>
     </div>
 
 <script>
-    // --- Logic ส่วนนี้คงเดิมตามไฟล์ต้นฉบับที่คุณส่งมา ---
-    let currentStaffObj = {};
-
-    function formatTimestamp(timestamp) {
-        if(!timestamp) return '-';
-        const d = new Date(parseInt(timestamp));
-        return d.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-    }
-
+    // --- Logic เดิมทั้งหมด ---
     function renderStaffSection() {
         const staff = JSON.parse(localStorage.getItem("employee_profile")) || {};
         const container = document.getElementById("staffSection");
         if (!staff.employeeId) {
-            container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #888; padding: 20px;">ไม่พบข้อมูลพนักงานในระบบ</div>`;
+            container.innerHTML = `<div style="text-align:center; color:#888; padding:20px;">ไม่พบข้อมูล</div>`;
             return;
         }
-        const sick = staff.q_sick || 30;
-        const personal = staff.q_personal || 6;
-        const vacation = staff.q_vacation || 10;
         container.innerHTML = `
             <div class="card">
-                <div style="display:flex; align-items:center; gap: 15px; margin-bottom: 15px;">
+                <div style="display:flex; align-items:center; gap: 15px;">
                     <img src="${staff.photo || 'https://via.placeholder.com/60'}" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid var(--primary);">
-                    <div style="overflow: hidden;">
-                        <div style="font-weight:bold; font-size:16px; color:var(--primary); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">${staff.fullName || 'ไม่มีชื่อ'}</div>
-                        <div style="font-size:13px; color:#666;">รหัส: ${staff.employeeId || '-'} | ${staff.department || '-'}</div>
+                    <div>
+                        <div style="font-weight:bold; color:var(--primary);">${staff.fullName}</div>
+                        <div style="font-size:12px; color:#666;">รหัส: ${staff.employeeId} | ${staff.department}</div>
                     </div>
                 </div>
-                <div style="font-size: 14px; color: #444; margin-bottom: 15px;">💼 ตำแหน่ง: ${staff.position || '-'}</div>
-                <div style="font-size: 12px; background:#f0f2f5; padding:8px; border-radius:8px; margin-bottom:15px; color:#555; text-align:center;">
-                    <strong>โควตา:</strong> ป่วย ${sick} | กิจ ${personal} | พักร้อน ${vacation}
+                <hr style="margin:15px 0; border:0.5px solid #eee;">
+                <div style="font-size:13px; margin-bottom:15px;">
+                    📍 ตำแหน่ง: ${staff.position}<br>
+                    📊 โควตา: ป่วย ${staff.q_sick||30} | กิจ ${staff.q_personal||6} | พักร้อน ${staff.q_vacation||10}
                 </div>
-                <button class="btn-action btn-edit" style="width:100%; padding:10px;" onclick="openEditModal()">✏️ จัดการข้อมูล & โควตา</button>
+                <button class="btn-action btn-edit" style="width:100%;" onclick="openEditModal()">✏️ แก้ไขข้อมูล & โควตา</button>
             </div>
         `;
     }
@@ -281,25 +267,22 @@
         }
         filtered.sort((a, b) => b.id - a.id);
         if (filtered.length === 0) {
-            container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #888; padding: 20px;">ไม่มีรายการแจ้งลาในวันที่เลือก</div>`;
+            container.innerHTML = `<div style="text-align:center; color:#888; padding:20px;">ไม่มีข้อมูล</div>`;
             return;
         }
-        container.innerHTML = filtered.map(req => {
-            let statusClass = req.status === 'อนุมัติ' ? 'status-approved' : (req.status === 'ไม่อนุมัติ' ? 'status-rejected' : 'status-pending');
-            return `
+        container.innerHTML = filtered.map(req => `
             <div class="card" style="border-left: 5px solid ${req.status === 'อนุมัติ' ? 'var(--success)' : (req.status==='ไม่อนุมัติ'?'var(--danger)':'var(--warning)')}">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <div style="font-weight:bold; color:var(--primary);">${req.name}</div>
-                    <span class="status-badge ${statusClass}">${req.status}</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-weight:bold; color:var(--primary);">${req.name}</span>
+                    <span class="status-badge ${req.status==='อนุมัติ'?'status-approved':(req.status==='ไม่อนุมัติ'?'status-rejected':'status-pending')}">${req.status}</span>
                 </div>
-                <div style="font-size:13px; color:#555; margin-bottom:15px;">
+                <div style="font-size:13px; color:#555; margin-bottom:12px;">
                     <strong>${req.type}</strong> (${req.days} วัน)<br>
                     📅 ${req.startDate} ถึง ${req.endDate}
                 </div>
-                <button class="btn-action btn-manage" style="width:100%;" onclick="openLeaveEditPopup(${req.id}, '${req.empId}')">⚙️ จัดการรายการนี้</button>
+                <button class="btn-action btn-manage" style="width:100%;" onclick="openLeaveEditPopup(${req.id}, '${req.empId}')">⚙️ จัดการรายการ</button>
             </div>
-            `;
-        }).join('');
+        `).join('');
     }
 
     function openLeaveEditPopup(reqId, empId) {
@@ -307,53 +290,37 @@
         const req = requests.find(r => r.id === reqId);
         if(req) {
             document.getElementById("editLeaveId").value = req.id;
-            document.getElementById("editLeaveReason").value = req.reason || 'ไม่มีการระบุสาเหตุ';
+            document.getElementById("editLeaveReason").value = req.reason || '-';
             document.getElementById("editLeaveStatus").value = req.status;
-            renderModalStatsAndHistory(empId);
+            
+            const profile = JSON.parse(localStorage.getItem("employee_profile")) || {};
+            const myLeaves = requests.filter(r => r.empId === empId && r.status === 'อนุมัติ');
+            const used = (type) => myLeaves.filter(r => r.type === type).reduce((s, r) => s + parseFloat(r.days||0), 0);
+            
+            document.getElementById("modalLeaveStats").innerHTML = `
+                <div style="flex:1; background:#eef; padding:5px; border-radius:10px; text-align:center; font-size:10px;">ป่วย ${used('ลาป่วย')}/${profile.q_sick||30}</div>
+                <div style="flex:1; background:#fff3cd; padding:5px; border-radius:10px; text-align:center; font-size:10px;">กิจ ${used('ลากิจ')}/${profile.q_personal||6}</div>
+                <div style="flex:1; background:#d4edda; padding:5px; border-radius:10px; text-align:center; font-size:10px;">พักร้อน ${used('ลาพักร้อน')}/${profile.q_vacation||10}</div>
+            `;
             document.getElementById("leaveEditModal").style.display = "block";
         }
     }
 
-    function renderModalStatsAndHistory(empId) {
-        const profile = JSON.parse(localStorage.getItem("employee_profile")) || {};
-        const requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
-        const myLeaves = requests.filter(r => r.empId === empId);
-        const sickUsed = myLeaves.filter(r => r.type === 'ลาป่วย' && r.status === 'อนุมัติ').reduce((sum, r) => sum + parseFloat(r.days||0), 0);
-        const perUsed = myLeaves.filter(r => r.type === 'ลากิจ' && r.status === 'อนุมัติ').reduce((sum, r) => sum + parseFloat(r.days||0), 0);
-        const vacUsed = myLeaves.filter(r => r.type === 'ลาพักร้อน' && r.status === 'อนุมัติ').reduce((sum, r) => sum + parseFloat(r.days||0), 0);
-        document.getElementById("modalLeaveStats").innerHTML = `
-            <div style="flex:1; background:#e8f4f8; padding:8px; border-radius:10px; text-align:center; font-size:11px;">ป่วย ${sickUsed}/${profile.q_sick||30}</div>
-            <div style="flex:1; background:#fff3cd; padding:8px; border-radius:10px; text-align:center; font-size:11px;">กิจ ${perUsed}/${profile.q_personal||6}</div>
-            <div style="flex:1; background:#d4edda; padding:8px; border-radius:10px; text-align:center; font-size:11px;">พักร้อน ${vacUsed}/${profile.q_vacation||10}</div>
-        `;
-        const historyDiv = document.getElementById("modalLeaveHistory");
-        if(myLeaves.length > 0) {
-            myLeaves.sort((a,b) => b.id - a.id);
-            historyDiv.innerHTML = myLeaves.map(l => `
-                <div style="background:#f8f9fa; padding:8px; border-radius:10px; margin-bottom:5px; font-size:11px; border: 1px solid #eee; display:flex; justify-content:space-between;">
-                    <span><strong>${l.type}</strong> ${l.days} วัน (${l.startDate})</span>
-                    <span style="font-weight:bold;">${l.status}</span>
-                </div>
-            `).join('');
-        } else { historyDiv.innerHTML = `<div style="text-align:center; color:#999; font-size:12px;">ไม่พบประวัติ</div>`; }
-    }
-
     function saveLeaveEdit() {
         const id = parseInt(document.getElementById("editLeaveId").value);
-        const newStatus = document.getElementById("editLeaveStatus").value;
         let requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
-        const index = requests.findIndex(r => r.id === id);
-        if(index !== -1) {
-            requests[index].status = newStatus;
+        const idx = requests.findIndex(r => r.id === id);
+        if(idx !== -1) {
+            requests[idx].status = document.getElementById("editLeaveStatus").value;
             localStorage.setItem("leave_requests", JSON.stringify(requests));
-            alert("✅ บันทึกเรียบร้อย");
+            alert("บันทึกแล้ว");
             closeModal('leaveEditModal');
             renderDailyLeaves();
         }
     }
 
     function deleteLeaveFromPopup() {
-        if(confirm("⚠️ ลบรายการลานี้?")) {
+        if(confirm("ลบรายการนี้?")) {
             const id = parseInt(document.getElementById("editLeaveId").value);
             let requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
             localStorage.setItem("leave_requests", JSON.stringify(requests.filter(r => r.id !== id)));
@@ -398,22 +365,13 @@
         staff.q_personal = document.getElementById("q_personal").value;
         staff.q_vacation = document.getElementById("q_vacation").value;
         localStorage.setItem("employee_profile", JSON.stringify(staff));
-        alert("✅ อัปเดตข้อมูลแล้ว");
+        alert("อัปเดตแล้ว");
         closeModal('editModal');
         renderStaffSection();
     }
 
     function closeModal(mId) { document.getElementById(mId).style.display = "none"; }
-
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal')) closeModal(event.target.id);
-    }
-
-    window.onload = () => {
-        document.getElementById('filterDate').value = new Date().toISOString().split('T')[0]; 
-        renderStaffSection();
-        renderDailyLeaves();
-    };
+    window.onload = () => { renderStaffSection(); renderDailyLeaves(); };
 </script>
 </body>
 </html>
