@@ -28,220 +28,263 @@ body {
     padding-bottom: 50px; 
 }
 
+/* ปรับปรุงส่วน Header ให้เล็กลงและมีมิติ */
 .header { 
     background: linear-gradient(135deg, var(--primary), var(--secondary)); 
     color: #fff; 
-    padding: 30px 20px 60px; 
-    text-align: center;
-    border-radius: 0 0 40px 40px;
-    position: relative;
+    padding: 20px 20px 35px; /* ลด padding ลง */
+    text-align: center; 
+    border-radius: 0 0 35px 35px; /* ปรับความโค้งให้ดูทันสมัย */
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
 }
 
-.profile-pic-wrapper {
-    position: relative;
-    width: 110px;
-    height: 110px;
-    margin: 0 auto -55px;
-    z-index: 10;
+.profile-pic-container { 
+    display: inline-flex; 
+    flex-direction: column; 
+    align-items: center; 
+    position: relative; 
+    cursor: pointer; 
 }
 
-#profilePreview {
-    width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
-    border: 4px solid var(--white); background: #f1f5f9;
-    box-shadow: var(--shadow-card);
+#profilePreview { 
+    width: 80px; /* ลดขนาดรูปโปรไฟล์ลง */
+    height: 80px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    border: 3px solid rgba(255,255,255,0.8); 
+    background: #f1f5f9; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.container { padding: 70px 20px 20px; max-width: 500px; margin: auto; }
-
-.card {
-    background: var(--white); padding: 24px; border-radius: 24px;
-    box-shadow: var(--shadow-card); margin-bottom: 20px;
-    border: 1px solid var(--border-color);
+.change-pic-hint { 
+    font-size: 9px; 
+    margin-top: -10px; 
+    background: rgba(0,0,0,0.4); 
+    padding: 2px 8px; 
+    border-radius: 20px; 
+    color: #fff; 
+    backdrop-filter: blur(2px);
 }
 
-.input-group { margin-bottom: 18px; }
-.input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-sub); }
-.input-group input, .input-group select, .input-group textarea {
-    width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 12px;
-    box-sizing: border-box; font-size: 15px; background: #fcfdfe; transition: all 0.2s;
+#displayName { 
+    margin: 10px 0 2px; 
+    font-size: 18px; 
+    font-weight: 700;
 }
-.input-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
 
-.btn-primary {
-    background: var(--primary); color: white; border: none; padding: 16px; width: 100%;
-    border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); transition: transform 0.2s;
+#displayId { 
+    margin: 0; 
+    font-size: 12px; 
+    opacity: 0.8; 
 }
-.btn-primary:active { transform: scale(0.98); }
 
-.leave-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-.stat-box { text-align: center; padding: 12px; border-radius: 16px; font-size: 12px; }
+.container { padding: 0 16px; margin-top: -20px; }
 
-.status-badge { padding: 4px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; }
-.status-pending { background: #fffbeb; color: #92400e; }
-.status-approved { background: #f0fdf4; color: #166534; }
-.status-rejected { background: #fef2f2; color: #991b1b; }
-
-.modal {
-    display: none; position: fixed; z-index: 100; left: 0; top: 0;
-    width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+.info-card { 
+    background: var(--white); 
+    border-radius: 20px; 
+    padding: 18px; 
+    box-shadow: var(--shadow-card); 
+    margin-bottom: 16px; 
+    border: 1px solid var(--border-color); 
 }
-.modal-content {
-    background: #fff; margin: 15% auto; padding: 28px;
-    width: 85%; max-width: 400px; border-radius: 28px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+
+.input-group { margin-bottom: 12px; }
+.input-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-sub); margin-bottom: 6px; }
+.input-group input, .input-group textarea, .input-group select { 
+    width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-color); 
+    border-radius: 12px; font-size: 14px; box-sizing: border-box; 
+}
+.input-group input:read-only { background: #f8fafc; color: #94a3b8; cursor: not-allowed; }
+
+.section-toggle-btn { 
+    background: #f8fafc; padding: 12px 16px; border-radius: 14px; 
+    display: flex; justify-content: space-between; align-items: center; 
+    cursor: pointer; font-weight: 700; color: var(--primary); 
+    margin-bottom: 8px; border: 1px solid var(--border-color); 
+}
+
+.collapsible-content { display: none; padding: 8px 4px 12px; }
+
+.btn-primary { 
+    background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+    color: #fff; border: none; padding: 14px; border-radius: 14px; 
+    width: 100%; font-size: 15px; font-weight: 700; cursor: pointer; 
+}
+
+.btn-leave { 
+    background: #f59e0b; color: #fff; border: none; padding: 12px; 
+    border-radius: 14px; width: 100%; font-weight: 700; 
+    margin-bottom: 16px; display: flex; align-items: center; 
+    justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+
+.leave-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.stat-box { padding: 10px 5px; border-radius: 12px; text-align: center; border: 1px solid rgba(0,0,0,0.03); }
+
+.status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+.status-pending { background: #fffbeb; color: #b45309; }
+.status-approved { background: #ecfdf5; color: #047857; }
+.status-rejected { background: #fef2f2; color: #b91c1c; }
+
+.modal { 
+    display: none; position: fixed; z-index: 1000; left: 0; top: 0; 
+    width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); 
+    backdrop-filter: blur(8px); 
+}
+.modal-content { 
+    background: #fff; margin: 15% auto; padding: 24px; 
+    border-radius: 24px; width: 85%; max-width: 380px; 
 }
 </style>
 </head>
 <body>
 
 <div class="header">
-    <h2 style="margin:0; font-weight: 800; letter-spacing: -0.5px;">My Profile</h2>
-    <p style="margin:5px 0 0; font-size: 13px; opacity: 0.9;">จัดการข้อมูลพนักงานและการลา</p>
-</div>
-
-<div class="profile-pic-wrapper">
-    <img id="profilePreview" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
-    <input type="file" id="photoInput" style="display:none" accept="image/*" onchange="previewImage(event)">
-    <div onclick="document.getElementById('photoInput').click()" style="position:absolute; bottom:0; right:0; background:var(--primary); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:3px solid #fff; cursor:pointer; color:white; font-size:14px;">📷</div>
+    <div class="profile-pic-container" onclick="document.getElementById('fileInput').click()">
+        <img id="profilePreview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ccc'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>">
+        <div class="change-pic-hint">📷 เปลี่ยนรูป</div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
+    </div>
+    <h2 id="displayName">ชื่อพนักงาน</h2>
+    <p id="displayId">ID: -</p>
 </div>
 
 <div class="container">
-    <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 style="margin:0; font-size:18px; color:var(--text-main);">👤 ข้อมูลส่วนตัว</h3>
-            <span id="saveStatus" style="font-size:11px; color:var(--primary); font-weight:bold;"></span>
+    <div class="info-card">
+        <div class="section-toggle-btn" onclick="toggleSection('personalContent', 'personalArrow')">
+            <span>👤 ข้อมูลส่วนตัว</span>
+            <span id="personalArrow">▼</span>
         </div>
-        
-        <div class="input-group">
-            <label>รหัสพนักงาน</label>
-            <input type="text" id="employeeId" placeholder="ระบุรหัสพนักงาน เช่น EMP001">
-        </div>
-        <div class="input-group">
-            <label>ชื่อ-นามสกุล</label>
-            <input type="text" id="fullName">
-        </div>
-        <div class="input-group">
-            <label>ตำแหน่ง</label>
-            <input type="text" id="position">
-        </div>
-        <div class="input-group">
-            <label>แผนก</label>
-            <input type="text" id="department">
-        </div>
-        <div class="input-group">
-            <label>วันเริ่มทำงาน</label>
-            <input type="date" id="startDateWork">
-        </div>
-        <button class="btn-primary" onclick="updateProfile()">บันทึกโปรไฟล์</button>
-    </div>
-
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:0 4px;">
-        <h3 style="margin:0; font-size:18px; color:var(--text-main);">📅 สถิติการลา</h3>
-        <button onclick="openModal()" style="border:none; background:var(--white); color:var(--primary); padding:8px 16px; border-radius:12px; font-weight:700; font-size:13px; box-shadow:var(--shadow-soft); cursor:pointer; border:1px solid var(--border-color);">+ แจ้งลา</button>
-    </div>
-
-    <div class="card" style="padding:16px;">
-        <div id="leaveStatsGrid" class="leave-stats">
+        <div id="personalContent" class="collapsible-content">
+            <div class="input-group"><label>รหัสพนักงาน</label><input type="text" id="employeeId" class="profile-input"></div>
+            <div class="input-group"><label>เลขประจำตัวประชาชน</label><input type="text" id="idCard" class="profile-input"></div>
+            <div class="input-group"><label>ชื่อ-นามสกุล</label><input type="text" id="fullName" class="profile-input"></div>
+            <div style="display: flex; gap: 8px;">
+                <div class="input-group" style="flex:1;"><label>ตำแหน่ง</label><input type="text" id="position" class="profile-input"></div>
+                <div class="input-group" style="flex:1;"><label>แผนก</label><input type="text" id="department" class="profile-input"></div>
             </div>
-        
-        <div style="border-top: 1px solid var(--border-color); margin-top:15px; padding-top:15px;">
-            <h4 style="margin:0 0 12px 0; font-size:14px; color:var(--text-sub);">ประวัติการลาล่าสุด</h4>
-            <table style="width:100%; border-collapse: collapse; font-size:14px;">
-                <tbody id="leaveHistoryBody">
-                    </tbody>
-            </table>
+            <div class="input-group"><label>เบอร์โทรศัพท์</label><input type="tel" id="phone" class="profile-input"></div>
         </div>
+
+        <div class="section-toggle-btn" onclick="toggleSection('addressContent', 'addressArrow')">
+            <span>📍 ที่อยู่ปัจจุบัน</span>
+            <span id="addressArrow">▼</span>
+        </div>
+        <div id="addressContent" class="collapsible-content">
+            <div style="display: flex; gap: 8px;">
+                <div class="input-group" style="flex:1;"><label>บ้านเลขที่</label><input type="text" id="addr_no" class="profile-input"></div>
+                <div class="input-group" style="flex:1;"><label>หมู่ที่</label><input type="text" id="addr_moo" class="profile-input"></div>
+            </div>
+            <div class="input-group"><label>ตำบล/แขวง</label><input type="text" id="addr_subdistrict" class="profile-input"></div>
+            <div class="input-group"><label>อำเภอ/เขต</label><input type="text" id="addr_district" class="profile-input"></div>
+            <div class="input-group"><label>จังหวัด</label><input type="text" id="addr_province" class="profile-input"></div>
+        </div>
+        <button id="saveBtn" class="btn-primary" onclick="saveProfile()">💾 บันทึกและซิงค์ข้อมูลกลาง</button>
+    </div>
+
+    <button class="btn-leave" onclick="openModal()">📅 แจ้งลาหยุดงาน / ลาพักร้อน</button>
+
+    <div class="info-card">
+        <h3 style="margin: 0 0 15px; color: var(--primary); font-size: 15px;">📊 สถิติการลาปีนี้</h3>
+        <div id="leaveStatsGrid" class="leave-stats"></div>
+        <h3 style="margin: 15px 0 10px; color: var(--primary); font-size: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">📋 ประวัติล่าสุด</h3>
+        <table style="width:100%; border-collapse: collapse; font-size: 13px;"><tbody id="leaveHistoryBody"></tbody></table>
     </div>
 </div>
 
 <div id="leaveModal" class="modal">
     <div class="modal-content">
-        <h3 style="margin-top:0; color:var(--text-main); font-size:20px;">แจ้งลาหยุด</h3>
-        <div class="input-group">
-            <label>ประเภท</label>
-            <select id="leaveType">
-                <option>ลาป่วย</option>
-                <option>ลากิจ</option>
-                <option>ลาพักร้อน</option>
-            </select>
+        <h3>📝 แจ้งขอลาหยุด</h3>
+        <div class="input-group"><label>ประเภทการลา</label><select id="leaveType"><option value="ลาป่วย">🤒 ลาป่วย</option><option value="ลากิจ">💼 ลากิจ</option><option value="ลาพักร้อน">🏖️ ลาพักร้อน</option></select></div>
+        <div style="display: flex; gap: 8px;">
+            <div class="input-group" style="flex:1;"><label>เริ่ม</label><input type="date" id="leaveStart"></div>
+            <div class="input-group" style="flex:1;"><label>ถึง</label><input type="date" id="leaveEnd"></div>
         </div>
-        <div style="display:flex; gap:10px;">
-            <div class="input-group" style="flex:1">
-                <label>จากวันที่</label>
-                <input type="date" id="leaveStart">
-            </div>
-            <div class="input-group" style="flex:1">
-                <label>ถึงวันที่</label>
-                <input type="date" id="leaveEnd">
-            </div>
-        </div>
-        <div class="input-group">
-            <label>จำนวนวัน</label>
-            <input type="number" id="leaveDays" step="0.5">
-        </div>
-        <div class="input-group">
-            <label>เหตุผล</label>
-            <textarea id="leaveReason" rows="2" style="resize:none;"></textarea>
-        </div>
-        <div style="display:flex; gap:12px;">
-            <button class="btn-primary" onclick="confirmLeave()" style="flex:2">ส่งใบลา</button>
-            <button onclick="closeModal()" style="flex:1; border:none; background:#f1f5f9; color:var(--text-sub); border-radius:16px; font-weight:700; cursor:pointer;">ยกเลิก</button>
+        <div class="input-group"><label>จำนวนวันลา</label><input type="number" id="leaveDays"></div>
+        <div class="input-group"><label>เหตุผล</label><textarea id="leaveReason" rows="2"></textarea></div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn-primary" onclick="submitLeave()" style="flex:2; margin:0;">ส่งคำขอลา</button>
+            <button onclick="closeModal()" style="border:none; background:#f1f5f9; padding:14px; border-radius:14px; flex:1; font-weight:bold; color:#64748b;">ยกเลิก</button>
         </div>
     </div>
 </div>
 
 <script>
-// --- Config Firebase ---
+// --- 1. Firebase Config ---
 const firebaseConfig = {
-    apiKey: "AIzaSy...",
-    authDomain: "your-app.firebaseapp.com",
-    databaseURL: "https://your-app-default-rtdb.firebaseio.com",
-    projectId: "your-app",
-    storageBucket: "your-app.appspot.com",
-    messagingSenderId: "...",
-    appId: "..."
+  apiKey: "AIzaSyDEzU0P1EWgJgABEw3sJL54N5dq4dlVHJQ",
+  authDomain: "hr-system-f9acc.firebaseapp.com",
+  databaseURL: "https://hr-system-f9acc-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "hr-system-f9acc",
+  storageBucket: "hr-system-f9acc.firebasestorage.app",
+  messagingSenderId: "793271973867",
+  appId: "1:793271973867:web:38bd510257d9d2bf500bae",
+  measurementId: "G-4VQJBG57EZ"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// ตัวแปรเก็บโควตาลา (จะถูกอัปเดตจาก Database)
 let currentQuota = { sick: 30, personal: 6, vacation: 10 };
 
-function previewImage(event) {
-    const reader = new FileReader();
-    reader.onload = () => { document.getElementById('profilePreview').src = reader.result; };
-    reader.readAsDataURL(event.target.files[0]);
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('profilePreview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
 }
 
-function updateProfile() {
-    const empId = document.getElementById('employeeId').value;
-    if(!empId) return alert("กรุณาระบุรหัสพนักงาน");
+function toggleSection(contentId, arrowId) {
+    const content = document.getElementById(contentId);
+    const arrow = document.getElementById(arrowId);
+    content.style.display = (content.style.display === "block") ? "none" : "block";
+    arrow.innerText = (content.style.display === "block") ? "▲" : "▼";
+}
 
-    const data = {
-        employeeId: empId,
+function lockInputs(isLocked) {
+    const inputs = document.querySelectorAll('.profile-input');
+    const saveBtn = document.getElementById('saveBtn');
+    if (isLocked) {
+        inputs.forEach(input => input.readOnly = true);
+        if(saveBtn) saveBtn.style.display = 'none';
+    }
+}
+
+function saveProfile() {
+    const profile = {
+        employeeId: document.getElementById('employeeId').value,
+        idCard: document.getElementById('idCard').value,
         fullName: document.getElementById('fullName').value,
         position: document.getElementById('position').value,
         department: document.getElementById('department').value,
-        startDateWork: document.getElementById('startDateWork').value, // เพิ่มวันเริ่มทำงาน
-        photo: document.getElementById('profilePreview').src,
-        q_sick: 30, q_personal: 6, q_vacation: 10
+        phone: document.getElementById('phone').value,
+        addr_no: document.getElementById('addr_no').value,
+        addr_moo: document.getElementById('addr_moo').value,
+        addr_subdistrict: document.getElementById('addr_subdistrict').value,
+        addr_district: document.getElementById('addr_district').value,
+        addr_province: document.getElementById('addr_province').value,
+        photo: document.getElementById('profilePreview').src
     };
-
-    localStorage.setItem('employee_profile', JSON.stringify(data));
-    db.ref('users/' + empId).set(data).then(() => {
-        document.getElementById('saveStatus').innerText = "✓ บันทึกสำเร็จ";
-        setTimeout(() => document.getElementById('saveStatus').innerText = "", 3000);
+    
+    if(!profile.fullName || !profile.employeeId) return alert('กรุณากรอกรหัสและชื่อพนักงาน');
+    
+    db.ref('users/' + profile.employeeId).update(profile).then(() => {
+        localStorage.setItem('employee_profile', JSON.stringify(profile));
+        alert('✅ บันทึกและเชื่อมโยงข้อมูลกลางสำเร็จ');
+        location.reload();
     });
 }
 
-function confirmLeave() {
+function submitLeave() {
     const empId = document.getElementById('employeeId').value;
-    if(!empId) return alert("กรุณาระบุรหัสพนักงานก่อนแจ้งลา");
-
-    const now = new Date();
-    // สร้างวันที่ทำรายการในรูปแบบ ว/ด/ป
-    const requestDateStr = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()+543}`;
-
-    const newLeave = {
+    if(!empId) return alert('กรุณาระบุรหัสพนักงานก่อน');
+    
+    const newRequest = {
         id: Date.now(),
         empId: empId,
         name: document.getElementById('fullName').value,
@@ -250,48 +293,83 @@ function confirmLeave() {
         endDate: document.getElementById('leaveEnd').value,
         days: document.getElementById('leaveDays').value,
         reason: document.getElementById('leaveReason').value,
-        requestDate: requestDateStr, // เพิ่มวันที่ทำรายการ
         status: 'รอการอนุมัติ'
     };
 
-    db.ref('leave_requests').push(newLeave).then(() => {
-        alert('ส่งคำขอลาสำเร็จ');
+    db.ref('leaves').push(newRequest).then(() => {
+        alert('ส่งใบลาสำเร็จ!');
         closeModal();
     });
 }
 
-function renderLeaveHistory() {
-    const empId = document.getElementById('employeeId').value;
-    if(!empId) return;
-
-    db.ref('leave_requests').on('value', (snapshot) => {
-        const data = snapshot.val();
-        const body = document.getElementById('leaveHistoryBody');
-        body.innerHTML = "";
-        
-        let stats = { sick: 0, personal: 0, vacation: 0 };
-
-        if(data) {
-            const list = Object.values(data).filter(r => r.empId === empId).reverse();
-            list.forEach(r => {
-                if(r.status === 'อนุมัติ') {
-                    if(r.type === 'ลาป่วย') stats.sick += parseFloat(r.days || 0);
-                    if(r.type === 'ลากิจ') stats.personal += parseFloat(r.days || 0);
-                    if(r.type === 'ลาพักร้อน') stats.vacation += parseFloat(r.days || 0);
-                }
+function loadProfile() {
+    const saved = JSON.parse(localStorage.getItem('employee_profile'));
+    if(saved && saved.employeeId) {
+        const empId = saved.employeeId;
+        // ดึงข้อมูล User และโควตาจาก Realtime Database
+        db.ref('users/' + empId).on('value', snap => {
+            const val = snap.val();
+            if(val) {
+                document.getElementById('employeeId').value = val.employeeId || '';
+                document.getElementById('fullName').value = val.fullName || '';
+                document.getElementById('idCard').value = val.idCard || '';
+                document.getElementById('position').value = val.position || '';
+                document.getElementById('department').value = val.department || '';
+                document.getElementById('phone').value = val.phone || '';
+                document.getElementById('addr_no').value = val.addr_no || '';
+                document.getElementById('addr_moo').value = val.addr_moo || '';
+                document.getElementById('addr_subdistrict').value = val.addr_subdistrict || '';
+                document.getElementById('addr_district').value = val.addr_district || '';
+                document.getElementById('addr_province').value = val.addr_province || '';
+                if(val.photo) document.getElementById('profilePreview').src = val.photo;
+                document.getElementById('displayName').innerText = val.fullName || 'ชื่อพนักงาน';
+                document.getElementById('displayId').innerText = 'ID: ' + empId;
                 
-                body.innerHTML += `<tr>
-                    <td style="padding:12px 4px;">
-                        <strong>${r.type}</strong> (${r.days} วัน)<br>
-                        <span style="font-size:11px; color:var(--text-sub);">${r.startDate} - ${r.endDate}</span><br>
-                        <span style="font-size:10px; color:var(--primary);">ยื่นคำขอเมื่อ: ${r.requestDate || '-'}</span>
-                    </td>
-                    <td style="text-align:right;"><span class="status-badge ${r.status==='อนุมัติ'?'status-approved':(r.status==='ไม่อนุมัติ'?'status-rejected':'status-pending')}">${r.status}</span></td>
-                </tr>`;
-            });
-        }
-        updateStatsView(stats);
-    });
+                // อัปเดตตัวแปรโควตาตามที่ Admin แก้ไข
+                currentQuota.sick = val.q_sick || 30;
+                currentQuota.personal = val.q_personal || 6;
+                currentQuota.vacation = val.q_vacation || 10;
+
+                lockInputs(true);
+
+                // โหลดประวัติการลาเพื่อมาคำนวณ stats
+                db.ref('leaves').orderByChild('empId').equalTo(empId).once('value', s => {
+                    renderLeaveHistory(s.val());
+                });
+            }
+        });
+
+        // ติดตามการเปลี่ยนแปลงของใบลา
+        db.ref('leaves').orderByChild('empId').equalTo(empId).on('value', snap => {
+            renderLeaveHistory(snap.val());
+        });
+    }
+}
+
+function renderLeaveHistory(data) {
+    const body = document.getElementById('leaveHistoryBody');
+    body.innerHTML = "";
+    
+    const stats = { sick: 0, personal: 0, vacation: 0 };
+    if(data) {
+        const list = Object.keys(data).map(key => data[key]).reverse();
+        list.forEach(r => {
+            if(r.status === 'อนุมัติ') {
+                if(r.type === 'ลาป่วย') stats.sick += parseFloat(r.days || 0);
+                if(r.type === 'ลากิจ') stats.personal += parseFloat(r.days || 0);
+                if(r.type === 'ลาพักร้อน') stats.vacation += parseFloat(r.days || 0);
+            }
+            
+            body.innerHTML += `<tr>
+                <td style="padding:12px 4px;">
+                    <strong>${r.type}</strong> (${r.days} วัน)<br>
+                    <span style="font-size:11px; color:var(--text-sub);">${r.startDate} - ${r.endDate}</span>
+                </td>
+                <td style="text-align:right;"><span class="status-badge ${r.status==='อนุมัติ'?'status-approved':(r.status==='ไม่อนุมัติ'?'status-rejected':'status-pending')}">${r.status}</span></td>
+            </tr>`;
+        });
+    }
+    updateStatsView(stats);
 }
 
 function updateStatsView(stats) {
@@ -302,21 +380,9 @@ function updateStatsView(stats) {
     `;
 }
 
-window.onload = function() {
-    const saved = JSON.parse(localStorage.getItem('employee_profile'));
-    if(saved) {
-        document.getElementById('employeeId').value = saved.employeeId || '';
-        document.getElementById('fullName').value = saved.fullName || '';
-        document.getElementById('position').value = saved.position || '';
-        document.getElementById('department').value = saved.department || '';
-        document.getElementById('startDateWork').value = saved.startDateWork || ''; // โหลดวันเริ่มทำงาน
-        document.getElementById('profilePreview').src = saved.photo || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
-        renderLeaveHistory();
-    }
-};
-
 function openModal() { document.getElementById('leaveModal').style.display = 'block'; }
 function closeModal() { document.getElementById('leaveModal').style.display = 'none'; }
+window.onload = loadProfile;
 </script>
 </body>
 </html>
