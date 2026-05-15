@@ -38,6 +38,11 @@
             box-sizing: border-box; font-size: 14px; margin-bottom: 20px; outline: none;
         }
 
+        .filter-container {
+            display: flex; gap: 10px; margin-bottom: 20px; align-items: center;
+            background: #f9f9ff; padding: 15px; border-radius: 15px;
+        }
+
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
         th { background: #f0edff; color: var(--primary); padding: 12px; text-align: left; }
         td { padding: 15px 12px; border-bottom: 1px solid #f1f1f1; }
@@ -57,15 +62,15 @@
         .btn-delete-sm { background: #fff1f0; color: #ff4d4f; padding: 5px 10px; border-radius: 8px; font-size: 11px; }
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
-        .modal-content { background: #fff; margin: 5% auto; padding: 30px; width: 90%; max-width: 650px; border-radius: 30px; max-height: 85vh; overflow-y: auto; }
+        .modal-content { background: #fff; margin: 2% auto; padding: 30px; width: 90%; max-width: 700px; border-radius: 30px; max-height: 90vh; overflow-y: auto; }
         
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 12px; color: #888; font-weight: bold; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee; box-sizing: border-box; background: #fafafa; }
+        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee; box-sizing: border-box; background: #fafafa; font-size: 14px; }
         
         .stats-box { background: #fdfdfd; border-radius: 15px; padding: 15px; margin-top: 20px; border: 1px solid #eee; }
-        .stats-list { max-height: 300px; overflow-y: auto; font-size: 12px; }
+        .stats-list { max-height: 250px; overflow-y: auto; font-size: 12px; }
         .stats-item { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 12px; border-bottom: 1px solid #f5f5f5; background: #fff; margin-bottom: 5px; border-radius: 10px;
@@ -93,7 +98,14 @@
     </div>
 
     <div class="section-card">
-        <div style="font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 15px;">📅 รายการแจ้งลาหยุด</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="font-size: 18px; font-weight: 800; color: var(--primary);">📅 รายการแจ้งลาหยุด</div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 12px; font-weight: bold; color: #666;">กรองวันที่:</span>
+                <input type="date" id="filterDate" onchange="renderLeaveRequests()" style="padding: 8px; border-radius: 10px; border: 1px solid #ddd; font-size: 12px;">
+                <button onclick="clearDateFilter()" style="border:none; background:none; color:var(--danger); font-size:12px; cursor:pointer;">ล้าง</button>
+            </div>
+        </div>
         <div id="leaveRequestGrid" class="leave-grid"></div>
     </div>
 </div>
@@ -101,28 +113,41 @@
 <div id="editModal" class="modal">
     <div class="modal-content">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="margin:0; color: var(--primary);">แก้ไขข้อมูลและประวัติการลา</h2>
+            <h2 style="margin:0; color: var(--primary);">แก้ไขข้อมูลและประวัติพนักงาน</h2>
             <span onclick="closeModal()" style="cursor:pointer; font-size: 24px; color: #ccc;">&times;</span>
         </div>
         
+        <h4 style="color: var(--primary); margin-bottom: 10px; border-bottom: 2px solid #f0edff; padding-bottom: 5px;">👤 ข้อมูลพื้นฐาน</h4>
         <div class="form-grid">
             <div class="form-group"><label>รหัสพนักงาน</label><input type="text" id="editEmpId"></div>
             <div class="form-group"><label>ชื่อ-นามสกุล</label><input type="text" id="editName"></div>
             <div class="form-group"><label>ตำแหน่ง</label><input type="text" id="editPos"></div>
             <div class="form-group"><label>แผนก</label><input type="text" id="editDept"></div>
+            <div class="form-group"><label>เลขบัตรประชาชน</label><input type="text" id="editIdCard"></div>
+            <div class="form-group"><label>เบอร์โทรศัพท์</label><input type="text" id="editPhone"></div>
         </div>
 
-        <h4 style="color: var(--primary); margin: 20px 0 10px 0; border-top: 1px solid #eee; padding-top: 15px;">📊 จัดการโควตาการลา (วันคงเหลือ)</h4>
+        <h4 style="color: var(--primary); margin: 20px 0 10px 0; border-bottom: 2px solid #f0edff; padding-bottom: 5px;">🏠 ข้อมูลที่อยู่</h4>
+        <div class="form-grid">
+            <div class="form-group"><label>บ้านเลขที่/หมู่บ้าน</label><input type="text" id="editAddrNo"></div>
+            <div class="form-group"><label>หมู่ที่ / ซอย</label><input type="text" id="editAddrMoo"></div>
+            <div class="form-group"><label>ตำบล/แขวง</label><input type="text" id="editAddrSub"></div>
+            <div class="form-group"><label>อำเภอ/เขต</label><input type="text" id="editAddrDist"></div>
+            <div class="form-group"><label>จังหวัด</label><input type="text" id="editAddrProv"></div>
+            <div class="form-group"><label>รหัสไปรษณีย์</label><input type="text" id="editAddrZip"></div>
+        </div>
+
+        <h4 style="color: var(--primary); margin: 20px 0 10px 0; border-bottom: 2px solid #f0edff; padding-bottom: 5px;">📊 จัดการโควตาการลา (วันคงเหลือ)</h4>
         <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
             <div class="form-group"><label>ป่วย</label><input type="number" id="q_sick"></div>
             <div class="form-group"><label>กิจ</label><input type="number" id="q_personal"></div>
             <div class="form-group"><label>พักร้อน</label><input type="number" id="q_vacation"></div>
         </div>
 
-        <button class="btn" style="background: var(--primary); color: #fff; width: 100%; padding: 15px; margin-top: 10px;" onclick="updateStaffInfo()">💾 บันทึกข้อมูลพนักงานและโควตา</button>
+        <button class="btn" style="background: var(--primary); color: #fff; width: 100%; padding: 15px; margin-top: 10px; font-size: 16px;" onclick="updateStaffInfo()">💾 บันทึกข้อมูลทั้งหมด</button>
 
         <div class="stats-box">
-            <h4 style="margin: 0 0 10px 0; color: var(--primary);">📈 สถิติ/ประวัติการลา (Admin จัดการได้)</h4>
+            <h4 style="margin: 0 0 10px 0; color: var(--primary);">📈 ประวัติการลาพนักงานคนนี้</h4>
             <div id="employeeStats" class="stats-list"></div>
         </div>
     </div>
@@ -153,17 +178,30 @@
 
     function renderLeaveRequests() {
         let requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
+        const filterDate = document.getElementById("filterDate").value;
         const grid = document.getElementById("leaveRequestGrid");
-        if(requests.length === 0) {
-            grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#999;">ไม่มีรายการลา</div>`;
+        
+        // กรองข้อมูลตามวันที่ (ถ้ามีการเลือก)
+        let displayRequests = requests;
+        if(filterDate) {
+            // แปลงรูปแบบวันที่จาก input (YYYY-MM-DD) ให้ตรงกับที่เก็บในระบบ (ซึ่งมักจะเป็น dd/mm/yyyy หรือตรวจสอบจาก startDate)
+            displayRequests = requests.filter(req => {
+                // หากระบบเก็บ startDate เป็น YYYY-MM-DD ให้เปรียบเทียบตรงๆ
+                return req.startDate === filterDate;
+            });
+        }
+
+        if(displayRequests.length === 0) {
+            grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#999;">ไม่พบรายการลาในวันที่เลือก</div>`;
             return;
         }
-        grid.innerHTML = requests.slice().reverse().map(req => `
+
+        grid.innerHTML = displayRequests.slice().reverse().map(req => `
             <div class="leave-card">
                 <span class="badge ${req.status === 'รอการอนุมัติ' ? 'badge-pending' : (req.status === 'อนุมัติ' ? 'badge-approved' : 'badge-rejected')}">${req.status}</span>
                 <div style="font-weight:800; font-size:16px; margin-top:10px; color:var(--primary);">${req.name}</div>
                 <div style="font-size:13px; margin: 5px 0;"><strong>${req.type}</strong> (${req.days || '0'} วัน)</div>
-                <div style="font-size:11px; color:#666;">${req.startDate} ถึง ${req.endDate}</div>
+                <div style="font-size:11px; color:#666;">เริ่ม: ${req.startDate} ถึง ${req.endDate}</div>
                 ${req.status === 'รอการอนุมัติ' ? `
                     <div style="display:flex; gap:10px; margin-top:15px;">
                         <button class="btn btn-approve" style="flex:1" onclick="handleLeave(${req.id}, 'อนุมัติ')">อนุมัติ</button>
@@ -174,6 +212,11 @@
         `).join('');
     }
 
+    function clearDateFilter() {
+        document.getElementById("filterDate").value = '';
+        renderLeaveRequests();
+    }
+
     function handleLeave(reqId, status) {
         let requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
         const idx = requests.findIndex(r => r.id === reqId);
@@ -181,19 +224,33 @@
             requests[idx].status = status;
             localStorage.setItem("leave_requests", JSON.stringify(requests));
             renderLeaveRequests();
-            if(document.getElementById("editModal").style.display === "block") openEditModal(); // Refresh stats if open
+            if(document.getElementById("editModal").style.display === "block") openEditModal();
         }
     }
 
     function openEditModal() {
         document.getElementById("editModal").style.display = "block";
+        // ข้อมูลพื้นฐาน
         document.getElementById("editEmpId").value = staff.employeeId || '';
         document.getElementById("editName").value = staff.fullName || '';
         document.getElementById("editPos").value = staff.position || '';
         document.getElementById("editDept").value = staff.department || '';
+        document.getElementById("editIdCard").value = staff.idCard || '';
+        document.getElementById("editPhone").value = staff.phone || '';
+        
+        // ข้อมูลที่อยู่ (แก้ไขเพิ่มให้ครบ)
+        document.getElementById("editAddrNo").value = staff.addr_no || '';
+        document.getElementById("editAddrMoo").value = staff.addr_moo || '';
+        document.getElementById("editAddrSub").value = staff.addr_subdistrict || '';
+        document.getElementById("editAddrDist").value = staff.addr_district || '';
+        document.getElementById("editAddrProv").value = staff.addr_province || '';
+        document.getElementById("editAddrZip").value = staff.addr_zipcode || '';
+
+        // โควตา
         document.getElementById("q_sick").value = staff.q_sick || 30;
         document.getElementById("q_personal").value = staff.q_personal || 6;
         document.getElementById("q_vacation").value = staff.q_vacation || 10;
+        
         renderStatsList();
     }
 
@@ -245,15 +302,27 @@
     }
 
     function updateStaffInfo() {
+        // ดึงค่ามาบันทึกลง Object
         staff.employeeId = document.getElementById("editEmpId").value;
         staff.fullName = document.getElementById("editName").value;
         staff.position = document.getElementById("editPos").value;
         staff.department = document.getElementById("editDept").value;
+        staff.idCard = document.getElementById("editIdCard").value;
+        staff.phone = document.getElementById("editPhone").value;
+        
+        staff.addr_no = document.getElementById("editAddrNo").value;
+        staff.addr_moo = document.getElementById("editAddrMoo").value;
+        staff.addr_subdistrict = document.getElementById("editAddrSub").value;
+        staff.addr_district = document.getElementById("editAddrDist").value;
+        staff.addr_province = document.getElementById("editAddrProv").value;
+        staff.addr_zipcode = document.getElementById("editAddrZip").value;
+
         staff.q_sick = document.getElementById("q_sick").value;
         staff.q_personal = document.getElementById("q_personal").value;
         staff.q_vacation = document.getElementById("q_vacation").value;
+
         localStorage.setItem("employee_profile", JSON.stringify(staff));
-        alert("✅ อัปเดตข้อมูลเรียบร้อย");
+        alert("✅ บันทึกข้อมูลและที่อยู่พนักงานเรียบร้อยแล้ว");
         renderTable();
     }
 
