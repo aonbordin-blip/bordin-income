@@ -33,10 +33,13 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 25px;
         }
 
+        /* Search Input */
         .search-box {
             width: 100%; padding: 14px 20px; border-radius: 15px; border: 1px solid #ddd;
             box-sizing: border-box; font-size: 14px; margin-bottom: 20px; outline: none;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
         }
+        .search-box:focus { border-color: var(--primary); }
 
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
         th { background: #f0edff; color: var(--primary); padding: 12px; text-align: left; }
@@ -54,7 +57,6 @@
         .btn-edit { background: #f0edff; color: var(--primary); }
         .btn-approve { background: var(--success); color: #fff; }
         .btn-reject { background: #ffe2e5; color: var(--danger); }
-        .btn-delete-sm { background: #fff1f0; color: #ff4d4f; padding: 5px 10px; border-radius: 8px; font-size: 11px; }
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
         .modal-content { background: #fff; margin: 5% auto; padding: 30px; width: 90%; max-width: 650px; border-radius: 30px; max-height: 85vh; overflow-y: auto; }
@@ -62,14 +64,11 @@
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 12px; color: #888; font-weight: bold; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee; box-sizing: border-box; background: #fafafa; }
+        input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee; box-sizing: border-box; background: #fafafa; }
         
-        .stats-box { background: #fdfdfd; border-radius: 15px; padding: 15px; margin-top: 20px; border: 1px solid #eee; }
-        .stats-list { max-height: 300px; overflow-y: auto; font-size: 12px; }
-        .stats-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 12px; border-bottom: 1px solid #f5f5f5; background: #fff; margin-bottom: 5px; border-radius: 10px;
-        }
+        .stats-box { background: #f9f9f9; border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 1px dashed #ccc; }
+        .stats-list { max-height: 150px; overflow-y: auto; font-size: 12px; }
+        .stats-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
@@ -82,6 +81,7 @@
     <div class="section-card">
         <div style="font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 15px;">👥 จัดการข้อมูลพนักงาน</div>
         <input type="text" id="searchInput" class="search-box" placeholder="🔍 ค้นหาชื่อพนักงาน หรือตำแหน่ง..." onkeyup="renderTable()">
+        
         <div style="overflow-x: auto;">
             <table>
                 <thead>
@@ -105,11 +105,25 @@
             <span onclick="closeModal()" style="cursor:pointer; font-size: 24px; color: #ccc;">&times;</span>
         </div>
         
+        <div class="stats-box">
+            <h4 style="margin: 0 0 10px 0; color: var(--primary);">📈 สถิติ/ประวัติการลาที่ผ่านมา</h4>
+            <div id="employeeStats" class="stats-list"></div>
+        </div>
+
         <div class="form-grid">
             <div class="form-group"><label>รหัสพนักงาน</label><input type="text" id="editEmpId"></div>
             <div class="form-group"><label>ชื่อ-นามสกุล</label><input type="text" id="editName"></div>
             <div class="form-group"><label>ตำแหน่ง</label><input type="text" id="editPos"></div>
             <div class="form-group"><label>แผนก</label><input type="text" id="editDept"></div>
+            <div class="form-group"><label>เบอร์โทรศัพท์</label><input type="text" id="editPhone"></div>
+        </div>
+
+        <h4 style="color: var(--primary); margin: 20px 0 10px 0; border-top: 1px solid #eee; padding-top: 15px;">📍 ข้อมูลที่อยู่ (แยกชัดเจน)</h4>
+        <div class="form-grid">
+            <div class="form-group"><label>บ้านเลขที่/หมู่</label><input type="text" id="editAddrNo"></div>
+            <div class="form-group"><label>ตำบล</label><input type="text" id="editAddrSub"></div>
+            <div class="form-group"><label>อำเภอ</label><input type="text" id="editAddrDist"></div>
+            <div class="form-group"><label>จังหวัด</label><input type="text" id="editAddrProv"></div>
         </div>
 
         <h4 style="color: var(--primary); margin: 20px 0 10px 0; border-top: 1px solid #eee; padding-top: 15px;">📊 จัดการโควตาการลา (วันคงเหลือ)</h4>
@@ -119,12 +133,7 @@
             <div class="form-group"><label>พักร้อน</label><input type="number" id="q_vacation"></div>
         </div>
 
-        <button class="btn" style="background: var(--primary); color: #fff; width: 100%; padding: 15px; margin-top: 10px;" onclick="updateStaffInfo()">💾 บันทึกข้อมูลพนักงานและโควตา</button>
-
-        <div class="stats-box">
-            <h4 style="margin: 0 0 10px 0; color: var(--primary);">📈 สถิติ/ประวัติการลา (Admin จัดการได้)</h4>
-            <div id="employeeStats" class="stats-list"></div>
-        </div>
+        <button class="btn" style="background: var(--primary); color: #fff; width: 100%; padding: 15px; margin-top: 10px;" onclick="updateStaffInfo()">💾 บันทึกการเปลี่ยนแปลง</button>
     </div>
 </div>
 
@@ -134,56 +143,80 @@
     function renderTable() {
         const tableBody = document.getElementById("staffTableBody");
         const searchText = document.getElementById("searchInput").value.toLowerCase();
+        
         tableBody.innerHTML = '';
         if(!staff.fullName) {
             tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:#999;">ยังไม่มีข้อมูลพนักงาน</td></tr>`;
             return;
         }
-        if(staff.fullName.toLowerCase().includes(searchText) || (staff.position || '').toLowerCase().includes(searchText)) {
+
+        // ระบบค้นหา
+        const matchName = staff.fullName.toLowerCase().includes(searchText);
+        const matchPos = (staff.position || '').toLowerCase().includes(searchText);
+        
+        if(matchName || matchPos) {
             tableBody.innerHTML = `
                 <tr>
-                    <td><strong>${staff.fullName}</strong><br><small>ID: ${staff.employeeId || '-'}</small></td>
-                    <td>${staff.position || '-'}<br><small style="color:var(--primary)">${staff.department || '-'}</small></td>
+                    <td>
+                        <div style="font-weight:bold;">${staff.fullName}</div>
+                        <div style="font-size:11px; color:#888;">ID: ${staff.employeeId || '-'}</div>
+                    </td>
+                    <td>
+                        <div>${staff.position || '-'}</div>
+                        <div style="font-size:11px; color:var(--primary);">${staff.department || '-'}</div>
+                    </td>
                     <td>${staff.phone || '-'}</td>
                     <td><button class="btn btn-edit" onclick="openEditModal()">⚙️ จัดการ/สถิติ</button></td>
                 </tr>
             `;
+        } else {
+            tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:#999;">ไม่พบพนักงานที่ค้นหา</td></tr>`;
         }
     }
 
+    // --- จุดที่แก้ไข: เปลี่ยนการอ้างอิงเป็น req.id เพื่อความแม่นยำ ---
     function renderLeaveRequests() {
         let requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
         const grid = document.getElementById("leaveRequestGrid");
+        
         if(requests.length === 0) {
-            grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#999;">ไม่มีรายการลา</div>`;
+            grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#999;">ไม่มีรายการลาที่รอการอนุมัติ</div>`;
             return;
         }
-        grid.innerHTML = requests.slice().reverse().map(req => `
+
+        grid.innerHTML = requests.map(req => `
             <div class="leave-card">
-                <span class="badge ${req.status === 'รอการอนุมัติ' ? 'badge-pending' : (req.status === 'อนุมัติ' ? 'badge-approved' : 'badge-rejected')}">${req.status}</span>
+                <span class="badge ${req.status === 'รอการอนุมัติ' ? 'badge-pending' : (req.status === 'อนุมัติ' ? 'badge-approved' : 'badge-rejected')}">
+                    ${req.status}
+                </span>
                 <div style="font-weight:800; font-size:16px; margin-top:10px; color:var(--primary);">${req.name}</div>
-                <div style="font-size:13px; margin: 5px 0;"><strong>${req.type}</strong> (${req.days || '0'} วัน)</div>
-                <div style="font-size:11px; color:#666;">${req.startDate} ถึง ${req.endDate}</div>
+                <div style="font-size:13px; margin: 8px 0;">ประเภท: <strong>${req.type}</strong> (${req.days || '-'} วัน)</div>
+                <div style="font-size:12px; color:#555;">📅 ${req.startDate || '-'} ถึง ${req.endDate || '-'}</div>
+                <div style="font-size:12px; color:#444; margin-top:8px; background:#f9f9f9; padding:8px; border-radius:8px;">
+                    <strong>สาเหตุ:</strong> ${req.reason || 'ไม่ระบุ'}
+                </div>
+                
                 ${req.status === 'รอการอนุมัติ' ? `
-                    <div style="display:flex; gap:10px; margin-top:15px;">
-                        <button class="btn btn-approve" style="flex:1" onclick="handleLeave(${req.id}, 'อนุมัติ')">อนุมัติ</button>
-                        <button class="btn btn-reject" style="flex:1" onclick="handleLeave(${req.id}, 'ไม่อนุมัติ')">ปฏิเสธ</button>
+                    <div style="display:flex; gap:10px; margin-top:15px; border-top:1px solid #f5f5f5; padding-top:15px;">
+                        <button class="btn btn-approve" style="flex:1;" onclick="handleLeave(${req.id}, 'อนุมัติ')">✔️ อนุมัติ</button>
+                        <button class="btn btn-reject" style="flex:1;" onclick="handleLeave(${req.id}, 'ไม่อนุมัติ')">❌ ปฏิเสธ</button>
                     </div>
                 ` : ''}
             </div>
-        `).join('');
+        `).reverse().join('');
     }
 
     function handleLeave(reqId, status) {
         let requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
-        const idx = requests.findIndex(r => r.id === reqId);
-        if(idx !== -1) {
-            requests[idx].status = status;
+        // ค้นหาตำแหน่งโดยใช้ id ป้องกันความคลาดเคลื่อนเมื่อมีการ reverse ข้อมูล
+        const index = requests.findIndex(r => r.id === reqId);
+        if (index !== -1) {
+            requests[index].status = status;
             localStorage.setItem("leave_requests", JSON.stringify(requests));
             renderLeaveRequests();
-            if(document.getElementById("editModal").style.display === "block") openEditModal(); // Refresh stats if open
         }
     }
+    // --- สิ้นสุดจุดที่แก้ไข ---
 
     function openEditModal() {
         document.getElementById("editModal").style.display = "block";
@@ -191,13 +224,17 @@
         document.getElementById("editName").value = staff.fullName || '';
         document.getElementById("editPos").value = staff.position || '';
         document.getElementById("editDept").value = staff.department || '';
+        document.getElementById("editPhone").value = staff.phone || '';
+        
+        document.getElementById("editAddrNo").value = staff.addr_no || '';
+        document.getElementById("editAddrSub").value = staff.addr_subdistrict || '';
+        document.getElementById("editAddrDist").value = staff.addr_district || '';
+        document.getElementById("editAddrProv").value = staff.addr_province || '';
+        
         document.getElementById("q_sick").value = staff.q_sick || 30;
         document.getElementById("q_personal").value = staff.q_personal || 6;
         document.getElementById("q_vacation").value = staff.q_vacation || 10;
-        renderStatsList();
-    }
 
-    function renderStatsList() {
         const allLeaves = JSON.parse(localStorage.getItem("leave_requests")) || [];
         const empLeaves = allLeaves.filter(l => l.empId === staff.employeeId);
         const statsDiv = document.getElementById("employeeStats");
@@ -205,60 +242,41 @@
         if(empLeaves.length > 0) {
             statsDiv.innerHTML = empLeaves.map(l => `
                 <div class="stats-item">
-                    <div style="flex:1">
-                        <div style="font-weight:bold; color:#444;">${l.type} (${l.days} วัน)</div>
-                        <div style="font-size:10px; color:#888;">${l.startDate} - ${l.status}</div>
-                    </div>
-                    <div style="display:flex; gap:5px;">
-                        <button class="btn-edit" style="padding:5px 8px; font-size:10px;" onclick="editLeaveRecord(${l.id})">แก้ไข</button>
-                        <button class="btn-delete-sm" onclick="deleteLeaveRecord(${l.id})">ลบ</button>
-                    </div>
+                    <span>${l.type} (${l.days} วัน) - ${l.status}</span>
+                    <span style="color:#888;">${l.startDate}</span>
                 </div>
-            `).reverse().join('');
+            `).join('');
         } else {
-            statsDiv.innerHTML = `<div style="text-align:center; color:#999; padding:20px;">ไม่มีประวัติการลา</div>`;
+            statsDiv.innerHTML = `<div style="text-align:center; color:#999; padding:10px;">ไม่พบประวัติการลา</div>`;
         }
     }
 
-    function editLeaveRecord(id) {
-        let requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
-        const idx = requests.findIndex(r => r.id === id);
-        if(idx !== -1) {
-            const newType = prompt("เปลี่ยนประเภทการลา:", requests[idx].type);
-            const newDays = prompt("เปลี่ยนจำนวนวัน:", requests[idx].days);
-            if(newType) requests[idx].type = newType;
-            if(newDays) requests[idx].days = newDays;
-            localStorage.setItem("leave_requests", JSON.stringify(requests));
-            renderStatsList();
-            renderLeaveRequests();
-        }
-    }
-
-    function deleteLeaveRecord(id) {
-        if(confirm("ยืนยันการลบรายการลานี้?")) {
-            let requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
-            requests = requests.filter(r => r.id !== id);
-            localStorage.setItem("leave_requests", JSON.stringify(requests));
-            renderStatsList();
-            renderLeaveRequests();
-        }
-    }
+    function closeModal() { document.getElementById("editModal").style.display = "none"; }
 
     function updateStaffInfo() {
         staff.employeeId = document.getElementById("editEmpId").value;
         staff.fullName = document.getElementById("editName").value;
         staff.position = document.getElementById("editPos").value;
         staff.department = document.getElementById("editDept").value;
+        staff.phone = document.getElementById("editPhone").value;
+        
+        staff.addr_no = document.getElementById("editAddrNo").value;
+        staff.addr_subdistrict = document.getElementById("editAddrSub").value;
+        staff.addr_district = document.getElementById("editAddrDist").value;
+        staff.addr_province = document.getElementById("editAddrProv").value;
+        
         staff.q_sick = document.getElementById("q_sick").value;
         staff.q_personal = document.getElementById("q_personal").value;
         staff.q_vacation = document.getElementById("q_vacation").value;
+
         localStorage.setItem("employee_profile", JSON.stringify(staff));
-        alert("✅ อัปเดตข้อมูลเรียบร้อย");
+        alert("✅ อัปเดตข้อมูลและโควตาเรียบร้อยแล้ว");
+        closeModal();
         renderTable();
     }
 
-    function closeModal() { document.getElementById("editModal").style.display = "none"; }
     window.onload = () => { renderTable(); renderLeaveRequests(); };
 </script>
 </body>
 </html>
+
