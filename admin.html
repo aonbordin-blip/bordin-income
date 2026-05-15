@@ -49,26 +49,27 @@
 
         .section-title { font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
 
-        /* Leave Card Style */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; margin-bottom: 15px; }
+        .info-item { background: #f9f9ff; padding: 10px; border-radius: 12px; border: 1px solid #eee; }
+        .info-label { font-size: 10px; color: #888; font-weight: bold; display: block; }
+
         .leave-item {
             background: #f9f9ff; border-radius: 18px; padding: 15px;
             margin-bottom: 12px; border: 1px solid #eee;
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        .badge { padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: bold; }
-        .status-pending { background: #fff4de; color: #ffa800; }
-        .status-approved { background: #c9f7f5; color: #1bc5bd; }
-        .status-rejected { background: #ffe2e5; color: #f64e60; }
+        .stats-box { display: flex; gap: 10px; margin-top: 10px; }
+        .stat-card { flex: 1; text-align: center; padding: 10px; border-radius: 15px; background: #fff; border: 1px solid #eee; }
+        .stat-val { display: block; font-size: 18px; font-weight: 800; color: var(--primary); }
+        .stat-lab { font-size: 10px; color: #666; }
 
         .btn { border: none; padding: 10px 18px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.3s; }
         .btn-edit { background: #f0edff; color: var(--primary); }
         .btn-save { background: var(--primary); color: #fff; width: 100%; padding: 15px; }
-        .btn-delete { background: #ffe2e5; color: var(--danger); }
 
-        /* Modal Style */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); }
-        .modal-content { background: #fff; margin: 5% auto; padding: 25px; width: 90%; max-width: 500px; border-radius: 30px; }
+        .modal-content { background: #fff; margin: 5% auto; padding: 25px; width: 90%; max-width: 500px; border-radius: 30px; max-height: 80vh; overflow-y: auto; }
         
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; font-weight: bold; }
@@ -79,36 +80,34 @@
 
 <div class="header">
     <h1 style="margin:0; font-size: 24px; letter-spacing: 1px;">Admin Dashboard</h1>
-    <p style="font-size: 12px; opacity: 0.8;">จัดการข้อมูลและตรวจสอบการลา</p>
+    <p style="font-size: 12px; opacity: 0.8;">จัดการข้อมูลพนักงานและประวัติการลา</p>
 </div>
 
 <div class="container">
     <div class="search-container">
-        <input type="text" id="searchInput" class="search-box" placeholder="🔍 ค้นหาชื่อพนักงาน..." onkeyup="renderTable()">
+        <input type="text" id="searchInput" class="search-box" placeholder="🔍 ค้นหาชื่อพนักงาน..." onkeyup="renderStaffSection()">
     </div>
 
-    <div class="card">
-        <div class="section-title">👥 รายชื่อพนักงาน</div>
-        <div id="staffList"></div>
-    </div>
+    <div id="staffSection"></div>
 
     <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <div class="section-title" style="margin:0;">📅 รายการแจ้งลา</div>
-            <input type="date" id="filterDate" onchange="renderLeaveRequests()" style="width: auto; padding: 5px 10px; font-size: 12px; border-radius: 10px;">
+            <div class="section-title" style="margin:0;">📅 รายการแจ้งลา (วันนี้)</div>
+            <input type="date" id="filterDate" onchange="renderDailyLeaves()" style="width: auto; padding: 5px 10px; font-size: 12px; border-radius: 10px; border: 1px solid #ddd;">
         </div>
-        <div id="leaveRequests"></div>
+        <div id="dailyLeaves"></div>
     </div>
 </div>
 
 <div id="editModal" class="modal">
     <div class="modal-content">
         <div style="display:flex; justify-content: space-between; margin-bottom: 20px;">
-            <h3 style="margin:0; color: var(--primary);">⚙️ จัดการข้อมูลพนักงาน</h3>
+            <h3 style="margin:0; color: var(--primary);">⚙️ แก้ไขข้อมูลพนักงาน</h3>
             <span onclick="closeModal('editModal')" style="cursor:pointer; font-size: 20px;">&times;</span>
         </div>
         <div class="form-group"><label>ชื่อ-นามสกุล</label><input type="text" id="editName"></div>
         <div class="form-group"><label>ตำแหน่ง</label><input type="text" id="editPos"></div>
+        <div class="form-group"><label>แผนก</label><input type="text" id="editDept"></div>
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
             <div class="form-group"><label>ป่วย</label><input type="number" id="q_sick"></div>
             <div class="form-group"><label>กิจ</label><input type="number" id="q_personal"></div>
@@ -118,144 +117,137 @@
     </div>
 </div>
 
-<div id="leaveEditModal" class="modal">
+<div id="leaveDetailModal" class="modal">
     <div class="modal-content">
         <div style="display:flex; justify-content: space-between; margin-bottom: 20px;">
-            <h3 style="margin:0; color: var(--primary);">📝 แก้ไขรายการแจ้งลา</h3>
-            <span onclick="closeModal('leaveEditModal')" style="cursor:pointer; font-size: 20px;">&times;</span>
+            <h3 style="margin:0; color: var(--primary);">📋 รายละเอียดการลา</h3>
+            <span onclick="closeModal('leaveDetailModal')" style="cursor:pointer; font-size: 20px;">&times;</span>
         </div>
-        <input type="hidden" id="editLeaveId">
-        <div class="form-group">
-            <label>ประเภทการลา</label>
-            <select id="editLeaveType">
-                <option value="ลาป่วย">ลาป่วย</option>
-                <option value="ลากิจ">ลากิจ</option>
-                <option value="ลาพักร้อน">ลาพักร้อน</option>
-            </select>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div class="form-group"><label>เริ่มวันที่</label><input type="date" id="editLeaveStart"></div>
-            <div class="form-group"><label>ถึงวันที่</label><input type="date" id="editLeaveEnd"></div>
-        </div>
-        <div class="form-group"><label>จำนวนวัน</label><input type="number" id="editLeaveDays"></div>
-        <div class="form-group">
-            <label>สถานะ</label>
-            <select id="editLeaveStatus">
-                <option value="รอการอนุมัติ">รอการอนุมัติ</option>
-                <option value="อนุมัติ">อนุมัติ</option>
-                <option value="ไม่อนุมัติ">ไม่อนุมัติ</option>
-            </select>
-        </div>
-        <div style="display: flex; gap: 10px;">
-            <button class="btn btn-save" style="flex:2;" onclick="saveLeaveEdit()">💾 บันทึกการแก้ไข</button>
-            <button class="btn btn-delete" style="flex:1;" onclick="deleteLeaveFromPopup()">🗑️ ลบ</button>
-        </div>
+        <div id="leaveDetailBody"></div>
     </div>
 </div>
 
 <script>
     let staff = JSON.parse(localStorage.getItem("employee_profile")) || {};
 
-    // ฟังก์ชันตั้งค่าวันที่ปัจจุบัน
-    function setTodayFilter() {
-        const now = new Date();
-        const today = now.toLocaleDateString('en-CA'); // YYYY-MM-DD
-        document.getElementById('filterDate').value = today;
-    }
-
-    function renderTable() {
-        const list = document.getElementById("staffList");
+    function renderStaffSection() {
+        const container = document.getElementById("staffSection");
+        const requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
         const search = document.getElementById("searchInput").value.toLowerCase();
-        list.innerHTML = '';
-        if(!staff.fullName) return;
-        if(staff.fullName.toLowerCase().includes(search)) {
-            list.innerHTML = `
-                <div class="leave-item">
-                    <div><strong>${staff.fullName}</strong><br><small>${staff.position}</small></div>
-                    <button class="btn btn-edit" onclick="openEditModal()">⚙️ ตั้งค่า</button>
-                </div>
-            `;
+        
+        if(!staff.fullName || !staff.fullName.toLowerCase().includes(search)) {
+            container.innerHTML = '';
+            return;
         }
+
+        // คำนวณสถิติการลา (เฉพาะที่อนุมัติแล้ว)
+        const approvedLeaves = requests.filter(r => r.empId === staff.employeeId && r.status === 'อนุมัติ');
+        const countSick = approvedLeaves.filter(r => r.type === 'ลาป่วย').reduce((sum, r) => sum + parseFloat(r.days), 0);
+        const countPersonal = approvedLeaves.filter(r => r.type === 'ลากิจ').reduce((sum, r) => sum + parseFloat(r.days), 0);
+        const countVacation = approvedLeaves.filter(r => r.type === 'ลาพักร้อน').reduce((sum, r) => sum + parseFloat(r.days), 0);
+
+        container.innerHTML = `
+            <div class="card">
+                <div class="section-title">👤 ข้อมูลส่วนตัว & ที่อยู่</div>
+                <div class="info-grid">
+                    <div class="info-item"><span class="info-label">ชื่อ-นามสกุล</span>${staff.fullName}</div>
+                    <div class="info-item"><span class="info-label">รหัสพนักงาน</span>${staff.employeeId || '-'}</div>
+                    <div class="info-item"><span class="info-label">ตำแหน่ง</span>${staff.position}</div>
+                    <div class="info-item"><span class="info-label">แผนก</span>${staff.department || '-'}</div>
+                    <div class="info-item"><span class="info-label">เบอร์โทรศัพท์</span>${staff.phone || '-'}</div>
+                    <div class="info-item" style="grid-column: span 2;">
+                        <span class="info-label">ที่อยู่ปัจจุบัน</span>
+                        ${staff.addr_no || ''} ม.${staff.addr_moo || ''} ต.${staff.addr_subdistrict || ''} อ.${staff.addr_district || ''} จ.${staff.addr_province || ''} ${staff.addr_zipcode || ''}
+                    </div>
+                </div>
+
+                <div class="section-title">📊 สถิติการลา (ที่อนุมัติแล้ว)</div>
+                <div class="stats-box">
+                    <div class="stat-card"><span class="stat-val">${countSick}</span><span class="stat-lab">ลาป่วย</span></div>
+                    <div class="stat-card"><span class="stat-val">${countPersonal}</span><span class="stat-lab">ลากิจ</span></div>
+                    <div class="stat-card"><span class="stat-val">${countVacation}</span><span class="stat-lab">พักร้อน</span></div>
+                </div>
+
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button class="btn btn-edit" style="flex:1" onclick="openEditModal()">⚙️ ตั้งค่าพนักงาน</button>
+                    <button class="btn btn-edit" style="flex:1; background: #eef9f2; color: #2ecc71;" onclick="viewLeaveHistory()">📜 ดูประวัติการลาทั้งหมด</button>
+                </div>
+            </div>
+        `;
     }
 
-    function renderLeaveRequests() {
+    // ฟังก์ชันดูประวัติทั้งหมดแบบ Popup
+    function viewLeaveHistory() {
+        const requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
+        const myLeaves = requests.filter(r => r.empId === staff.employeeId).reverse();
+        
+        let html = myLeaves.map(r => `
+            <div class="leave-item" onclick="showLeaveDetail(${r.id})" style="cursor:pointer; margin-bottom: 8px; padding: 10px;">
+                <div style="font-size: 13px;">
+                    <strong>${r.type}</strong><br>
+                    <small style="color:#888;">${r.startDate} (${r.days} วัน)</small>
+                </div>
+                <span style="font-size:11px; color: ${r.status === 'อนุมัติ' ? '#2ecc71' : (r.status === 'ไม่อนุมัติ' ? '#ff7675' : '#ffa800')}">${r.status}</span>
+            </div>
+        `).join('') || '<p style="text-align:center; color:#999;">ไม่พบประวัติการลา</p>';
+
+        document.getElementById("leaveDetailBody").innerHTML = html;
+        document.getElementById("leaveDetailModal").style.display = "block";
+    }
+
+    // ฟังก์ชันแสดงรายละเอียดการลาแบบ Popup (เมื่อกดที่รายการ)
+    function showLeaveDetail(id) {
+        const requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
+        const r = requests.find(item => item.id === id);
+        if(!r) return;
+
+        const html = `
+            <div style="background:#f9f9ff; padding:20px; border-radius:20px; border: 1px solid #eee;">
+                <div style="margin-bottom:10px;"><span class="info-label">ประเภทการลา</span><strong>${r.type}</strong></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div><span class="info-label">เริ่มวันที่</span>${r.startDate}</div>
+                    <div><span class="info-label">ถึงวันที่</span>${r.endDate}</div>
+                </div>
+                <div style="margin-bottom:10px;"><span class="info-label">จำนวนวัน</span>${r.days} วัน</div>
+                <div style="margin-bottom:10px;"><span class="info-label">เหตุผลการลา</span>${r.reason || 'ไม่ได้ระบุ'}</div>
+                <div style="margin-bottom:10px;"><span class="info-label">วันที่ส่งรายการ</span>${r.date}</div>
+                <div style="padding-top:10px; border-top:1px dashed #ddd; margin-top:10px;">
+                    <span class="info-label">สถานะปัจจุบัน</span>
+                    <strong style="color:var(--primary)">${r.status}</strong>
+                </div>
+            </div>
+            <button class="btn btn-save" style="margin-top:15px; background:#666;" onclick="viewLeaveHistory()">⬅️ กลับไปที่รายการ</button>
+        `;
+        document.getElementById("leaveDetailBody").innerHTML = html;
+    }
+
+    function renderDailyLeaves() {
         const requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
         const filterDate = document.getElementById("filterDate").value; 
-        const container = document.getElementById("leaveRequests");
+        const container = document.getElementById("dailyLeaves");
         
-        // กรองตามวันที่ทำรายการ (Transaction Date)
-        const filtered = requests.filter(r => {
-            // แปลงรูปแบบวันที่ในระบบ (dd/mm/yyyy หรือ Thai format) ให้ตรงกับ input date ถ้าจำเป็น
-            // ในที่นี้สมมติระบบเก็บ r.date เป็น YYYY-MM-DD หรือทำการเปรียบเทียบเบื้องต้น
-            return r.date === new Date(filterDate).toLocaleDateString('th-TH');
-        });
+        const filtered = requests.filter(r => r.date === new Date(filterDate).toLocaleDateString('th-TH'));
 
         if(filtered.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding:20px; color:#999; font-size:12px;">ไม่มีรายการของวันที่เลือก</div>`;
+            container.innerHTML = `<div style="text-align:center; padding:20px; color:#999; font-size:12px;">ไม่มีรายการส่งเข้ามาในวันที่เลือก</div>`;
             return;
         }
 
         container.innerHTML = filtered.slice().reverse().map(req => `
-            <div class="leave-item" style="flex-direction: column; align-items: flex-start;">
-                <div style="display:flex; justify-content:space-between; width:100%; margin-bottom:8px;">
-                    <span class="badge ${req.status === 'รอการอนุมัติ' ? 'status-pending' : (req.status === 'อนุมัติ' ? 'status-approved' : 'status-rejected')}">${req.status}</span>
-                    <small style="color:#999;">${req.date}</small>
+            <div class="leave-item" onclick="showLeaveDetail(${req.id})" style="cursor:pointer;">
+                <div>
+                    <div style="font-weight:bold; color:var(--primary);">${req.name}</div>
+                    <div style="font-size:12px;">${req.type} (${req.days} วัน)</div>
                 </div>
-                <div style="font-weight:bold; color:var(--primary);">${req.name}</div>
-                <div style="font-size:13px;">${req.type} (${req.days} วัน)</div>
-                <div style="font-size:11px; color:#777; margin-bottom:10px;">${req.startDate} ถึง ${req.endDate}</div>
-                <button class="btn btn-edit" style="width:100%;" onclick="openLeaveEditModal(${req.id})">🔍 จัดการรายการนี้</button>
+                <span style="font-size: 11px; font-weight:bold; color: ${req.status === 'อนุมัติ' ? '#2ecc71' : '#ffa800'}">${req.status}</span>
             </div>
         `).join('');
     }
 
-    // --- ฟังก์ชันจัดการ Leave Popup ---
-    function openLeaveEditModal(id) {
-        const requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
-        const req = requests.find(r => r.id === id);
-        if(req) {
-            document.getElementById("editLeaveId").value = req.id;
-            document.getElementById("editLeaveType").value = req.type;
-            document.getElementById("editLeaveStart").value = req.startDate;
-            document.getElementById("editLeaveEnd").value = req.endDate;
-            document.getElementById("editLeaveDays").value = req.days;
-            document.getElementById("editLeaveStatus").value = req.status;
-            document.getElementById("leaveEditModal").style.display = "block";
-        }
-    }
-
-    function saveLeaveEdit() {
-        const id = parseInt(document.getElementById("editLeaveId").value);
-        let requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
-        const idx = requests.findIndex(r => r.id === id);
-        if(idx !== -1) {
-            requests[idx].type = document.getElementById("editLeaveType").value;
-            requests[idx].startDate = document.getElementById("editLeaveStart").value;
-            requests[idx].endDate = document.getElementById("editLeaveEnd").value;
-            requests[idx].days = document.getElementById("editLeaveDays").value;
-            requests[idx].status = document.getElementById("editLeaveStatus").value;
-            localStorage.setItem("leave_requests", JSON.stringify(requests));
-            alert("บันทึกการแก้ไขแล้ว");
-            closeModal('leaveEditModal');
-            renderLeaveRequests();
-        }
-    }
-
-    function deleteLeaveFromPopup() {
-        if(confirm("ยืนยันการลบรายการนี้?")) {
-            const id = parseInt(document.getElementById("editLeaveId").value);
-            let requests = JSON.parse(localStorage.getItem("leave_requests")) || [];
-            requests = requests.filter(r => r.id !== id);
-            localStorage.setItem("leave_requests", JSON.stringify(requests));
-            closeModal('leaveEditModal');
-            renderLeaveRequests();
-        }
-    }
-
-    // --- ฟังก์ชันเดิม ---
     function openEditModal() {
         document.getElementById("editName").value = staff.fullName || '';
         document.getElementById("editPos").value = staff.position || '';
+        document.getElementById("editDept").value = staff.department || '';
         document.getElementById("q_sick").value = staff.q_sick || 30;
         document.getElementById("q_personal").value = staff.q_personal || 6;
         document.getElementById("q_vacation").value = staff.q_vacation || 10;
@@ -265,21 +257,22 @@
     function updateStaffInfo() {
         staff.fullName = document.getElementById("editName").value;
         staff.position = document.getElementById("editPos").value;
+        staff.department = document.getElementById("editDept").value;
         staff.q_sick = document.getElementById("q_sick").value;
         staff.q_personal = document.getElementById("q_personal").value;
         staff.q_vacation = document.getElementById("q_vacation").value;
         localStorage.setItem("employee_profile", JSON.stringify(staff));
         alert("อัปเดตข้อมูลสำเร็จ");
         closeModal('editModal');
-        renderTable();
+        renderStaffSection();
     }
 
     function closeModal(mId) { document.getElementById(mId).style.display = "none"; }
 
     window.onload = () => {
-        setTodayFilter();
-        renderTable();
-        renderLeaveRequests();
+        document.getElementById('filterDate').value = new Date().toLocaleDateString('en-CA');
+        renderStaffSection();
+        renderDailyLeaves();
     };
 </script>
 </body>
