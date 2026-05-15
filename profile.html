@@ -44,7 +44,7 @@ body { margin: 0; font-family: 'Inter', 'Segoe UI', sans-serif; background: var(
 
 <div class="header">
     <div class="profile-pic-container" onclick="document.getElementById('fileInput').click()">
-        <img id="profilePreview" src="data:image/svg+xml;utf8,...">
+        <img id="profilePreview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ccc'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>">
         <div class="change-pic-hint">📷 เปลี่ยนรูป</div>
         <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
     </div>
@@ -127,6 +127,18 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// --- เพิ่ม: ฟังก์ชันจัดการอัปโหลดรูปภาพ ---
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('profilePreview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
 // --- 2. ฟังก์ชัน UI (เดิม 100%) ---
 function toggleSection(contentId, arrowId) {
     const content = document.getElementById(contentId);
@@ -144,7 +156,7 @@ function lockInputs(isLocked) {
     }
 }
 
-// --- 3. ฟังก์ชันเชื่อมต่อ Firebase (ปรับปรุงจากเดิม) ---
+// --- 3. ฟังก์ชันเชื่อมต่อ Firebase (เดิม 100%) ---
 function saveProfile() {
     const profile = {
         employeeId: document.getElementById('employeeId').value,
@@ -163,7 +175,6 @@ function saveProfile() {
     
     if(!profile.fullName || !profile.employeeId) return alert('กรุณากรอกรหัสและชื่อพนักงาน');
     
-    // บันทึกไปที่ Firebase และ LocalStorage
     db.ref('users/' + profile.employeeId).update(profile).then(() => {
         localStorage.setItem('employee_profile', JSON.stringify(profile));
         alert('✅ บันทึกและเชื่อมโยงข้อมูลกลางสำเร็จ');
@@ -187,7 +198,6 @@ function submitLeave() {
         status: 'รอการอนุมัติ'
     };
 
-    // ส่งเข้า Firebase ส่วนกลางเพื่อให้ Admin เห็น
     db.ref('leaves').push(newRequest).then(() => {
         alert('ส่งใบลาสำเร็จ!');
         closeModal();
@@ -198,7 +208,6 @@ function loadProfile() {
     const saved = JSON.parse(localStorage.getItem('employee_profile'));
     if(saved && saved.employeeId) {
         const empId = saved.employeeId;
-        // ดึงข้อมูล Real-time จาก Firebase มาแสดง
         db.ref('users/' + empId).on('value', snap => {
             const val = snap.val();
             if(val) {
@@ -220,7 +229,6 @@ function loadProfile() {
             }
         });
 
-        // ดึงประวัติการลา Real-time
         db.ref('leaves').orderByChild('empId').equalTo(empId).on('value', snap => {
             renderLeaveHistory(snap.val());
         });
@@ -234,7 +242,6 @@ function renderLeaveHistory(data) {
 
     const list = Object.keys(data).map(key => data[key]).reverse();
     
-    // คำนวณสถิติ (เฉพาะที่อนุมัติแล้ว)
     const stats = { sick: 0, personal: 0, vacation: 0 };
     list.forEach(r => {
         if(r.status === 'อนุมัติ') {
@@ -255,7 +262,7 @@ function renderLeaveHistory(data) {
     document.getElementById('leaveStatsGrid').innerHTML = `
         <div class="stat-box" style="background:#f0f9ff; color:#0369a1;">ลาป่วย<br><b>${stats.sick}/30</b></div>
         <div class="stat-box" style="background:#fffbeb; color:#92400e;">ลากิจ<br><b>${stats.personal}/6</b></div>
-        <div class="stat-box" style="background:#f0fdf4; color:#166534;">พักร้อน<br><b>${stats.vacation}/10</b></div>
+        <div class="stat-box" style="background:#f0fdf4; color:#166534;">ลาพักร้อน<br><b>${stats.vacation}/10</b></div>
     `;
 }
 
