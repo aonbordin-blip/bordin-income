@@ -28,14 +28,16 @@ body {
     padding-bottom: 50px; 
 }
 
-/* ปรับปรุงส่วน Header ให้เล็กลงและมีมิติ */
+/* ปรับปรุง Header ให้มีมิติมากขึ้นตามบรีฟ */
 .header { 
     background: linear-gradient(135deg, var(--primary), var(--secondary)); 
     color: #fff; 
-    padding: 20px 20px 35px; /* ลด padding ลง */
+    padding: 30px 20px 50px; /* เพิ่มพื้นที่ */
     text-align: center; 
-    border-radius: 0 0 35px 35px; /* ปรับความโค้งให้ดูทันสมัย */
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+    border-radius: 0 0 45px 45px; 
+    box-shadow: 0 15px 30px rgba(99, 102, 241, 0.25); /* เพิ่มเงาให้มีมิติ */
+    position: relative;
+    z-index: 1;
 }
 
 .profile-pic-container { 
@@ -44,46 +46,54 @@ body {
     align-items: center; 
     position: relative; 
     cursor: pointer; 
+    transition: transform 0.3s;
 }
+.profile-pic-container:active { transform: scale(0.95); }
 
 #profilePreview { 
-    width: 80px; /* ลดขนาดรูปโปรไฟล์ลง */
-    height: 80px; 
+    width: 95px; /* ปรับขนาดให้เด่นขึ้น */
+    height: 95px; 
     border-radius: 50%; 
     object-fit: cover; 
-    border: 3px solid rgba(255,255,255,0.8); 
-    background: #f1f5f9; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border: 4px solid rgba(255,255,255,1); 
+    background: #fff; 
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* เงาเข้มขึ้นให้ดูมีมิติ */
 }
 
 .change-pic-hint { 
-    font-size: 9px; 
-    margin-top: -10px; 
-    background: rgba(0,0,0,0.4); 
-    padding: 2px 8px; 
+    font-size: 10px; 
+    margin-top: -12px; 
+    background: var(--primary); 
+    padding: 3px 10px; 
     border-radius: 20px; 
     color: #fff; 
-    backdrop-filter: blur(2px);
+    border: 2px solid #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 #displayName { 
-    margin: 10px 0 2px; 
-    font-size: 18px; 
-    font-weight: 700;
+    margin: 15px 0 5px; 
+    font-size: 20px; 
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 #displayId { 
     margin: 0; 
-    font-size: 12px; 
-    opacity: 0.8; 
+    font-size: 13px; 
+    opacity: 0.9; 
+    background: rgba(255,255,255,0.2);
+    padding: 2px 12px;
+    border-radius: 10px;
+    display: inline-block;
 }
 
-.container { padding: 0 16px; margin-top: -20px; }
+.container { padding: 0 16px; margin-top: -25px; position: relative; z-index: 2; }
 
 .info-card { 
     background: var(--white); 
-    border-radius: 20px; 
-    padding: 18px; 
+    border-radius: 24px; 
+    padding: 20px; 
     box-shadow: var(--shadow-card); 
     margin-bottom: 16px; 
     border: 1px solid var(--border-color); 
@@ -92,10 +102,11 @@ body {
 .input-group { margin-bottom: 12px; }
 .input-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-sub); margin-bottom: 6px; }
 .input-group input, .input-group textarea, .input-group select { 
-    width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-color); 
-    border-radius: 12px; font-size: 14px; box-sizing: border-box; 
+    width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); 
+    border-radius: 14px; font-size: 15px; box-sizing: border-box; 
+    background: #fcfdfe;
 }
-.input-group input:read-only { background: #f8fafc; color: #94a3b8; cursor: not-allowed; }
+.input-group input:read-only { background: #f8fafc; color: #94a3b8; cursor: not-allowed; border-color: #f1f5f9; }
 
 .section-toggle-btn { 
     background: #f8fafc; padding: 12px 16px; border-radius: 14px; 
@@ -108,21 +119,30 @@ body {
 
 .btn-primary { 
     background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-    color: #fff; border: none; padding: 14px; border-radius: 14px; 
-    width: 100%; font-size: 15px; font-weight: 700; cursor: pointer; 
+    color: #fff; border: none; padding: 15px; border-radius: 16px; 
+    width: 100%; font-size: 16px; font-weight: 700; cursor: pointer; 
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
 }
 
 .btn-leave { 
-    background: #f59e0b; color: #fff; border: none; padding: 12px; 
-    border-radius: 14px; width: 100%; font-weight: 700; 
+    background: #f59e0b; color: #fff; border: none; padding: 14px; 
+    border-radius: 16px; width: 100%; font-weight: 700; font-size: 15px;
     margin-bottom: 16px; display: flex; align-items: center; 
-    justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+    justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
 .leave-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-.stat-box { padding: 10px 5px; border-radius: 12px; text-align: center; border: 1px solid rgba(0,0,0,0.03); }
+.stat-box { padding: 12px 5px; border-radius: 14px; text-align: center; border: 1px solid rgba(0,0,0,0.03); }
+.stat-box b { font-size: 16px; }
 
-.status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+/* ปรับปรุงสไตล์ประวัติการลาให้ชัดเจน */
+.leave-row { border-bottom: 1px solid #f1f5f9; }
+.leave-row:last-child { border-bottom: none; }
+.leave-info-title { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 2px; }
+.leave-info-date { font-size: 12px; color: var(--text-sub); }
+.leave-info-request { font-size: 10px; color: var(--primary); font-weight: 600; margin-top: 4px; display: block; }
+
+.status-badge { padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; }
 .status-pending { background: #fffbeb; color: #b45309; }
 .status-approved { background: #ecfdf5; color: #047857; }
 .status-rejected { background: #fef2f2; color: #b91c1c; }
@@ -134,7 +154,8 @@ body {
 }
 .modal-content { 
     background: #fff; margin: 15% auto; padding: 24px; 
-    border-radius: 24px; width: 85%; max-width: 380px; 
+    border-radius: 28px; width: 85%; max-width: 380px; 
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
 </style>
 </head>
@@ -164,6 +185,7 @@ body {
                 <div class="input-group" style="flex:1;"><label>ตำแหน่ง</label><input type="text" id="position" class="profile-input"></div>
                 <div class="input-group" style="flex:1;"><label>แผนก</label><input type="text" id="department" class="profile-input"></div>
             </div>
+            <div class="input-group"><label>วันเริ่มทำงาน</label><input type="date" id="startDateWork" class="profile-input"></div>
             <div class="input-group"><label>เบอร์โทรศัพท์</label><input type="tel" id="phone" class="profile-input"></div>
         </div>
 
@@ -186,26 +208,26 @@ body {
     <button class="btn-leave" onclick="openModal()">📅 แจ้งลาหยุดงาน / ลาพักร้อน</button>
 
     <div class="info-card">
-        <h3 style="margin: 0 0 15px; color: var(--primary); font-size: 15px;">📊 สถิติการลาปีนี้</h3>
+        <h3 style="margin: 0 0 15px; color: var(--primary); font-size: 16px; font-weight: 800;">📊 สถิติการลาปีนี้</h3>
         <div id="leaveStatsGrid" class="leave-stats"></div>
-        <h3 style="margin: 15px 0 10px; color: var(--primary); font-size: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">📋 ประวัติล่าสุด</h3>
-        <table style="width:100%; border-collapse: collapse; font-size: 13px;"><tbody id="leaveHistoryBody"></tbody></table>
+        <h3 style="margin: 15px 0 10px; color: var(--primary); font-size: 16px; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">📋 ประวัติล่าสุด</h3>
+        <table style="width:100%; border-collapse: collapse;"><tbody id="leaveHistoryBody"></tbody></table>
     </div>
 </div>
 
 <div id="leaveModal" class="modal">
     <div class="modal-content">
-        <h3>📝 แจ้งขอลาหยุด</h3>
+        <h3 style="margin-top:0;">📝 แจ้งขอลาหยุด</h3>
         <div class="input-group"><label>ประเภทการลา</label><select id="leaveType"><option value="ลาป่วย">🤒 ลาป่วย</option><option value="ลากิจ">💼 ลากิจ</option><option value="ลาพักร้อน">🏖️ ลาพักร้อน</option></select></div>
         <div style="display: flex; gap: 8px;">
             <div class="input-group" style="flex:1;"><label>เริ่ม</label><input type="date" id="leaveStart"></div>
             <div class="input-group" style="flex:1;"><label>ถึง</label><input type="date" id="leaveEnd"></div>
         </div>
-        <div class="input-group"><label>จำนวนวันลา</label><input type="number" id="leaveDays"></div>
+        <div class="input-group"><label>จำนวนวันลา</label><input type="number" id="leaveDays" step="0.5"></div>
         <div class="input-group"><label>เหตุผล</label><textarea id="leaveReason" rows="2"></textarea></div>
         <div style="display: flex; gap: 10px; margin-top: 20px;">
             <button class="btn-primary" onclick="submitLeave()" style="flex:2; margin:0;">ส่งคำขอลา</button>
-            <button onclick="closeModal()" style="border:none; background:#f1f5f9; padding:14px; border-radius:14px; flex:1; font-weight:bold; color:#64748b;">ยกเลิก</button>
+            <button onclick="closeModal()" style="border:none; background:#f1f5f9; padding:14px; border-radius:14px; flex:1; font-weight:bold; color:#64748b; cursor:pointer;">ยกเลิก</button>
         </div>
     </div>
 </div>
@@ -225,16 +247,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ตัวแปรเก็บโควตาลา (จะถูกอัปเดตจาก Database)
 let currentQuota = { sick: 30, personal: 6, vacation: 10 };
 
 function handleImageUpload(event) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('profilePreview').src = e.target.result;
-        };
+        reader.onload = function(e) { document.getElementById('profilePreview').src = e.target.result; };
         reader.readAsDataURL(file);
     }
 }
@@ -262,6 +281,7 @@ function saveProfile() {
         fullName: document.getElementById('fullName').value,
         position: document.getElementById('position').value,
         department: document.getElementById('department').value,
+        startDateWork: document.getElementById('startDateWork').value, // บันทึกวันเริ่มทำงาน
         phone: document.getElementById('phone').value,
         addr_no: document.getElementById('addr_no').value,
         addr_moo: document.getElementById('addr_moo').value,
@@ -275,7 +295,7 @@ function saveProfile() {
     
     db.ref('users/' + profile.employeeId).update(profile).then(() => {
         localStorage.setItem('employee_profile', JSON.stringify(profile));
-        alert('✅ บันทึกและเชื่อมโยงข้อมูลกลางสำเร็จ');
+        alert('✅ บันทึกและเชื่อมโยงข้อมูลสำเร็จ');
         location.reload();
     });
 }
@@ -284,6 +304,9 @@ function submitLeave() {
     const empId = document.getElementById('employeeId').value;
     if(!empId) return alert('กรุณาระบุรหัสพนักงานก่อน');
     
+    const now = new Date();
+    const timestamp = now.toLocaleString('th-TH'); // วันเวลาที่ทำรายการ
+
     const newRequest = {
         id: Date.now(),
         empId: empId,
@@ -293,6 +316,7 @@ function submitLeave() {
         endDate: document.getElementById('leaveEnd').value,
         days: document.getElementById('leaveDays').value,
         reason: document.getElementById('leaveReason').value,
+        requestTime: timestamp, // เพิ่มข้อมูลเวลาที่ยื่น
         status: 'รอการอนุมัติ'
     };
 
@@ -306,7 +330,6 @@ function loadProfile() {
     const saved = JSON.parse(localStorage.getItem('employee_profile'));
     if(saved && saved.employeeId) {
         const empId = saved.employeeId;
-        // ดึงข้อมูล User และโควตาจาก Realtime Database
         db.ref('users/' + empId).on('value', snap => {
             const val = snap.val();
             if(val) {
@@ -315,6 +338,7 @@ function loadProfile() {
                 document.getElementById('idCard').value = val.idCard || '';
                 document.getElementById('position').value = val.position || '';
                 document.getElementById('department').value = val.department || '';
+                document.getElementById('startDateWork').value = val.startDateWork || ''; // โหลดวันเริ่มทำงาน
                 document.getElementById('phone').value = val.phone || '';
                 document.getElementById('addr_no').value = val.addr_no || '';
                 document.getElementById('addr_moo').value = val.addr_moo || '';
@@ -325,21 +349,18 @@ function loadProfile() {
                 document.getElementById('displayName').innerText = val.fullName || 'ชื่อพนักงาน';
                 document.getElementById('displayId').innerText = 'ID: ' + empId;
                 
-                // อัปเดตตัวแปรโควตาตามที่ Admin แก้ไข
                 currentQuota.sick = val.q_sick || 30;
                 currentQuota.personal = val.q_personal || 6;
                 currentQuota.vacation = val.q_vacation || 10;
 
                 lockInputs(true);
 
-                // โหลดประวัติการลาเพื่อมาคำนวณ stats
                 db.ref('leaves').orderByChild('empId').equalTo(empId).once('value', s => {
                     renderLeaveHistory(s.val());
                 });
             }
         });
 
-        // ติดตามการเปลี่ยนแปลงของใบลา
         db.ref('leaves').orderByChild('empId').equalTo(empId).on('value', snap => {
             renderLeaveHistory(snap.val());
         });
@@ -360,12 +381,13 @@ function renderLeaveHistory(data) {
                 if(r.type === 'ลาพักร้อน') stats.vacation += parseFloat(r.days || 0);
             }
             
-            body.innerHTML += `<tr>
-                <td style="padding:12px 4px;">
-                    <strong>${r.type}</strong> (${r.days} วัน)<br>
-                    <span style="font-size:11px; color:var(--text-sub);">${r.startDate} - ${r.endDate}</span>
+            body.innerHTML += `<tr class="leave-row">
+                <td style="padding:15px 5px;">
+                    <span class="leave-info-title">${r.type} (${r.days} วัน)</span><br>
+                    <span class="leave-info-date">🗓️ ${r.startDate} ถึง ${r.endDate}</span><br>
+                    <span class="leave-info-request">🕒 ทำรายการเมื่อ: ${r.requestTime || '-'}</span>
                 </td>
-                <td style="text-align:right;"><span class="status-badge ${r.status==='อนุมัติ'?'status-approved':(r.status==='ไม่อนุมัติ'?'status-rejected':'status-pending')}">${r.status}</span></td>
+                <td style="text-align:right;"><span class="status-badge ${r.status==='อนุมัติ'?'status-approved':(r.status==='ไม่นุมัติ'?'status-rejected':'status-pending')}">${r.status}</span></td>
             </tr>`;
         });
     }
