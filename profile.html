@@ -51,6 +51,7 @@ body {
     width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 12px;
     font-size: 15px; box-sizing: border-box; background: #fafafa;
 }
+.input-group input:read-only { background: #e9ecef; color: #666; cursor: not-allowed; }
 
 /* สไตล์ปุ่ม Toggle */
 .section-toggle-btn {
@@ -97,7 +98,7 @@ body {
 
 <div class="header">
     <div class="profile-pic-container" id="picUploadArea" onclick="document.getElementById('fileInput').click()">
-        <img id="profilePreview" src="https://via.placeholder.com/100" alt="Profile">
+        <img id="profilePreview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cccccc'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Profile">
         <div class="change-pic-hint" id="picHint">📷 แตะเพื่อเปลี่ยนรูป</div>
         <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
     </div>
@@ -254,14 +255,11 @@ function handleImageUpload(event) {
 function lockInputs(isLocked) {
     const inputs = document.querySelectorAll('.profile-input');
     const saveBtn = document.getElementById('saveBtn');
-    const picHint = document.getElementById('picHint');
-    const picUploadArea = document.getElementById('picUploadArea');
 
     if (isLocked) {
         inputs.forEach(input => input.readOnly = true);
         if(saveBtn) saveBtn.style.display = 'none';
-        if(picHint) picHint.style.display = 'none';
-        if(picUploadArea) picUploadArea.onclick = null; // ปิดการเปลี่ยนรูป
+        // เอาการปิดรูปโปรไฟล์ออก เพื่อให้เปลี่ยนรูปได้ตลอดเวลา
     }
 }
 
@@ -309,7 +307,10 @@ function loadProfile() {
         document.getElementById('addr_district').value = saved.addr_district || '';
         document.getElementById('addr_province').value = saved.addr_province || '';
         
-        if(saved.photo) document.getElementById('profilePreview').src = saved.photo;
+        // ถ้าไม่มีรูปที่เซฟไว้ จะใช้รูปไอคอนคน (SVG) ที่ใส่ไว้ในแท็ก img แทน
+        if(saved.photo && saved.photo.length > 50) {
+            document.getElementById('profilePreview').src = saved.photo;
+        }
         document.getElementById('displayName').innerText = saved.fullName || 'ชื่อพนักงาน';
         document.getElementById('displayId').innerText = 'ID: ' + (saved.employeeId || '-');
 
