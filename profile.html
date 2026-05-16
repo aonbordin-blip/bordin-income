@@ -28,19 +28,18 @@ body {
     padding-bottom: 50px; 
 }
 
-/* --- เริ่มส่วนที่ทำศัลยกรรม: Modern Banner Header --- */
+/* --- Modern Banner Header --- */
 .header { 
     position: relative;
     background: linear-gradient(135deg, #4f46e5 0%, #0891b2 100%);
-    height: 160px; /* ปรับความสูงให้เป็น Banner */
-    border-radius: 0 0 0 0; /* ยกเลิกโค้งมนแบบเก่าเพื่อให้ดูเป็น Banner เว็บ */
+    height: 160px; 
+    border-radius: 0 0 0 0; 
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
 }
 
-/* เพิ่มลวดลายมิติใน Banner */
 .header::before {
     content: "";
     position: absolute;
@@ -60,7 +59,7 @@ body {
 .profile-section {
     position: relative;
     text-align: center;
-    margin-top: -60px; /* ดันรูปขึ้นไปทับ Banner */
+    margin-top: -60px; 
     z-index: 10;
 }
 
@@ -77,7 +76,7 @@ body {
     height: 110px; 
     border-radius: 50%; 
     object-fit: cover; 
-    border: 5px solid var(--white); /* ขอบหนาขึ้นเพื่อตัดกับ Banner */
+    border: 5px solid var(--white); 
     background: #fff; 
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     transition: transform 0.3s ease;
@@ -119,7 +118,6 @@ body {
     display: inline-block;
     letter-spacing: 0.5px;
 }
-/* --- สิ้นสุดส่วนที่ทำศัลยกรรม Header --- */
 
 .container { padding: 0 16px; margin-top: 20px; position: relative; z-index: 2; }
 
@@ -168,17 +166,32 @@ body {
 .stat-box { padding: 12px 5px; border-radius: 14px; text-align: center; border: 1px solid rgba(0,0,0,0.03); }
 .stat-box b { font-size: 16px; }
 
-/* ปรับปรุงสไตล์ประวัติการลาให้ชัดเจน */
 .leave-row { border-bottom: 1px solid #f1f5f9; }
 .leave-row:last-child { border-bottom: none; }
 .leave-info-title { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 2px; }
 .leave-info-date { font-size: 12px; color: var(--text-sub); }
 .leave-info-request { font-size: 10px; color: var(--primary); font-weight: 600; margin-top: 4px; display: block; }
 
-.status-badge { padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+.status-badge { padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; display: inline-block; }
 .status-pending { background: #fffbeb; color: #b45309; }
 .status-approved { background: #ecfdf5; color: #047857; }
 .status-rejected { background: #fef2f2; color: #b91c1c; }
+
+/* ปุ่มแก้ไขและยกเลิกคำขอลา */
+.action-btn-group { display: flex; gap: 6px; margin-top: 6px; }
+.btn-edit-leave {
+    background: #e0f2fe; color: #0369a1; border: none; 
+    padding: 4px 10px; border-radius: 8px; font-size: 11px; 
+    font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+.btn-edit-leave:hover { background: #bae6fd; }
+
+.btn-cancel-leave {
+    background: #fee2e2; color: #ef4444; border: none; 
+    padding: 4px 10px; border-radius: 8px; font-size: 11px; 
+    font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+.btn-cancel-leave:hover { background: #fca5a5; }
 
 .modal { 
     display: none; position: fixed; z-index: 1000; left: 0; top: 0; 
@@ -194,8 +207,7 @@ body {
 </head>
 <body>
 
-<div class="header">
-    </div>
+<div class="header"></div>
 
 <div class="profile-section">
     <div class="profile-pic-container" onclick="document.getElementById('fileInput').click()">
@@ -253,7 +265,7 @@ body {
 
 <div id="leaveModal" class="modal">
     <div class="modal-content">
-        <h3 style="margin-top:0;">📝 แจ้งขอลาหยุด</h3>
+        <h3 id="modalTitle">📝 แจ้งขอลาหยุด</h3>
         <div class="input-group"><label>ประเภทการลา</label><select id="leaveType"><option value="ลาป่วย">🤒 ลาป่วย</option><option value="ลากิจ">💼 ลากิจ</option><option value="ลาพักร้อน">🏖️ ลาพักร้อน</option></select></div>
         <div style="display: flex; gap: 8px;">
             <div class="input-group" style="flex:1;"><label>เริ่ม</label><input type="date" id="leaveStart"></div>
@@ -262,14 +274,13 @@ body {
         <div class="input-group"><label>จำนวนวันลา</label><input type="number" id="leaveDays" step="0.5"></div>
         <div class="input-group"><label>เหตุผล</label><textarea id="leaveReason" rows="2"></textarea></div>
         <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button class="btn-primary" onclick="submitLeave()" style="flex:2; margin:0;">ส่งคำขอลา</button>
+            <button id="btnSubmitLeave" class="btn-primary" onclick="submitLeave()" style="flex:2; margin:0;">ส่งคำขอลา</button>
             <button onclick="closeModal()" style="border:none; background:#f1f5f9; padding:14px; border-radius:14px; flex:1; font-weight:bold; color:#64748b; cursor:pointer;">ยกเลิก</button>
         </div>
     </div>
 </div>
 
 <script>
-// --- ส่วนการทำงานคงเดิม 100% ---
 const firebaseConfig = {
   apiKey: "AIzaSyDEzU0P1EWgJgABEw3sJL54N5dq4dlVHJQ",
   authDomain: "hr-system-f9acc.firebaseapp.com",
@@ -283,6 +294,48 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let currentQuota = { sick: 30, personal: 6, vacation: 10 };
+let editTargetKey = null; 
+let currentSlipId = null;  
+
+function sendTelegramNotification(leaveData, isEditMode = false) {
+    const telegramToken = "8427153199:AAH7QQ_WgqjPPd1RoHv9BRq2fHyVEnK_vcI"; 
+    const chatId = "-1003946357713"; 
+    const dept = document.getElementById('department').value || '-';
+    
+    const headerTitle = isEditMode ? `⚠️ [แก้ไขข้อมูลคำขอลา]\n🧾 *E-SLIP: ใบแจ้งขออนุมัติลาหยุด*` : `🧾 *E-SLIP: ใบแจ้งขออนุมัติลาหยุด*`;
+    const slipId = isEditMode ? leaveData.slipId : Math.floor(100000 + Math.random() * 900000);
+
+    const message = `${headerTitle}
+═════════════════════
+*รหัสอ้างอิง:* \`#REQ-${slipId}\`
+*เวลาทำรายการ:* ${leaveData.requestTime || '-'}
+
+👤 *ข้อมูลพนักงาน*
+• *ชื่อ-สกุล:* ${leaveData.name}
+• *รหัสพนักงาน:* \`${leaveData.empId}\`
+• *แผนก:* ${dept}
+
+📝 *รายละเอียดการลา*
+• *ประเภท:* ${leaveData.type}
+• *วันที่:* ${leaveData.startDate} ➔ ${leaveData.endDate}
+• *จำนวน:* ${leaveData.days} วัน
+• *เหตุผล:* ${leaveData.reason || '-'}
+
+═════════════════════
+*สถานะ:* ⏳ รอการอนุมัติจากผู้ดูแล`;
+
+    fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: 'Markdown'
+        })
+    })
+    .then(response => response.json())
+    .catch(error => console.error('Fetch Error:', error));
+}
 
 function handleImageUpload(event) {
     const file = event.target.files[0];
@@ -341,8 +394,9 @@ function submitLeave() {
     
     const now = new Date();
     const timestamp = now.toLocaleString('th-TH');
+    const slipId = editTargetKey ? currentSlipId : Math.floor(100000 + Math.random() * 900000);
 
-    const newRequest = {
+    const leaveRequestData = {
         id: Date.now(),
         empId: empId,
         name: document.getElementById('fullName').value,
@@ -352,13 +406,58 @@ function submitLeave() {
         days: document.getElementById('leaveDays').value,
         reason: document.getElementById('leaveReason').value,
         requestTime: timestamp,
-        status: 'รอการอนุมัติ'
+        status: 'รอการอนุมัติ',
+        slipId: slipId
     };
 
-    db.ref('leaves').push(newRequest).then(() => {
-        alert('ส่งใบลาสำเร็จ!');
-        closeModal();
+    if (editTargetKey) {
+        db.ref('leaves/' + editTargetKey).update(leaveRequestData).then(() => {
+            sendTelegramNotification(leaveRequestData, true);
+            alert('✅ อัปเดตข้อมูลคำขอลาสำเร็จ!');
+            closeModal();
+        });
+    } else {
+        db.ref('leaves').push(leaveRequestData).then(() => {
+            sendTelegramNotification(leaveRequestData, false);
+            alert('ส่งใบลาสำเร็จ!');
+            closeModal();
+        });
+    }
+}
+
+// 🟢 แก้ไขใหม่: ปลอดภัย 100% วิ่งไปคุยกับฐานข้อมูลผ่าน Key ป้องกันข้อความยาวทำหน้าจอค้าง
+function openEditLeaveModal(key) {
+    editTargetKey = key;
+    
+    db.ref('leaves/' + key).once('value').then(snap => {
+        const r = snap.val();
+        if(r) {
+            currentSlipId = r.slipId || Math.floor(100000 + Math.random() * 900000);
+            
+            document.getElementById('modalTitle').innerText = "✏️ แก้ไขคำขอลาหยุด";
+            document.getElementById('btnSubmitLeave').innerText = "อัปเดตคำขอลา";
+            
+            document.getElementById('leaveType').value = r.type;
+            document.getElementById('leaveStart').value = r.startDate;
+            document.getElementById('leaveEnd').value = r.endDate;
+            document.getElementById('leaveDays').value = r.days;
+            document.getElementById('leaveReason').value = r.reason || '';
+            
+            document.getElementById('leaveModal').style.display = 'block';
+        }
+    }).catch(err => {
+        alert("ไม่สามารถดึงข้อมูลรายการลาได้: " + err.message);
     });
+}
+
+function cancelLeaveRequest(leaveFirebaseKey) {
+    if(confirm("⚠️ คุณแน่ใจใช่ไหมว่าต้องการยกเลิกคำขอลาหยุดรายการนี้?")) {
+        db.ref('leaves/' + leaveFirebaseKey).remove().then(() => {
+            alert("✅ ยกเลิกคำขอลาสำเร็จ รายการถูกถอนออกจากระบบแล้ว");
+        }).catch(err => {
+            alert("เกิดข้อผิดพลาด: " + err.message);
+        });
+    }
 }
 
 function loadProfile() {
@@ -389,10 +488,6 @@ function loadProfile() {
                 currentQuota.vacation = val.q_vacation || 10;
 
                 lockInputs(true);
-
-                db.ref('leaves').orderByChild('empId').equalTo(empId).once('value', s => {
-                    renderLeaveHistory(s.val());
-                });
             }
         });
 
@@ -408,12 +503,24 @@ function renderLeaveHistory(data) {
     
     const stats = { sick: 0, personal: 0, vacation: 0 };
     if(data) {
-        const list = Object.keys(data).map(key => data[key]).reverse();
-        list.forEach(r => {
+        const keys = Object.keys(data).reverse();
+        
+        keys.forEach(key => {
+            const r = data[key];
             if(r.status === 'อนุมัติ') {
                 if(r.type === 'ลาป่วย') stats.sick += parseFloat(r.days || 0);
                 if(r.type === 'ลากิจ') stats.personal += parseFloat(r.days || 0);
                 if(r.type === 'ลาพักร้อน') stats.vacation += parseFloat(r.days || 0);
+            }
+            
+            // 🟢 แก้ไขใหม่: ส่งไปแค่ key ตัวเดียว ปลอดภัย ไม่มีค้างแน่นอน
+            let actionButtonsHtml = "";
+            if(r.status === 'รอการอนุมัติ') {
+                actionButtonsHtml = `
+                <div class="action-btn-group">
+                    <button class="btn-edit-leave" onclick="openEditLeaveModal('${key}')">✏️ แก้ไข</button>
+                    <button class="btn-cancel-leave" onclick="cancelLeaveRequest('${key}')">❌ ยกเลิก</button>
+                </div>`;
             }
             
             body.innerHTML += `<tr class="leave-row">
@@ -421,8 +528,9 @@ function renderLeaveHistory(data) {
                     <span class="leave-info-title">${r.type} (${r.days} วัน)</span><br>
                     <span class="leave-info-date">🗓️ ${r.startDate} ถึง ${r.endDate}</span><br>
                     <span class="leave-info-request">🕒 ทำรายการเมื่อ: ${r.requestTime || '-'}</span>
+                    ${actionButtonsHtml}
                 </td>
-                <td style="text-align:right;"><span class="status-badge ${r.status==='อนุมัติ'?'status-approved':(r.status==='ไม่นุมัติ'?'status-rejected':'status-pending')}">${r.status}</span></td>
+                <td style="text-align:right; vertical-align:top; padding-top:15px;"><span class="status-badge ${r.status==='อนุมัติ'?'status-approved':(r.status==='ไม่อนุมัติ'?'status-rejected':'status-pending')}">${r.status}</span></td>
             </tr>`;
         });
     }
@@ -461,7 +569,20 @@ function updateStatsView(stats) {
     `;
 }
 
-function openModal() { document.getElementById('leaveModal').style.display = 'block'; }
+function openModal() { 
+    editTargetKey = null; 
+    currentSlipId = null;
+    document.getElementById('modalTitle').innerText = "📝 แจ้งขอลาหยุด";
+    document.getElementById('btnSubmitLeave').innerText = "ส่งคำขอลา";
+    
+    document.getElementById('leaveStart').value = "";
+    document.getElementById('leaveEnd').value = "";
+    document.getElementById('leaveDays').value = "";
+    document.getElementById('leaveReason').value = "";
+    
+    document.getElementById('leaveModal').style.display = 'block'; 
+}
+
 function closeModal() { document.getElementById('leaveModal').style.display = 'none'; }
 window.onload = loadProfile;
 </script>
