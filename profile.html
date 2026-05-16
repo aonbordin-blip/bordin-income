@@ -28,16 +28,40 @@ body {
     padding-bottom: 50px; 
 }
 
-/* ปรับปรุง Header ให้มีมิติมากขึ้นตามบรีฟ */
+/* --- เริ่มส่วนที่ทำศัลยกรรม: Modern Banner Header --- */
 .header { 
-    background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-    color: #fff; 
-    padding: 30px 20px 50px; /* เพิ่มพื้นที่ */
-    text-align: center; 
-    border-radius: 0 0 45px 45px; 
-    box-shadow: 0 15px 30px rgba(99, 102, 241, 0.25); /* เพิ่มเงาให้มีมิติ */
     position: relative;
-    z-index: 1;
+    background: linear-gradient(135deg, #4f46e5 0%, #0891b2 100%);
+    height: 160px; /* ปรับความสูงให้เป็น Banner */
+    border-radius: 0 0 0 0; /* ยกเลิกโค้งมนแบบเก่าเพื่อให้ดูเป็น Banner เว็บ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* เพิ่มลวดลายมิติใน Banner */
+.header::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 80%);
+    top: -50%;
+    left: -50%;
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.profile-section {
+    position: relative;
+    text-align: center;
+    margin-top: -60px; /* ดันรูปขึ้นไปทับ Banner */
+    z-index: 10;
 }
 
 .profile-pic-container { 
@@ -46,49 +70,58 @@ body {
     align-items: center; 
     position: relative; 
     cursor: pointer; 
-    transition: transform 0.3s;
 }
-.profile-pic-container:active { transform: scale(0.95); }
 
 #profilePreview { 
-    width: 95px; /* ปรับขนาดให้เด่นขึ้น */
-    height: 95px; 
+    width: 110px; 
+    height: 110px; 
     border-radius: 50%; 
     object-fit: cover; 
-    border: 4px solid rgba(255,255,255,1); 
+    border: 5px solid var(--white); /* ขอบหนาขึ้นเพื่อตัดกับ Banner */
     background: #fff; 
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* เงาเข้มขึ้นให้ดูมีมิติ */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
 }
+.profile-pic-container:hover #profilePreview { transform: scale(1.05); }
 
 .change-pic-hint { 
-    font-size: 10px; 
-    margin-top: -12px; 
+    position: absolute;
+    bottom: 12px;
+    right: -5px;
     background: var(--primary); 
-    padding: 3px 10px; 
-    border-radius: 20px; 
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: #fff; 
-    border: 2px solid #fff;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 3px solid #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    font-size: 14px;
 }
 
 #displayName { 
-    margin: 15px 0 5px; 
-    font-size: 20px; 
+    margin: 12px 0 4px; 
+    font-size: 22px; 
     font-weight: 800;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    color: var(--text-main);
 }
 
 #displayId { 
     margin: 0; 
-    font-size: 13px; 
-    opacity: 0.9; 
-    background: rgba(255,255,255,0.2);
-    padding: 2px 12px;
-    border-radius: 10px;
+    font-size: 12px; 
+    font-weight: 600;
+    color: var(--primary);
+    background: #eef2ff;
+    padding: 4px 12px;
+    border-radius: 20px;
     display: inline-block;
+    letter-spacing: 0.5px;
 }
+/* --- สิ้นสุดส่วนที่ทำศัลยกรรม Header --- */
 
-.container { padding: 0 16px; margin-top: -25px; position: relative; z-index: 2; }
+.container { padding: 0 16px; margin-top: 20px; position: relative; z-index: 2; }
 
 .info-card { 
     background: var(--white); 
@@ -162,9 +195,12 @@ body {
 <body>
 
 <div class="header">
+    </div>
+
+<div class="profile-section">
     <div class="profile-pic-container" onclick="document.getElementById('fileInput').click()">
         <img id="profilePreview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ccc'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>">
-        <div class="change-pic-hint">📷 เปลี่ยนรูป</div>
+        <div class="change-pic-hint">📷</div>
         <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
     </div>
     <h2 id="displayName">ชื่อพนักงาน</h2>
@@ -233,7 +269,7 @@ body {
 </div>
 
 <script>
-// --- 1. Firebase Config ---
+// --- ส่วนการทำงานคงเดิม 100% ---
 const firebaseConfig = {
   apiKey: "AIzaSyDEzU0P1EWgJgABEw3sJL54N5dq4dlVHJQ",
   authDomain: "hr-system-f9acc.firebaseapp.com",
@@ -241,8 +277,7 @@ const firebaseConfig = {
   projectId: "hr-system-f9acc",
   storageBucket: "hr-system-f9acc.firebasestorage.app",
   messagingSenderId: "793271973867",
-  appId: "1:793271973867:web:38bd510257d9d2bf500bae",
-  measurementId: "G-4VQJBG57EZ"
+  appId: "1:793271973867:web:38bd510257d9d2bf500bae"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -281,7 +316,7 @@ function saveProfile() {
         fullName: document.getElementById('fullName').value,
         position: document.getElementById('position').value,
         department: document.getElementById('department').value,
-        startDateWork: document.getElementById('startDateWork').value, // บันทึกวันเริ่มทำงาน
+        startDateWork: document.getElementById('startDateWork').value,
         phone: document.getElementById('phone').value,
         addr_no: document.getElementById('addr_no').value,
         addr_moo: document.getElementById('addr_moo').value,
@@ -305,7 +340,7 @@ function submitLeave() {
     if(!empId) return alert('กรุณาระบุรหัสพนักงานก่อน');
     
     const now = new Date();
-    const timestamp = now.toLocaleString('th-TH'); // วันเวลาที่ทำรายการ
+    const timestamp = now.toLocaleString('th-TH');
 
     const newRequest = {
         id: Date.now(),
@@ -316,7 +351,7 @@ function submitLeave() {
         endDate: document.getElementById('leaveEnd').value,
         days: document.getElementById('leaveDays').value,
         reason: document.getElementById('leaveReason').value,
-        requestTime: timestamp, // เพิ่มข้อมูลเวลาที่ยื่น
+        requestTime: timestamp,
         status: 'รอการอนุมัติ'
     };
 
@@ -338,7 +373,7 @@ function loadProfile() {
                 document.getElementById('idCard').value = val.idCard || '';
                 document.getElementById('position').value = val.position || '';
                 document.getElementById('department').value = val.department || '';
-                document.getElementById('startDateWork').value = val.startDateWork || ''; // โหลดวันเริ่มทำงาน
+                document.getElementById('startDateWork').value = val.startDateWork || ''; 
                 document.getElementById('phone').value = val.phone || '';
                 document.getElementById('addr_no').value = val.addr_no || '';
                 document.getElementById('addr_moo').value = val.addr_moo || '';
@@ -396,9 +431,33 @@ function renderLeaveHistory(data) {
 
 function updateStatsView(stats) {
     document.getElementById('leaveStatsGrid').innerHTML = `
-        <div class="stat-box" style="background:#f0f9ff; color:#0369a1;">ลาป่วย<br><b>${stats.sick}/${currentQuota.sick}</b></div>
-        <div class="stat-box" style="background:#fffbeb; color:#92400e;">ลากิจ<br><b>${stats.personal}/${currentQuota.personal}</b></div>
-        <div class="stat-box" style="background:#f0fdf4; color:#166534;">ลาพักร้อน<br><b>${stats.vacation}/${currentQuota.vacation}</b></div>
+        <div style="background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 12px; text-align: center;">
+            <div style="color: #0284c7; font-size: 11px; font-weight: bold;">🤒 ลาป่วย</div>
+            <div style="font-size: 18px; font-weight: 800; color: #0284c7; margin: 5px 0;">
+                <span style="font-size:24px;">${stats.sick}</span><span style="font-size:12px; color:#aaa;"> / ใช้</span>
+            </div>
+            <div style="background: #e0f2fe; color: #0284c7; font-size: 10px; padding: 3px; border-radius: 20px; font-weight: bold;">
+                เหลือ ${currentQuota.sick - stats.sick}
+            </div>
+        </div>
+        <div style="background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 12px; text-align: center;">
+            <div style="color: #b45309; font-size: 11px; font-weight: bold;">💼 ลากิจ</div>
+            <div style="font-size: 18px; font-weight: 800; color: #b45309; margin: 5px 0;">
+                <span style="font-size:24px;">${stats.personal}</span><span style="font-size:12px; color:#aaa;"> / ใช้</span>
+            </div>
+            <div style="background: #fef3c7; color: #b45309; font-size: 10px; padding: 3px; border-radius: 20px; font-weight: bold;">
+                เหลือ ${currentQuota.personal - stats.personal}
+            </div>
+        </div>
+        <div style="background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 12px; text-align: center;">
+            <div style="color: #166534; font-size: 11px; font-weight: bold;">🏖️ พักร้อน</div>
+            <div style="font-size: 18px; font-weight: 800; color: #166534; margin: 5px 0;">
+                <span style="font-size:24px;">${stats.vacation}</span><span style="font-size:12px; color:#aaa;"> / ใช้</span>
+            </div>
+            <div style="background: #dcfce3; color: #166534; font-size: 10px; padding: 3px; border-radius: 20px; font-weight: bold;">
+                เหลือ ${currentQuota.vacation - stats.vacation}
+            </div>
+        </div>
     `;
 }
 
