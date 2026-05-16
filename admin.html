@@ -90,7 +90,11 @@
                 <div style="display:flex; gap:10px;"><div style="flex:1;"><label>รหัสพนักงาน</label><input type="text" id="editEmpId"></div><div style="flex:1;"><label>ชื่อ-นามสกุล</label><input type="text" id="editName"></div></div>
                 <label>เลขประจำตัวประชาชน</label><input type="text" id="editIdCard">
                 <div style="display:flex; gap:10px;"><div style="flex:1;"><label>เบอร์โทรศัพท์</label><input type="tel" id="editPhone"></div><div style="flex:1;"><label>ตำแหน่ง</label><input type="text" id="editPos"></div></div>
-                <label>แผนก</label><input type="text" id="editDept">
+                
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;"><label>แผนก</label><input type="text" id="editDept"></div>
+                    <div style="flex:1;"><label>วันเริ่มทำงาน</label><input type="date" id="editStartDateWork"></div>
+                </div>
                 
                 <div class="form-section-title"><span style="color:#e74c3c">📍</span> ที่อยู่ปัจจุบัน</div>
                 <div style="display:flex; gap:10px;"><div style="flex:1;"><label>บ้านเลขที่</label><input type="text" id="editAddrNo"></div><div style="flex:1;"><label>หมู่ที่</label><input type="text" id="editAddrMoo"></div></div>
@@ -226,12 +230,11 @@ function renderStaffSection() {
     });
 }
 
-// โค้ดที่แก้ไขระบบตรวจสอบวันที่ (ดึงจาก Timestamp ของระบบ)
 function renderDailyLeaves() {
     db.ref('leaves').on('value', snap => {
         allLeaves = snap.val() || {};
         const container = document.getElementById("leaveDailySection");
-        const filterDate = document.getElementById("filterDate").value; // ค่าจะเป็นรูปแบบ YYYY-MM-DD
+        const filterDate = document.getElementById("filterDate").value; 
         container.innerHTML = "";
 
         let hasData = false;
@@ -241,11 +244,9 @@ function renderDailyLeaves() {
             let isDateMatch = true;
             
             if (filterDate) {
-                // ดึง Timestamp ออกมาคำนวณ (จาก id ที่ส่งมาจากเครื่องพนักงาน)
                 const ts = req.id ? parseInt(req.id) : parseInt(key);
                 if (!isNaN(ts) && ts > 0) {
                     const d = new Date(ts);
-                    // แปลง Timestamp กลับเป็น YYYY-MM-DD เพื่อเอามาเทียบกับช่องกรอก
                     const reqDateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
                     isDateMatch = (reqDateStr === filterDate);
                 } else {
@@ -288,6 +289,9 @@ function openEditModal(key) {
     document.getElementById("editPos").value = staff.position || '';
     document.getElementById("editDept").value = staff.department || '';
     
+    // ศัลยกรรมจุดที่ 2: ดึงค่าวันเริ่มทำงานมาแสดงใน Modal
+    document.getElementById("editStartDateWork").value = staff.startDateWork || '';
+    
     document.getElementById("editAddrNo").value = staff.addr_no || '';
     document.getElementById("editAddrMoo").value = staff.addr_moo || '';
     document.getElementById("editAddrSub").value = staff.addr_subdistrict || '';
@@ -328,6 +332,10 @@ function updateStaffInfo() {
         phone: document.getElementById("editPhone").value,
         position: document.getElementById("editPos").value,
         department: document.getElementById("editDept").value,
+        
+        // ศัลยกรรมจุดที่ 3: บันทึกค่าวันเริ่มทำงาน
+        startDateWork: document.getElementById("editStartDateWork").value,
+
         addr_no: document.getElementById("editAddrNo").value,
         addr_moo: document.getElementById("editAddrMoo").value,
         addr_subdistrict: document.getElementById("editAddrSub").value,
@@ -432,7 +440,6 @@ function deleteEmployee() {
 
 function closeModal(mId) { document.getElementById(mId).style.display = "none"; }
 
-// โค้ดที่แก้ไข: ให้เซ็ตค่าเป็นวันที่ปัจจุบันเมื่อเปิดหน้าเว็บอัตโนมัติ
 window.onload = () => { 
     const today = new Date();
     const yyyy = today.getFullYear();
