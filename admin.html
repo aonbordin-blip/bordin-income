@@ -123,6 +123,14 @@
             <span class="close" onclick="closeModal('leaveEditModal')">&times;</span>
             <h2 class="modal-title">จัดการรายการลา</h2>
             
+            <div style="display: flex; align-items: center; background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #eee; gap: 15px;">
+                <img id="leaveEmpPic" src="https://via.placeholder.com/60" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                <div style="font-size: 14px; line-height: 1.4; width: 100%;">
+                    <div style="font-weight: bold; font-size: 16px; color: var(--primary);" id="leaveEmpName">-</div>
+                    <div style="color: #555; font-size: 12px;">รหัส: <strong id="leaveEmpId">-</strong> | ตำแหน่ง: <strong id="leaveEmpPos">-</strong></div>
+                    <div style="color: #555; font-size: 12px;">แผนก: <strong id="leaveEmpDept">-</strong></div>
+                </div>
+            </div>
             <div style="background: #fff; padding: 20px; border-radius: 18px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
                 <input type="hidden" id="editLeaveId">
                 <input type="hidden" id="editLeaveEmpId">
@@ -264,7 +272,10 @@ function renderDailyLeaves() {
                         <span class="status-badge ${statusClass}">${req.status}</span>
                     </div>
                     <div style="font-size:14px; color:#555; margin-bottom:5px;">ประเภท: <strong>${req.type}</strong> (${req.days} วัน)</div>
-                    <div style="font-size:12px; color:#777; margin-bottom:15px;">📅 ลาวันที่: ${req.startDate} ถึง ${req.endDate}</div>
+                    <div style="font-size:12px; color:#777; margin-bottom:5px;">📅 ลาวันที่: ${req.startDate} ถึง ${req.endDate}</div>
+                    
+                    <div style="font-size:11px; color:#aaa; margin-bottom:15px;">🕒 ทำรายการ: ${formatTimestamp(req.id || key)}</div>
+                    
                     <button class="btn-action btn-manage" style="width:100%;" onclick="openLeaveEditPopup('${key}', '${req.empId}')">⚙️ จัดการรายการนี้</button>
                 </div>`;
             }
@@ -288,8 +299,6 @@ function openEditModal(key) {
     document.getElementById("editPhone").value = staff.phone || '';
     document.getElementById("editPos").value = staff.position || '';
     document.getElementById("editDept").value = staff.department || '';
-    
-    // ศัลยกรรมจุดที่ 2: ดึงค่าวันเริ่มทำงานมาแสดงใน Modal
     document.getElementById("editStartDateWork").value = staff.startDateWork || '';
     
     document.getElementById("editAddrNo").value = staff.addr_no || '';
@@ -332,10 +341,7 @@ function updateStaffInfo() {
         phone: document.getElementById("editPhone").value,
         position: document.getElementById("editPos").value,
         department: document.getElementById("editDept").value,
-        
-        // ศัลยกรรมจุดที่ 3: บันทึกค่าวันเริ่มทำงาน
         startDateWork: document.getElementById("editStartDateWork").value,
-
         addr_no: document.getElementById("editAddrNo").value,
         addr_moo: document.getElementById("editAddrMoo").value,
         addr_subdistrict: document.getElementById("editAddrSub").value,
@@ -345,7 +351,7 @@ function updateStaffInfo() {
         q_personal: document.getElementById("q_personal").value,
         q_vacation: document.getElementById("q_vacation").value
     };
-    db.ref('users/' + updates.employeeId).update(updates).then(() => {
+    db.ref('users/' + key).update(updates).then(() => {
         alert("✅ บันทึกข้อมูลพนักงานเรียบร้อย");
         closeModal('editModal');
     });
@@ -355,6 +361,14 @@ function openLeaveEditPopup(key, empId) {
     const req = allLeaves[key];
     const stats = calculateEmpStats(empId);
     
+    // 🟢 ส่วนที่แก้ไขเพิ่มเติม: นำข้อมูลจาก allStaff มาแสดงในหน้าโปรไฟล์ของ Modal ลา 🟢
+    const staff = Object.values(allStaff).find(s => s.employeeId === empId) || {};
+    document.getElementById("leaveEmpName").innerText = req.name || staff.fullName || "ไม่ระบุชื่อ";
+    document.getElementById("leaveEmpId").innerText = empId || "-";
+    document.getElementById("leaveEmpPos").innerText = staff.position || "-";
+    document.getElementById("leaveEmpDept").innerText = staff.department || "-";
+    document.getElementById("leaveEmpPic").src = staff.photo || "https://via.placeholder.com/60";
+
     document.getElementById("editLeaveId").value = key;
     document.getElementById("editLeaveEmpId").value = empId;
     document.getElementById("editLeaveType").value = req.type;
