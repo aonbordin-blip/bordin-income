@@ -8,201 +8,242 @@
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+
 :root {
-    --primary: #6366f1;
-    --secondary: #06b6d4;
+    --primary: #4f46e5;
+    --primary-light: #eef2ff;
+    --secondary: #0ea5e9;
     --bg: #f8fafc;
     --white: #ffffff;
-    --text-main: #1e293b;
+    --text-main: #0f172a;
     --text-sub: #64748b;
-    --border-color: #f1f5f9;
-    --shadow-soft: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    --shadow-card: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    --shadow-lg: 0 10px 25px -5px rgba(79, 70, 229, 0.1), 0 8px 10px -6px rgba(79, 70, 229, 0.05);
+    --radius-lg: 20px;
+    --radius-md: 14px;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Prompt', sans-serif;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body { 
     margin: 0; 
-    font-family: 'Inter', 'Segoe UI', sans-serif; 
     background: var(--bg); 
     color: var(--text-main); 
-    padding-bottom: 50px; 
+    padding-bottom: 60px; 
 }
 
-/* --- Modern Banner Header --- */
+/* --- Modern Header & Profile Space --- */
 .header { 
     position: relative;
-    background: linear-gradient(135deg, #4f46e5 0%, #0891b2 100%);
-    height: 160px; 
-    border-radius: 0 0 0 0; 
+    background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 50%, #7c3aed 100%);
+    height: 180px; 
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    border-radius: 0 0 30px 30px;
 }
 
 .header::before {
     content: "";
     position: absolute;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 80%);
-    top: -50%;
-    left: -50%;
-    animation: rotate 20s linear infinite;
-}
-
-@keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    width: 150%;
+    height: 150%;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    top: -30%;
+    left: -25%;
 }
 
 .profile-section {
     position: relative;
     text-align: center;
-    margin-top: -60px; 
+    margin-top: -70px; 
     z-index: 10;
+    padding: 0 20px;
 }
 
 .profile-pic-container { 
     display: inline-flex; 
-    flex-direction: column; 
-    align-items: center; 
     position: relative; 
     cursor: pointer; 
 }
 
 #profilePreview { 
-    width: 110px; 
-    height: 110px; 
+    width: 120px; 
+    height: 120px; 
     border-radius: 50%; 
     object-fit: cover; 
-    border: 5px solid var(--white); 
+    border: 4px solid var(--white); 
     background: #fff; 
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-lg);
     transition: transform 0.3s ease;
 }
-.profile-pic-container:hover #profilePreview { transform: scale(1.05); }
+.profile-pic-container:hover #profilePreview { transform: scale(1.03); }
 
 .change-pic-hint { 
     position: absolute;
-    bottom: 12px;
-    right: -5px;
+    bottom: 5px;
+    right: 5px;
     background: var(--primary); 
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff; 
     border: 3px solid #fff;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     font-size: 14px;
 }
 
 #displayName { 
-    margin: 12px 0 4px; 
+    margin: 14px 0 6px; 
     font-size: 22px; 
-    font-weight: 800;
+    font-weight: 600;
     color: var(--text-main);
+    word-break: break-word;
 }
 
 #displayId { 
     margin: 0; 
-    font-size: 12px; 
-    font-weight: 600;
+    font-size: 13px; 
+    font-weight: 500;
     color: var(--primary);
-    background: #eef2ff;
-    padding: 4px 12px;
+    background: var(--primary-light);
+    padding: 6px 16px;
     border-radius: 20px;
     display: inline-block;
     letter-spacing: 0.5px;
 }
 
-.container { padding: 0 16px; margin-top: 20px; position: relative; z-index: 2; }
+.container { padding: 0 16px; margin-top: 25px; max-width: 500px; margin-left: auto; margin-right: auto; }
 
+/* --- Premium Cards --- */
 .info-card { 
     background: var(--white); 
-    border-radius: 24px; 
-    padding: 20px; 
-    box-shadow: var(--shadow-card); 
-    margin-bottom: 16px; 
-    border: 1px solid var(--border-color); 
+    border-radius: var(--radius-lg); 
+    padding: 22px; 
+    box-shadow: var(--shadow-md); 
+    margin-bottom: 20px; 
+    border: 1px solid rgba(226, 232, 240, 0.7); 
 }
 
-.input-group { margin-bottom: 12px; }
-.input-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-sub); margin-bottom: 6px; }
+.input-group { margin-bottom: 16px; }
+.input-group label { display: block; font-size: 13px; font-weight: 500; color: var(--text-sub); margin-bottom: 6px; }
 .input-group input, .input-group textarea, .input-group select { 
-    width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); 
-    border-radius: 14px; font-size: 15px; box-sizing: border-box; 
-    background: #fcfdfe;
+    width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0; 
+    border-radius: var(--radius-md); font-size: 15px; box-sizing: border-box; 
+    background: #f8fafc; color: var(--text-main); transition: all 0.2s ease;
+    outline: none;
 }
-.input-group input:read-only { background: #f8fafc; color: #94a3b8; cursor: not-allowed; border-color: #f1f5f9; }
+.input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+    border-color: var(--primary);
+    background: var(--white);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+.input-group input:read-only { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; border-color: #e2e8f0; }
 
+/* --- Collapsible Accordion --- */
 .section-toggle-btn { 
-    background: #f8fafc; padding: 12px 16px; border-radius: 14px; 
+    background: #f8fafc; padding: 14px 18px; border-radius: var(--radius-md); 
     display: flex; justify-content: space-between; align-items: center; 
-    cursor: pointer; font-weight: 700; color: var(--primary); 
-    margin-bottom: 8px; border: 1px solid var(--border-color); 
+    cursor: pointer; font-weight: 600; color: #334155; 
+    margin-bottom: 10px; border: 1px solid #e2e8f0; transition: all 0.2s ease;
 }
+.section-toggle-btn:hover { background: #f1f5f9; }
+.section-toggle-btn span:first-child { display: flex; align-items: center; gap: 8px; font-size: 15px; }
 
-.collapsible-content { display: none; padding: 8px 4px 12px; }
+.collapsible-content { display: none; padding: 10px 4px 15px; }
 
+/* --- Elegant Buttons --- */
 .btn-primary { 
-    background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-    color: #fff; border: none; padding: 15px; border-radius: 16px; 
-    width: 100%; font-size: 16px; font-weight: 700; cursor: pointer; 
-    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+    background: linear-gradient(135deg, var(--primary), #6366f1); 
+    color: #fff; border: none; padding: 15px; border-radius: var(--radius-md); 
+    width: 100%; font-size: 16px; font-weight: 600; cursor: pointer; 
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25); transition: all 0.2s ease;
 }
+.btn-primary:active { transform: scale(0.98); box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2); }
 
 .btn-leave { 
-    background: #f59e0b; color: #fff; border: none; padding: 14px; 
-    border-radius: 16px; width: 100%; font-weight: 700; font-size: 15px;
-    margin-bottom: 16px; display: flex; align-items: center; 
-    justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; padding: 15px; 
+    border-radius: var(--radius-lg); width: 100%; font-weight: 600; font-size: 16px;
+    margin-bottom: 20px; display: flex; align-items: center; 
+    justify-content: center; gap: 10px; box-shadow: 0 8px 20px rgba(217, 119, 6, 0.25);
+    cursor: pointer; transition: all 0.2s ease;
 }
+.btn-leave:active { transform: scale(0.98); }
 
-.leave-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-.stat-box { padding: 12px 5px; border-radius: 14px; text-align: center; border: 1px solid rgba(0,0,0,0.03); }
-.stat-box b { font-size: 16px; }
+/* --- Dashboard Leaves Stats --- */
+.card-title { margin: 0 0 16px; color: #1e293b; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.leave-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
 
-.leave-row { border-bottom: 1px solid #f1f5f9; }
-.leave-row:last-child { border-bottom: none; }
-.leave-info-title { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 2px; }
-.leave-info-date { font-size: 12px; color: var(--text-sub); }
-.leave-info-request { font-size: 10px; color: var(--primary); font-weight: 600; margin-top: 4px; display: block; }
+.stat-card {
+    background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 8px; border-radius: var(--radius-md); text-align: center;
+    display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;
+}
+.stat-card .stat-label { font-size: 12px; font-weight: 500; margin-bottom: 4px; }
+.stat-card .stat-count { font-size: 22px; font-weight: 700; line-height: 1.2; margin: 4px 0; }
+.stat-card .stat-count small { font-size: 11px; color: #94a3b8; font-weight: 400; margin-left: 2px; }
+.stat-card .stat-remaining { font-size: 10px; padding: 3px 6px; border-radius: 20px; font-weight: 500; margin-top: 4px; display: inline-block; width: fit-content; margin-left: auto; margin-right: auto; }
 
-.status-badge { padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; display: inline-block; }
+/* Themes for stats */
+.stat-sick { color: #0284c7; } .stat-sick .stat-remaining { background: #e0f2fe; color: #0369a1; }
+.stat-personal { color: #b45309; } .stat-personal .stat-remaining { background: #fef3c7; color: #92400e; }
+.stat-vacation { color: #166534; } .stat-vacation .stat-remaining { background: #dcfce3; color: #15803d; }
+
+/* --- Modern Leave History List (Fixing Table Overflow) --- */
+.history-table-container { width: 100%; overflow: hidden; }
+.leave-history-list { display: flex; flex-direction: column; gap: 12px; }
+
+.history-item {
+    background: var(--white); border-bottom: 1px solid #f1f5f9; padding: 14px 4px;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+}
+.history-item:last-child { border-bottom: none; }
+.history-details { flex: 1; min-width: 0; } /* ป้องกันข้อความดันดันขอบตกหล่น */
+.leave-info-title { font-size: 15px; font-weight: 600; color: var(--text-main); margin: 0 0 4px 0; display: block; }
+.leave-info-date { font-size: 12px; color: var(--text-sub); display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+.leave-info-request { font-size: 11px; color: #94a3b8; display: block; }
+
+.status-badge { padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 500; display: inline-block; text-align: center; white-space: nowrap; }
 .status-pending { background: #fffbeb; color: #b45309; }
 .status-approved { background: #ecfdf5; color: #047857; }
 .status-rejected { background: #fef2f2; color: #b91c1c; }
 
-/* ปุ่มแก้ไขและยกเลิกคำขอลา */
-.action-btn-group { display: flex; gap: 6px; margin-top: 6px; }
-.btn-edit-leave {
-    background: #e0f2fe; color: #0369a1; border: none; 
-    padding: 4px 10px; border-radius: 8px; font-size: 11px; 
-    font-weight: 700; cursor: pointer; transition: all 0.2s;
+/* Actions button inside cards */
+.action-btn-group { display: flex; gap: 8px; margin-top: 10px; }
+.btn-edit-leave, .btn-cancel-leave {
+    border: none; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 4px;
 }
-.btn-edit-leave:hover { background: #bae6fd; }
+.btn-edit-leave { background: #f0fdf4; color: #166534; } .btn-edit-leave:hover { background: #dcfce3; }
+.btn-cancel-leave { background: #fef2f2; color: #b91c1c; } .btn-cancel-leave:hover { background: #fee2e2; }
 
-.btn-cancel-leave {
-    background: #fee2e2; color: #ef4444; border: none; 
-    padding: 4px 10px; border-radius: 8px; font-size: 11px; 
-    font-weight: 700; cursor: pointer; transition: all 0.2s;
-}
-.btn-cancel-leave:hover { background: #fca5a5; }
-
+/* --- Responsive Modal Popup --- */
 .modal { 
     display: none; position: fixed; z-index: 1000; left: 0; top: 0; 
-    width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); 
-    backdrop-filter: blur(8px); 
+    width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); 
+    backdrop-filter: blur(6px); transition: all 0.3s ease;
 }
 .modal-content { 
-    background: #fff; margin: 15% auto; padding: 24px; 
-    border-radius: 28px; width: 85%; max-width: 380px; 
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    background: #fff; margin: 10% auto; padding: 26px; 
+    border-radius: var(--radius-lg); width: 90%; max-width: 400px; 
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.modal-content h3 { margin: 0 0 20px 0; font-size: 18px; font-weight: 600; color: #0f172a; text-align: center; }
 </style>
 </head>
 <body>
@@ -229,7 +270,7 @@ body {
             <div class="input-group"><label>รหัสพนักงาน</label><input type="text" id="employeeId" class="profile-input"></div>
             <div class="input-group"><label>เลขประจำตัวประชาชน</label><input type="text" id="idCard" class="profile-input"></div>
             <div class="input-group"><label>ชื่อ-นามสกุล</label><input type="text" id="fullName" class="profile-input"></div>
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 12px;">
                 <div class="input-group" style="flex:1;"><label>ตำแหน่ง</label><input type="text" id="position" class="profile-input"></div>
                 <div class="input-group" style="flex:1;"><label>แผนก</label><input type="text" id="department" class="profile-input"></div>
             </div>
@@ -242,7 +283,7 @@ body {
             <span id="addressArrow">▼</span>
         </div>
         <div id="addressContent" class="collapsible-content">
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 12px;">
                 <div class="input-group" style="flex:1;"><label>บ้านเลขที่</label><input type="text" id="addr_no" class="profile-input"></div>
                 <div class="input-group" style="flex:1;"><label>หมู่ที่</label><input type="text" id="addr_moo" class="profile-input"></div>
             </div>
@@ -256,10 +297,13 @@ body {
     <button class="btn-leave" onclick="openModal()">📅 แจ้งลาหยุดงาน / ลาพักร้อน</button>
 
     <div class="info-card">
-        <h3 style="margin: 0 0 15px; color: var(--primary); font-size: 16px; font-weight: 800;">📊 สถิติการลาปีนี้</h3>
+        <h3 class="card-title">📊 สถิติการลาปีนี้</h3>
         <div id="leaveStatsGrid" class="leave-stats"></div>
-        <h3 style="margin: 15px 0 10px; color: var(--primary); font-size: 16px; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">📋 ประวัติล่าสุด</h3>
-        <table style="width:100%; border-collapse: collapse;"><tbody id="leaveHistoryBody"></tbody></table>
+        
+        <h3 class="card-title" style="margin-top: 25px; border-top: 1.5px solid #f1f5f9; padding-top: 18px;">📋 ประวัติการลาล่าสุด</h3>
+        <div class="history-table-container">
+            <div id="leaveHistoryBody" class="leave-history-list"></div>
+        </div>
     </div>
 </div>
 
@@ -267,15 +311,15 @@ body {
     <div class="modal-content">
         <h3 id="modalTitle">📝 แจ้งขอลาหยุด</h3>
         <div class="input-group"><label>ประเภทการลา</label><select id="leaveType"><option value="ลาป่วย">🤒 ลาป่วย</option><option value="ลากิจ">💼 ลากิจ</option><option value="ลาพักร้อน">🏖️ ลาพักร้อน</option></select></div>
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 12px;">
             <div class="input-group" style="flex:1;"><label>เริ่ม</label><input type="date" id="leaveStart"></div>
             <div class="input-group" style="flex:1;"><label>ถึง</label><input type="date" id="leaveEnd"></div>
         </div>
         <div class="input-group"><label>จำนวนวันลา</label><input type="number" id="leaveDays" step="0.5"></div>
-        <div class="input-group"><label>เหตุผล</label><textarea id="leaveReason" rows="2"></textarea></div>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <div class="input-group"><label>เหตุผลการลา</label><textarea id="leaveReason" rows="2" placeholder="ระบุเหตุผลความจำเป็น..."></textarea></div>
+        <div style="display: flex; gap: 10px; margin-top: 24px;">
             <button id="btnSubmitLeave" class="btn-primary" onclick="submitLeave()" style="flex:2; margin:0;">ส่งคำขอลา</button>
-            <button onclick="closeModal()" style="border:none; background:#f1f5f9; padding:14px; border-radius:14px; flex:1; font-weight:bold; color:#64748b; cursor:pointer;">ยกเลิก</button>
+            <button onclick="closeModal()" style="border:none; background:#f1f5f9; padding:14px; border-radius:14px; flex:1; font-weight:500; color:#64748b; cursor:pointer;">ยกเลิก</button>
         </div>
     </div>
 </div>
@@ -335,6 +379,35 @@ function sendTelegramNotification(leaveData, isEditMode = false) {
     })
     .then(response => response.json())
     .catch(error => console.error('Fetch Error:', error));
+}
+
+function sendLineNotification(leaveData) {
+    const gasAppUrl = "https://script.google.com/macros/s/AKfycby0kL00jnepsZfujU93PHLtAwU9_1vLr0PdLqUjU5dP81G-tSeetBA93iVtc4_xLkn6ag/exec"; 
+    
+    const payload = {
+        action: "send_line_update",
+        leaveData: {
+            slipId: leaveData.slipId,
+            name: leaveData.name,
+            empId: leaveData.empId,
+            type: leaveData.type,
+            days: leaveData.days,
+            startDate: leaveData.startDate,
+            endDate: leaveData.endDate,
+            reason: leaveData.reason || "ไม่ได้ระบุสาเหตุ"
+        },
+        newStatus: "รอการอนุมัติ"
+    };
+
+    fetch(gasAppUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => console.log('ส่งแจ้งเตือน LINE สำเร็จ'))
+    .catch(error => console.error('LINE Webhook Error:', error));
 }
 
 function handleImageUpload(event) {
@@ -413,19 +486,20 @@ function submitLeave() {
     if (editTargetKey) {
         db.ref('leaves/' + editTargetKey).update(leaveRequestData).then(() => {
             sendTelegramNotification(leaveRequestData, true);
+            sendLineNotification(leaveRequestData); 
             alert('✅ อัปเดตข้อมูลคำขอลาสำเร็จ!');
             closeModal();
         });
     } else {
         db.ref('leaves').push(leaveRequestData).then(() => {
             sendTelegramNotification(leaveRequestData, false);
+            sendLineNotification(leaveRequestData); 
             alert('ส่งใบลาสำเร็จ!');
             closeModal();
         });
     }
 }
 
-// 🟢 แก้ไขใหม่: ปลอดภัย 100% วิ่งไปคุยกับฐานข้อมูลผ่าน Key ป้องกันข้อความยาวทำหน้าจอค้าง
 function openEditLeaveModal(key) {
     editTargetKey = key;
     
@@ -513,7 +587,6 @@ function renderLeaveHistory(data) {
                 if(r.type === 'ลาพักร้อน') stats.vacation += parseFloat(r.days || 0);
             }
             
-            // 🟢 แก้ไขใหม่: ส่งไปแค่ key ตัวเดียว ปลอดภัย ไม่มีค้างแน่นอน
             let actionButtonsHtml = "";
             if(r.status === 'รอการอนุมัติ') {
                 actionButtonsHtml = `
@@ -522,16 +595,21 @@ function renderLeaveHistory(data) {
                     <button class="btn-cancel-leave" onclick="cancelLeaveRequest('${key}')">❌ ยกเลิก</button>
                 </div>`;
             }
+
+            const statusClass = r.status === 'อนุมัติ' ? 'status-approved' : (r.status === 'ไม่อนุมัติ' ? 'status-rejected' : 'status-pending');
             
-            body.innerHTML += `<tr class="leave-row">
-                <td style="padding:15px 5px;">
-                    <span class="leave-info-title">${r.type} (${r.days} วัน)</span><br>
-                    <span class="leave-info-date">🗓️ ${r.startDate} ถึง ${r.endDate}</span><br>
-                    <span class="leave-info-request">🕒 ทำรายการเมื่อ: ${r.requestTime || '-'}</span>
+            body.innerHTML += `
+            <div class="history-item">
+                <div class="history-details">
+                    <strong class="leave-info-title">${r.type} <span style="color:var(--primary);">(${r.days} วัน)</span></strong>
+                    <div class="leave-info-date">🗓️ ${r.startDate} ถึง ${r.endDate}</div>
+                    <span class="leave-info-request">🕒 ทำรายการ: ${r.requestTime || '-'}</span>
                     ${actionButtonsHtml}
-                </td>
-                <td style="text-align:right; vertical-align:top; padding-top:15px;"><span class="status-badge ${r.status==='อนุมัติ'?'status-approved':(r.status==='ไม่อนุมัติ'?'status-rejected':'status-pending')}">${r.status}</span></td>
-            </tr>`;
+                </div>
+                <div style="flex-shrink: 0;">
+                    <span class="status-badge ${statusClass}">${r.status}</span>
+                </div>
+            </div>`;
         });
     }
     updateStatsView(stats);
@@ -539,32 +617,20 @@ function renderLeaveHistory(data) {
 
 function updateStatsView(stats) {
     document.getElementById('leaveStatsGrid').innerHTML = `
-        <div style="background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 12px; text-align: center;">
-            <div style="color: #0284c7; font-size: 11px; font-weight: bold;">🤒 ลาป่วย</div>
-            <div style="font-size: 18px; font-weight: 800; color: #0284c7; margin: 5px 0;">
-                <span style="font-size:24px;">${stats.sick}</span><span style="font-size:12px; color:#aaa;"> / ใช้</span>
-            </div>
-            <div style="background: #e0f2fe; color: #0284c7; font-size: 10px; padding: 3px; border-radius: 20px; font-weight: bold;">
-                เหลือ ${currentQuota.sick - stats.sick}
-            </div>
+        <div class="stat-card stat-sick">
+            <div class="stat-label">🤒 ลาป่วย</div>
+            <div class="stat-count">${stats.sick}<small>/ใช้</small></div>
+            <div class="stat-remaining">เหลือ ${currentQuota.sick - stats.sick}</div>
         </div>
-        <div style="background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 12px; text-align: center;">
-            <div style="color: #b45309; font-size: 11px; font-weight: bold;">💼 ลากิจ</div>
-            <div style="font-size: 18px; font-weight: 800; color: #b45309; margin: 5px 0;">
-                <span style="font-size:24px;">${stats.personal}</span><span style="font-size:12px; color:#aaa;"> / ใช้</span>
-            </div>
-            <div style="background: #fef3c7; color: #b45309; font-size: 10px; padding: 3px; border-radius: 20px; font-weight: bold;">
-                เหลือ ${currentQuota.personal - stats.personal}
-            </div>
+        <div class="stat-card stat-personal">
+            <div class="stat-label">💼 ลากิจ</div>
+            <div class="stat-count">${stats.personal}<small>/ใช้</small></div>
+            <div class="stat-remaining">เหลือ ${currentQuota.personal - stats.personal}</div>
         </div>
-        <div style="background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 12px; text-align: center;">
-            <div style="color: #166534; font-size: 11px; font-weight: bold;">🏖️ พักร้อน</div>
-            <div style="font-size: 18px; font-weight: 800; color: #166534; margin: 5px 0;">
-                <span style="font-size:24px;">${stats.vacation}</span><span style="font-size:12px; color:#aaa;"> / ใช้</span>
-            </div>
-            <div style="background: #dcfce3; color: #166534; font-size: 10px; padding: 3px; border-radius: 20px; font-weight: bold;">
-                เหลือ ${currentQuota.vacation - stats.vacation}
-            </div>
+        <div class="stat-card stat-vacation">
+            <div class="stat-label">🏖️ พักร้อน</div>
+            <div class="stat-count">${stats.vacation}<small>/ใช้</small></div>
+            <div class="stat-remaining">เหลือ ${currentQuota.vacation - stats.vacation}</div>
         </div>
     `;
 }
