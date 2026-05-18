@@ -205,6 +205,64 @@ function sendAdminLineNotification(leaveData, newStatus) {
     }).then(() => console.log('ส่ง Line สำเร็จ')).catch(err => console.error('LINE Error:', err));
 }
 
+// === แทรกฟังก์ชันส่งแจ้งเตือน Telegram ตรงนี้ ===
+function sendAdminTelegramNotification(leaveData, newStatus) {
+    const token = "8427153199:AAH7QQ_WgqjPPd1RoHv9BRq2fHyVEnK_vcI"; 
+    let chatId = ""; 
+
+    const userTeam = (leaveData.team || "").trim().toUpperCase();
+
+    // แยกแชทกลุ่มตามฝ่ายและทีมพนักงาน
+    if (userTeam.includes("TEAM A") || userTeam.includes("ทีม A")) {
+        chatId = "-1003972124668"; 
+    } else if (userTeam.includes("TEAM C") || userTeam.includes("ทีม C")) {
+        chatId = "-1003946357713"; 
+    } else {
+        chatId = "-1003972124668"; 
+    }
+
+    let statusEmoji = "⏳";
+    if (newStatus === "อนุมัติ") statusEmoji = "✅";
+    if (newStatus === "ไม่อนุมัติ") statusEmoji = "❌";
+
+    const slipMessage = `📄 *E-SLIP : แจ้งผลการพิจารณาคำขอลา*\n` +
+                        `────────────────────────\n` +
+                        `🔹 *รหัสอ้างอิง:* #REQ-${leaveData.slipId || leaveData.id}\n` +
+                        `🕒 *เวลาประมวลผล:* ${leaveData.requestTime || '-'}\n\n` +
+                        `👤 *ข้อมูลพนักงานผู้ยื่นเรื่อง*\n` +
+                        `▫️ *ชื่อ-นามสกุล:* ${leaveData.name}\n` +
+                        `▫️ *รหัสพนักงาน:* ${leaveData.empId}\n` +
+                        `▫️ *แผนก/ทีม:* ${leaveData.team}\n\n` +
+                        `📝 *รายละเอียดการลาหยุดงาน*\n` +
+                        `▫️ *ประเภทการลา:* ${leaveData.type}\n` +
+                        `▫️ *วันที่ระบุ:* ${leaveData.startDate} ➔ ${leaveData.endDate}\n` +
+                        `▫️ *จำนวนวันลา:* ${leaveData.days} วันทำการ\n` +
+                        `▫️ *เหตุผลความจำเป็น:* "${leaveData.reason || "ไม่ได้ระบุสาเหตุ"}"\n` +
+                        `────────────────────────\n` +
+                        `${statusEmoji} *สถานะพิจารณา:* *${newStatus}*`;
+
+    const urlSendMsg = `https://api.telegram.org/bot${token}/sendMessage`;
+
+    fetch(urlSendMsg, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            chat_id: chatId,
+            text: slipMessage,
+            parse_mode: 'Markdown' 
+        })
+    })
+    .then(res => res.json())
+    .then(resData => {
+        if(resData.ok) {
+            console.log(`ส่งผลพิจารณาทาง Telegram เรียบร้อยแล้ว!`);
+        } else {
+            console.error('Telegram Admin API Error:', resData);
+        }
+    })
+    .catch(err => console.error('Telegram Admin Fetch Error:', err));
+}
+
 function saveLeaveEdit() {
     const key = document.getElementById("editLeaveId").value;
     const newStatus = document.getElementById("editLeaveStatus").value;
@@ -216,8 +274,10 @@ function saveLeaveEdit() {
     db.ref('leaves/' + key).update({ status: newStatus }).then(() => {
         if(leaveData) {
             sendAdminLineNotification(leaveData, newStatus);
+            // เรียกใช้ฟังก์ชัน Telegram แจ้งเตือนหลังจากบันทึกสถานะ
+            sendAdminTelegramNotification(leaveData, newStatus); 
         }
-        alert("✅ บันทึกสถานะและส่งแจ้งเตือนเข้า LINE เรียบร้อยแล้ว");
+        alert("✅ บันทึกสถานะและส่งแจ้งเตือนเข้า LINE และ Telegram เรียบร้อยแล้ว");
         closeModal('leaveEditModal');
     });
 }
