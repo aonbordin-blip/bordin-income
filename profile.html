@@ -371,14 +371,8 @@ function sendTelegramNotification(leaveData, isEditMode = false) {
     fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            chat_id: chatId,
-            text: message,
-            parse_mode: 'Markdown'
-        })
-    })
-    .then(response => response.json())
-    .catch(error => console.error('Fetch Error:', error));
+        body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'Markdown' })
+    }).catch(error => console.error('Telegram Error:', error));
 }
 
 function sendLineNotification(leaveData) {
@@ -394,20 +388,18 @@ function sendLineNotification(leaveData) {
             days: leaveData.days,
             startDate: leaveData.startDate,
             endDate: leaveData.endDate,
-            reason: leaveData.reason || "ไม่ได้ระบุสาเหตุ"
+            reason: leaveData.reason || "ไม่ได้ระบุสาเหตุ",
+            team: leaveData.team || "ทั่วไป" 
         },
         newStatus: "รอการอนุมัติ"
     };
 
     fetch(gasAppUrl, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-        },
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
-    })
-    .then(response => console.log('ส่งแจ้งเตือน LINE สำเร็จ'))
-    .catch(error => console.error('LINE Webhook Error:', error));
+    }).then(() => console.log('ส่งแจ้งเตือน LINE สำเร็จ')).catch(err => console.error('LINE Error:', err));
 }
 
 function handleImageUpload(event) {
@@ -468,6 +460,7 @@ function submitLeave() {
     const now = new Date();
     const timestamp = now.toLocaleString('th-TH');
     const slipId = editTargetKey ? currentSlipId : Math.floor(100000 + Math.random() * 900000);
+    const dept = document.getElementById('department').value || "ทั่วไป"; 
 
     const leaveRequestData = {
         id: Date.now(),
@@ -480,7 +473,8 @@ function submitLeave() {
         reason: document.getElementById('leaveReason').value,
         requestTime: timestamp,
         status: 'รอการอนุมัติ',
-        slipId: slipId
+        slipId: slipId,
+        team: dept 
     };
 
     if (editTargetKey) {
@@ -502,35 +496,27 @@ function submitLeave() {
 
 function openEditLeaveModal(key) {
     editTargetKey = key;
-    
     db.ref('leaves/' + key).once('value').then(snap => {
         const r = snap.val();
         if(r) {
             currentSlipId = r.slipId || Math.floor(100000 + Math.random() * 900000);
-            
             document.getElementById('modalTitle').innerText = "✏️ แก้ไขคำขอลาหยุด";
             document.getElementById('btnSubmitLeave').innerText = "อัปเดตคำขอลา";
-            
             document.getElementById('leaveType').value = r.type;
             document.getElementById('leaveStart').value = r.startDate;
             document.getElementById('leaveEnd').value = r.endDate;
             document.getElementById('leaveDays').value = r.days;
             document.getElementById('leaveReason').value = r.reason || '';
-            
             document.getElementById('leaveModal').style.display = 'block';
         }
-    }).catch(err => {
-        alert("ไม่สามารถดึงข้อมูลรายการลาได้: " + err.message);
-    });
+    }).catch(err => alert("ไม่สามารถดึงข้อมูลรายการลาได้: " + err.message));
 }
 
 function cancelLeaveRequest(leaveFirebaseKey) {
     if(confirm("⚠️ คุณแน่ใจใช่ไหมว่าต้องการยกเลิกคำขอลาหยุดรายการนี้?")) {
         db.ref('leaves/' + leaveFirebaseKey).remove().then(() => {
             alert("✅ ยกเลิกคำขอลาสำเร็จ รายการถูกถอนออกจากระบบแล้ว");
-        }).catch(err => {
-            alert("เกิดข้อผิดพลาด: " + err.message);
-        });
+        }).catch(err => alert("เกิดข้อผิดพลาด: " + err.message));
     }
 }
 
@@ -560,25 +546,19 @@ function loadProfile() {
                 currentQuota.sick = val.q_sick || 30;
                 currentQuota.personal = val.q_personal || 6;
                 currentQuota.vacation = val.q_vacation || 10;
-
                 lockInputs(true);
             }
         });
-
-        db.ref('leaves').orderByChild('empId').equalTo(empId).on('value', snap => {
-            renderLeaveHistory(snap.val());
-        });
+        db.ref('leaves').orderByChild('empId').equalTo(empId).on('value', snap => renderLeaveHistory(snap.val()));
     }
 }
 
 function renderLeaveHistory(data) {
     const body = document.getElementById('leaveHistoryBody');
     body.innerHTML = "";
-    
     const stats = { sick: 0, personal: 0, vacation: 0 };
     if(data) {
         const keys = Object.keys(data).reverse();
-        
         keys.forEach(key => {
             const r = data[key];
             if(r.status === 'อนุมัติ') {
@@ -586,7 +566,6 @@ function renderLeaveHistory(data) {
                 if(r.type === 'ลากิจ') stats.personal += parseFloat(r.days || 0);
                 if(r.type === 'ลาพักร้อน') stats.vacation += parseFloat(r.days || 0);
             }
-            
             let actionButtonsHtml = "";
             if(r.status === 'รอการอนุมัติ') {
                 actionButtonsHtml = `
@@ -595,9 +574,7 @@ function renderLeaveHistory(data) {
                     <button class="btn-cancel-leave" onclick="cancelLeaveRequest('${key}')">❌ ยกเลิก</button>
                 </div>`;
             }
-
             const statusClass = r.status === 'อนุมัติ' ? 'status-approved' : (r.status === 'ไม่อนุมัติ' ? 'status-rejected' : 'status-pending');
-            
             body.innerHTML += `
             <div class="history-item">
                 <div class="history-details">
@@ -606,9 +583,7 @@ function renderLeaveHistory(data) {
                     <span class="leave-info-request">🕒 ทำรายการ: ${r.requestTime || '-'}</span>
                     ${actionButtonsHtml}
                 </div>
-                <div style="flex-shrink: 0;">
-                    <span class="status-badge ${statusClass}">${r.status}</span>
-                </div>
+                <div style="flex-shrink: 0;"><span class="status-badge ${statusClass}">${r.status}</span></div>
             </div>`;
         });
     }
@@ -617,21 +592,9 @@ function renderLeaveHistory(data) {
 
 function updateStatsView(stats) {
     document.getElementById('leaveStatsGrid').innerHTML = `
-        <div class="stat-card stat-sick">
-            <div class="stat-label">🤒 ลาป่วย</div>
-            <div class="stat-count">${stats.sick}<small>/ใช้</small></div>
-            <div class="stat-remaining">เหลือ ${currentQuota.sick - stats.sick}</div>
-        </div>
-        <div class="stat-card stat-personal">
-            <div class="stat-label">💼 ลากิจ</div>
-            <div class="stat-count">${stats.personal}<small>/ใช้</small></div>
-            <div class="stat-remaining">เหลือ ${currentQuota.personal - stats.personal}</div>
-        </div>
-        <div class="stat-card stat-vacation">
-            <div class="stat-label">🏖️ พักร้อน</div>
-            <div class="stat-count">${stats.vacation}<small>/ใช้</small></div>
-            <div class="stat-remaining">เหลือ ${currentQuota.vacation - stats.vacation}</div>
-        </div>
+        <div class="stat-card stat-sick"><div class="stat-label">🤒 ลาป่วย</div><div class="stat-count">${stats.sick}<small>/ใช้</small></div><div class="stat-remaining">เหลือ ${currentQuota.sick - stats.sick}</div></div>
+        <div class="stat-card stat-personal"><div class="stat-label">💼 ลากิจ</div><div class="stat-count">${stats.personal}<small>/ใช้</small></div><div class="stat-remaining">เหลือ ${currentQuota.personal - stats.personal}</div></div>
+        <div class="stat-card stat-vacation"><div class="stat-label">🏖️ พักร้อน</div><div class="stat-count">${stats.vacation}<small>/ใช้</small></div><div class="stat-remaining">เหลือ ${currentQuota.vacation - stats.vacation}</div></div>
     `;
 }
 
@@ -640,17 +603,16 @@ function openModal() {
     currentSlipId = null;
     document.getElementById('modalTitle').innerText = "📝 แจ้งขอลาหยุด";
     document.getElementById('btnSubmitLeave').innerText = "ส่งคำขอลา";
-    
     document.getElementById('leaveStart').value = "";
     document.getElementById('leaveEnd').value = "";
     document.getElementById('leaveDays').value = "";
     document.getElementById('leaveReason').value = "";
-    
     document.getElementById('leaveModal').style.display = 'block'; 
 }
 
 function closeModal() { document.getElementById('leaveModal').style.display = 'none'; }
 window.onload = loadProfile;
 </script>
+
 </body>
 </html>

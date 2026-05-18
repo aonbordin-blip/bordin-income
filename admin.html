@@ -162,7 +162,6 @@
     </div>
 
 <script>
-// --- 1. Firebase Config ---
 const firebaseConfig = {
   apiKey: "AIzaSyDEzU0P1EWgJgABEw3sJL54N5dq4dlVHJQ",
   authDomain: "hr-system-f9acc.firebaseapp.com",
@@ -178,13 +177,10 @@ const db = firebase.database();
 let allStaff = {};
 let allLeaves = {};
 
-// 🟢 ปรับเปลี่ยนโครงสร้าง Payload ยิงหา GAS ให้แมตช์ตามแบบฟอร์ม 100% 🟢
 function sendAdminLineNotification(leaveData, newStatus) {
-    // ⚠️ ตรวจสอบ URL App Script ตรงนี้ให้มั่นใจว่าเป็นลิงก์ Web app ล่าสุด ⚠️
     const gasAppUrl = "https://script.google.com/macros/s/AKfycby0kL00jnepsZfujU93PHLtAwU9_1vLr0PdLqUjU5dP81G-tSeetBA93iVtc4_xLkn6ag/exec"; 
-
     const slipId = leaveData.slipId || leaveData.id || Math.floor(Math.random() * 90000) + 10000;
-
+    
     const payload = {
         action: "send_line_update",
         leaveData: {
@@ -195,23 +191,36 @@ function sendAdminLineNotification(leaveData, newStatus) {
             days: leaveData.days,
             startDate: leaveData.startDate,
             endDate: leaveData.endDate,
-            reason: leaveData.reason || "ไม่ได้ระบุสาเหตุ"
+            reason: leaveData.reason || "ไม่ได้ระบุสาเหตุ",
+            team: leaveData.team || "ทั่วไป" 
         },
         newStatus: newStatus
     };
 
-    // ✨ ศัลยกรรมจุดนี้: เปลี่ยนจาก mode: 'no-cors' เป็นใส่ headers ที่ถูกต้อง ✨
     fetch(gasAppUrl, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain;charset=utf-8' // ป้องกันปัญหา CORS และทำให้ GAS อ่านค่า JSON.parse() ได้
-        },
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
-    })
-    .then(response => { console.log('ส่งข้อมูลการลาผ่าน Webhook ไปยังหน้าต่างเซิร์ฟเวอร์ LINE สำเร็จ!'); })
-    .catch(error => console.error('LINE Webhook Error:', error));
+    }).then(() => console.log('ส่ง Line สำเร็จ')).catch(err => console.error('LINE Error:', err));
 }
 
+function saveLeaveEdit() {
+    const key = document.getElementById("editLeaveId").value;
+    const newStatus = document.getElementById("editLeaveStatus").value;
+    const leaveData = allLeaves[key];
+
+    const staffInfo = Object.values(allStaff).find(s => s.employeeId === leaveData.empId) || {};
+    leaveData.team = leaveData.team || staffInfo.department || "ทั่วไป";
+
+    db.ref('leaves/' + key).update({ status: newStatus }).then(() => {
+        if(leaveData) {
+            sendAdminLineNotification(leaveData, newStatus);
+        }
+        alert("✅ บันทึกสถานะและส่งแจ้งเตือนเข้า LINE เรียบร้อยแล้ว");
+        closeModal('leaveEditModal');
+    });
+}
 
 function formatTimestamp(timestamp) {
     if(!timestamp) return '-';
@@ -272,7 +281,6 @@ function renderDailyLeaves() {
         const container = document.getElementById("leaveDailySection");
         const filterDate = document.getElementById("filterDate").value; 
         container.innerHTML = "";
-
         let hasData = false;
 
         Object.keys(allLeaves).reverse().forEach(key => {
@@ -327,35 +335,20 @@ function openEditModal(key) {
     document.getElementById("editPos").value = staff.position || '';
     document.getElementById("editDept").value = staff.department || '';
     document.getElementById("editStartDateWork").value = staff.startDateWork || '';
-    
     document.getElementById("editAddrNo").value = staff.addr_no || '';
     document.getElementById("editAddrMoo").value = staff.addr_moo || '';
     document.getElementById("editAddrSub").value = staff.addr_subdistrict || '';
     document.getElementById("editAddrDist").value = staff.addr_district || '';
     document.getElementById("editAddrProv").value = staff.addr_province || '';
-    
     document.getElementById("q_sick").value = staff.q_sick || 30;
     document.getElementById("q_personal").value = staff.q_personal || 6;
     document.getElementById("q_vacation").value = staff.q_vacation || 10;
     
     document.getElementById("empStatsGrid").innerHTML = `
-        <div style="background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 12px; text-align: center;">
-            <div style="color: #0284c7; font-size: 11px; font-weight: bold;">🤒 ลาป่วย</div>
-            <div style="font-size: 18px; font-weight: 800; color: #0284c7; margin: 5px 0;"><span style="font-size:24px;">${stats.sickUsed}</span><span style="font-size:12px; color:#aaa;"> / ใช้</span></div>
-            <div style="background: #e0f2fe; color: #0284c7; font-size: 10px; padding: 3px; border-radius: 20px; font-weight: bold;">เหลือ ${stats.q_sick - stats.sickUsed}</div>
-        </div>
-        <div style="background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 12px; text-align: center;">
-            <div style="color: #b45309; font-size: 11px; font-weight: bold;">💼 ลากิจ</div>
-            <div style="font-size: 18px; font-weight: 800; color: #b45309; margin: 5px 0;"><span style="font-size:24px;">${stats.perUsed}</span><span style="font-size:12px; color:#aaa;"> / ใช้</span></div>
-            <div style="background: #fef3c7; color: #b45309; font-size: 10px; padding: 3px; border-radius: 20px; font-weight: bold;">เหลือ ${stats.q_personal - stats.perUsed}</div>
-        </div>
-        <div style="background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 12px; text-align: center;">
-            <div style="color: #166534; font-size: 11px; font-weight: bold;">🏖️ พักร้อน</div>
-            <div style="font-size: 18px; font-weight: 800; color: #166534; margin: 5px 0;"><span style="font-size:24px;">${stats.vacUsed}</span><span style="font-size:12px; color:#aaa;"> / ใช้</span></div>
-            <div style="background: #dcfce3; color: #166534; font-size: 10px; padding: 3px; border-radius: 20px; font-weight: bold;">เหลือ ${stats.q_vacation - stats.vacUsed}</div>
-        </div>
+        <div style="background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 12px; text-align: center;"><div style="color: #0284c7; font-size: 11px; font-weight: bold;">🤒 ลาป่วย</div><div style="font-size: 18px; font-weight: 800; color: #0284c7; margin: 5px 0;"><span style="font-size:24px;">${stats.sickUsed}</span><span style="font-size:12px; color:#aaa;"> / ใช้</span></div><div style="background: #e0f2fe; color: #0284c7; font-size: 10px; padding: 3px; border-radius: 20px; font-weight: bold;">เหลือ ${stats.q_sick - stats.sickUsed}</div></div>
+        <div style="background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 12px; text-align: center;"><div style="color: #b45309; font-size: 11px; font-weight: bold;">💼 ลากิจ</div><div style="font-size: 18px; font-weight: 800; color: #b45309; margin: 5px 0;"><span style="font-size:24px;">${stats.perUsed}</span><span style="font-size:12px; color:#aaa;"> / ใช้</span></div><div style="background: #fef3c7; color: #b45309; font-size: 10px; padding: 3px; border-radius: 20px; font-weight: bold;">เหลือ ${stats.q_personal - stats.perUsed}</div></div>
+        <div style="background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 12px; text-align: center;"><div style="color: #166534; font-size: 11px; font-weight: bold;">🏖️ พักร้อน</div><div style="font-size: 18px; font-weight: 800; color: #166534; margin: 5px 0;"><span style="font-size:24px;">${stats.vacUsed}</span><span style="font-size:12px; color:#aaa;"> / ใช้</span></div><div style="background: #dcfce3; color: #166534; font-size: 10px; padding: 3px; border-radius: 20px; font-weight: bold;">เหลือ ${stats.q_vacation - stats.vacUsed}</div></div>
     `;
-
     document.getElementById("editModal").style.display = "block";
 }
 
@@ -403,7 +396,7 @@ function openLeaveEditPopup(key, empId) {
     
     const statusSelect = document.getElementById("editLeaveStatus");
     if(req.status === 'อนุมัติ') statusSelect.style.color = '#155724';
-    else if(req.status === 'ไม่นุมัติ') statusSelect.style.color = '#721c24';
+    else if(req.status === 'ไม่อนุมัติ') statusSelect.style.color = '#721c24';
     else statusSelect.style.color = '#856404';
 
     statusSelect.onchange = function() {
@@ -413,18 +406,9 @@ function openLeaveEditPopup(key, empId) {
     };
 
     document.getElementById("leaveModalStatsGrid").innerHTML = `
-        <div class="stat-box" style="background:#f0f9ff; color:#0369a1;">
-            <div style="font-size:11px; font-weight:bold;">ป่วย</div>
-            <div style="font-size:12px; font-weight:500;">ใช้ ${stats.sickUsed}/${stats.q_sick}</div>
-        </div>
-        <div class="stat-box" style="background:#fffbeb; color:#92400e;">
-            <div style="font-size:11px; font-weight:bold;">กิจ</div>
-            <div style="font-size:12px; font-weight:500;">ใช้ ${stats.perUsed}/${stats.q_personal}</div>
-        </div>
-        <div class="stat-box" style="background:#f0fdf4; color:#166534;">
-            <div style="font-size:11px; font-weight:bold;">พักร้อน</div>
-            <div style="font-size:12px; font-weight:500;">ใช้ ${stats.vacUsed}/${stats.q_vacation}</div>
-        </div>
+        <div class="stat-box" style="background:#f0f9ff; color:#0369a1;"><div style="font-size:11px; font-weight:bold;">ป่วย</div><div style="font-size:12px; font-weight:500;">ใช้ ${stats.sickUsed}/${stats.q_sick}</div></div>
+        <div class="stat-box" style="background:#fffbeb; color:#92400e;"><div style="font-size:11px; font-weight:bold;">กิจ</div><div style="font-size:12px; font-weight:500;">ใช้ ${stats.perUsed}/${stats.q_personal}</div></div>
+        <div class="stat-box" style="background:#f0fdf4; color:#166534;"><div style="font-size:11px; font-weight:bold;">พักร้อน</div><div style="font-size:12px; font-weight:500;">ใช้ ${stats.vacUsed}/${stats.q_vacation}</div></div>
     `;
 
     let historyHtml = '';
@@ -445,27 +429,7 @@ function openLeaveEditPopup(key, empId) {
         `;
     });
     document.getElementById("modalLeaveHistoryList").innerHTML = historyHtml;
-
     document.getElementById("leaveEditModal").style.display = "block";
-}
-
-// 🔥 ปลดล็อกเงื่อนไขสถานะซ้ำ เพื่อให้เตงกดคลิกทดสอบได้ทุกครั้งตามต้องการ 🔥
-function saveLeaveEdit() {
-    const key = document.getElementById("editLeaveId").value;
-    const newStatus = document.getElementById("editLeaveStatus").value;
-    
-    const leaveData = allLeaves[key];
-
-    db.ref('leaves/' + key).update({ status: newStatus }).then(() => {
-        
-        // ส่งข้อความ Flex Message แจ้งเตือนตรงเข้ากลุ่มทันทีทุกรอบที่กดเซฟ
-        if(leaveData) {
-            sendAdminLineNotification(leaveData, newStatus);
-        }
-
-        alert("✅ บันทึกสถานะและส่งแจ้งเตือนเข้า LINE เรียบร้อยแล้ว");
-        closeModal('leaveEditModal');
-    });
 }
 
 function deleteLeaveFromPopup() {
@@ -480,7 +444,7 @@ function deleteLeaveFromPopup() {
 
 function deleteEmployee() {
     const key = document.getElementById("editEmpKey").value;
-    if (confirm("⚠️ คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลพนักงานคนนี้ออกจากระบบ? \n(การดำเนินการนี้จะไม่สามารถย้อนกลับได้)")) {
+    if (confirm("⚠️ คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลพนักงานคนนี้ออกจากระบบ?")) {
         db.ref('users/' + key).remove().then(() => {
             alert("ลบข้อมูลพนักงานเรียบร้อย");
             closeModal('editModal');
@@ -496,7 +460,6 @@ window.onload = () => {
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate()).padStart(2, '0');
     document.getElementById('filterDate').value = `${yyyy}-${mm}-${dd}`;
-    
     renderStaffSection(); 
     renderDailyLeaves(); 
 };
