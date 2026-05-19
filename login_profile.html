@@ -10,213 +10,280 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* === ปรับปรุง CSS เป็นโทนสว่าง === */
         :root {
-            --primary: #4f46e5; 
-            --primary-dark: #3730a3; 
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
             --secondary: #0ea5e9;
-            --accent: #f43f5e; 
-            
-            /* สีพื้นหลังและตัวอักษรใหม่สำหรับโทนสว่าง */
-            --bg-color: #f0f4f8; /* เทาอ่อนอมฟ้าดูสะอาดตา */
-            --glass-bg: rgba(255, 255, 255, 0.7); /* ขาวโปร่งแสง */
-            --glass-border: rgba(255, 255, 255, 0.5); /* ขอบขาวจางๆ */
-            --text-main: #1e293b; /* เทาเข้มเกือบดำ อ่านง่าย */
-            --text-sub: #64748b; /* เทากลางๆ */
-            
-            /* สีเพิ่มเติมสำหรับ Input และ Shadow ในโทนสว่าง */
-            --input-bg: #ffffff;
-            --input-border: #e2e8f0;
-            --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            --accent: #f43f5e;
+            --bg-color: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
-        
-        * { box-sizing: border-box; font-family: 'Prompt', sans-serif; margin: 0; padding: 0; }
-        
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Prompt', sans-serif;
+        }
+
         body {
-            min-height: 100vh; display: flex; justify-content: center; align-items: center;
-            background: var(--bg-color);
-            /* ปรับ Gradients พื้นหลังให้จางลงเหมาะกับโทนสว่าง */
-            background-image: radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.08) 0%, transparent 50%),
-                              radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.08) 0%, transparent 50%);
-            overflow: hidden; perspective: 1000px;
-        }
-        
-        /* ปรับ Blobs ให้สีนุ่มนวลขึ้น */
-        .blob { position: absolute; filter: blur(80px); z-index: 0; opacity: 0.4; animation: float 10s infinite alternate ease-in-out; }
-        .blob-1 { width: 300px; height: 300px; background: var(--primary); top: -10%; left: -10%; animation-delay: 0s; }
-        .blob-2 { width: 400px; height: 400px; background: var(--secondary); bottom: -20%; right: -10%; animation-delay: -5s; }
-        .blob-3 { width: 250px; height: 250px; background: #c084fc; top: 40%; left: 50%; animation-duration: 15s; }
-        
-        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(30px, 50px) scale(1.1); } }
-        
-        .auth-container { position: relative; width: 100%; max-width: 420px; height: 600px; z-index: 10; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        
-        .auth-card { 
-            position: absolute; width: 100%; height: 100%; 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); 
-            border: 1px solid var(--glass-border); 
-            border-radius: 24px; padding: 40px 30px; 
-            box-shadow: var(--card-shadow); 
-            display: flex; flex-direction: column; 
-            backface-visibility: hidden; overflow-y: auto; 
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
             color: var(--text-main);
+            min-height: 100vh;
+            /* 🎯 ศัลยกรรมจุดที่ 1: ใช้ Flexbox จัดให้กล่องอยู่ตรงกลางเป๊ะทั้งแนวตั้ง-แนวนอนบน Desktop */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
         }
-        
-        /* สไตล์ Scrollbar สำหรับโทนสว่าง */
-        .auth-card::-webkit-scrollbar { width: 6px; } 
-        .auth-card::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
-        
-        .card-front { transform: rotateY(0deg); } 
-        .card-back { transform: rotateY(180deg); }
-        
-        .auth-container.show-register { transform: rotateY(-180deg); } 
-        .auth-container.show-forgot { transform: rotateY(180deg); }
-        
-        .logo-area { text-align: center; margin-bottom: 30px; }
-        .logo-area i { font-size: 48px; background: linear-gradient(135deg, #4f46e5, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
-        .logo-area h2 { color: var(--text-main); font-size: 24px; font-weight: 700; letter-spacing: 1px; }
-        .logo-area p { color: var(--text-sub); font-size: 13px; margin-top: 5px; }
-        
-        .input-group { margin-bottom: 20px; position: relative; }
-        .input-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 16px; transition: 0.3s; }
-        
-        /* ปรับ Input เป็นโทนสว่าง */
-        .input-field { 
-            width: 100%; padding: 14px 16px 14px 45px; 
-            background: var(--input-bg); 
-            border: 1px solid var(--input-border); 
-            border-radius: 12px; 
-            color: var(--text-main); 
-            font-size: 15px; outline: none; transition: all 0.3s ease; 
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); 
+
+        /* 🪐 ศัลยกรรมจุดที่ 2: ล็อกขนาดพื้นหลังแอนิเมชันให้บาลานซ์กึ่งกลางจอ */
+        .background-decor {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
         }
-        /* ปรับสี Placeholder */
-        .input-field::placeholder { color: #cbd5e1; }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.2) 0%, rgba(14, 165, 233, 0.2) 100%);
+            backdrop-filter: blur(80px);
+            animation: floatAnimation 8s infinite ease-in-out;
+        }
+
+        .circle-1 { width: 300px; height: 300px; top: -5%; left: -5%; animation-delay: 0s; }
+        .circle-2 { width: 400px; height: 400px; bottom: -10%; right: -5%; animation-delay: 2s; background: linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(244, 63, 94, 0.15) 100%); }
+        .circle-3 { width: 150px; height: 150px; top: 40%; left: 80%; animation-delay: 4s; }
+
+        @keyframes floatAnimation {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .card-container {
+            width: 100%;
+            max-width: 400px;
+            height: 600px;
+            perspective: 1500px;
+            z-index: 10;
+            padding: 16px;
+            /* 🎯 ศัลยกรรมจุดที่ 3: เอา margin ด้านบนออกเพื่อให้ Flexbox จัดวางกึ่งกลางได้อย่างสมบูรณ์ */
+            margin: 0;
+        }
+
+        .card-cube {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card-cube.show-register { transform: rotateY(180deg); }
+        .card-cube.show-forgot { transform: rotateX(180deg); }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 35px 25px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .face-login { transform: rotateY(0deg); z-index: 2; }
+        .face-register { transform: rotateY(180deg); }
+        .face-forgot { transform: rotateX(180deg); }
+
+        .brand-section { text-align: center; }
+        .logo-icon {
+            width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 12px; color: white; font-size: 24px; box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+        }
+        .brand-section h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+        .brand-section p { margin: 5px 0 0; font-size: 13px; color: var(--text-sub); }
+
+        .form-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px; }
+        .input-group { position: relative; }
+        .input-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-sub); transition: 0.3s; }
         
-        .input-field:focus { border-color: var(--secondary); background: #ffffff; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1), inset 0 1px 2px rgba(0,0,0,0.05); }
-        .input-field:focus + i, .input-field:not(:placeholder-shown) + i { color: var(--secondary); }
-        
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
-        
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); margin-top: 10px; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4); }
-        .btn-primary:active { transform: translateY(1px); }
-        
-        /* ปรับ Outline Button สำหรับโทนสว่าง */
-        .btn-outline { background: transparent; color: var(--text-sub); border: 1px solid var(--input-border); margin-top: 15px; }
-        .btn-outline:hover { background: #f1f5f9; color: var(--text-main); border-color: #cbd5e1; }
-        
-        .action-links { display: flex; justify-content: space-between; margin-top: 25px; font-size: 13px; }
-        .action-links a { color: var(--secondary); text-decoration: none; font-weight: 500; transition: 0.2s; cursor: pointer; }
-        .action-links a:hover { color: var(--primary); text-shadow: 0 0 8px rgba(79, 70, 229, 0.2); }
-        
-        #registerContent, #forgotContent { display: none; flex-direction: column; height: 100%; }
-        .show-register-content #registerContent { display: flex; } .show-forgot-content #forgotContent { display: flex; }
-        
-        /* ปรับ Loader Overlay เป็นโทนสว่าง */
-        .loader-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; border-radius: 24px; z-index: 100; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: var(--secondary); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .input-group input, .input-group select {
+            width: 100%; padding: 12px 16px 12px 45px; background: var(--input-bg);
+            border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-main);
+            font-size: 14.5px; outline: none; transition: 0.3s;
+        }
+        .input-group input::placeholder { color: #64748b; }
+        .input-group input:focus { border-color: var(--primary); background: rgba(15, 23, 42, 0.8); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3); }
+        .input-group input:focus + i { color: var(--primary); }
+
+        .btn-submit {
+            width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none; border-radius: 12px; color: white; font-size: 15px; font-weight: 600;
+            cursor: pointer; margin-top: 8px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4); }
+        .btn-submit:active { transform: translateY(0); }
+
+        .form-footer-links { text-align: center; font-size: 13.5px; color: var(--text-sub); }
+        .link-trigger { color: var(--secondary); font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .link-trigger:hover { color: #38bdf8; text-decoration: underline; }
+
+        .back-loader {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.7); border-radius: 24px; z-index: 100;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .back-loader p { margin-top: 12px; font-size: 13.5px; color: var(--text-main); }
     </style>
 </head>
 <body>
 
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
+<div class="background-decor">
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+    <div class="circle circle-3"></div>
+</div>
 
-    <div class="auth-container" id="authContainer">
+<div class="card-container">
+    <div class="card-cube" id="cardCube">
         
-        <div class="auth-card card-front">
-            <div class="loader-overlay" id="loginLoader"><div class="spinner"></div></div>
+        <div class="card-face face-login">
+            <div class="back-loader" id="loginLoader">
+                <div class="spinner"></div>
+                <p>กำลังตรวจสอบข้อมูล...</p>
+            </div>
             
-            <div class="logo-area">
-                <i class="fa-solid fa-fingerprint"></i>
-                <h2>ยินดีต้อนรับ</h2>
-                <p>ลงชื่อเข้าใช้ระบบ HR Management</p>
+            <div class="brand-section">
+                <div class="logo-icon"><i class="fa-solid fa-wallet"></i></div>
+                <h2>✓Record Income</h2>
+                <p>เข้าสู่ระบบเพื่อจัดการข้อมูลพนักงาน</p>
             </div>
 
-            <form id="loginForm" onsubmit="handleLogin(event)">
+            <form class="form-body" id="loginForm" onsubmit="handleLogin(event)">
                 <div class="input-group">
-                    <input type="text" class="input-field" id="loginUserId" placeholder="Username (User ID)" required autocomplete="off">
                     <i class="fa-solid fa-user"></i>
+                    <input type="text" id="loginUserId" placeholder="Username (รหัสพนักงาน)" required>
                 </div>
                 <div class="input-group">
-                    <input type="password" class="input-field" id="loginPassword" placeholder="รหัสผ่าน" required>
                     <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="รหัสผ่าน" required>
                 </div>
-                
-                <button type="submit" class="btn btn-primary">เข้าสู่ระบบ <i class="fa-solid fa-arrow-right-to-bracket" style="margin-left: 8px;"></i></button>
-                
-                <div class="action-links">
-                    <a onclick="flipCard('forgot')">ลืมรหัสผ่าน?</a>
-                    <a onclick="flipCard('register')">พนักงานใหม่? ลงทะเบียน</a>
-                </div>
+                <button type="submit" class="btn-submit">
+                    เข้าสู่ระบบ <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </button>
             </form>
+
+            <div class="form-footer-links">
+                ยังไม่มีบัญชีผู้ใช้? <span class="link-trigger" onclick="flipCard('register')">ลงทะเบียนใหม่</span>
+                <br><br>
+                <span class="link-trigger" style="color: #94a3b8; font-size: 12.5px;" onclick="flipCard('forgot')">ลืมรหัสผ่านใช่ไหม?</span>
+            </div>
         </div>
 
-        <div class="auth-card card-back" id="backCard">
-            <div class="loader-overlay" id="backLoader"><div class="spinner"></div></div>
-            
-            <div id="registerContent">
-                <div class="logo-area" style="margin-bottom: 20px;">
-                    <i class="fa-solid fa-user-plus" style="font-size: 36px;"></i>
-                    <h2>สร้างบัญชีผู้ใช้</h2>
-                    <p>ตั้ง Username และ Password ของคุณ</p>
-                </div>
-                <form id="registerForm" onsubmit="handleRegister(event)" style="flex:1;">
-                    <div class="input-group" style="margin-bottom: 12px;">
-                        <input type="text" class="input-field" id="regUserId" placeholder="ตั้ง Username (User ID)" required>
-                        <i class="fa-solid fa-user-tag"></i>
-                    </div>
-                    <div class="input-group" style="margin-bottom: 12px;">
-                        <input type="password" class="input-field" id="regPassword" placeholder="ตั้งรหัสผ่าน" required minlength="6">
-                        <i class="fa-solid fa-key"></i>
-                    </div>
-                    <div class="input-group" style="margin-bottom: 15px;">
-                        <input type="password" class="input-field" id="regConfirmPassword" placeholder="ยืนยันรหัสผ่าน" required minlength="6">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">สร้างบัญชี</button>
-                    <button type="button" class="btn btn-outline" onclick="flipCard('login')">กลับไปหน้าล็อกอิน</button>
-                </form>
+        <div class="card-face face-register">
+            <div class="back-loader" id="registerLoader">
+                <div class="spinner"></div>
+                <p>กำลังสร้างบัญชีผู้ใช้ใหม่...</p>
             </div>
 
-            <div id="forgotContent">
-                <div class="logo-area" style="margin-bottom: 20px;">
-                    <i class="fa-solid fa-unlock-keyhole" style="font-size: 36px;"></i>
-                    <h2>รีเซ็ตรหัสผ่าน</h2>
-                    <p style="margin-top: 10px;">กรุณากรอก Username และเลขบัตรปชช.<br>เพื่อตั้งรหัสผ่านใหม่ (ต้องเคยบันทึกประวัติแล้ว)</p>
-                </div>
-                <form id="forgotForm" onsubmit="handleForgot(event)" style="flex:1;">
-                    <div class="input-group">
-                        <input type="text" class="input-field" id="forgotUserId" placeholder="Username (User ID)" required>
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" class="input-field" id="forgotIdCard" placeholder="เลขประจำตัวประชาชน (13 หลัก)" required maxlength="13">
-                        <i class="fa-solid fa-address-card"></i>
-                    </div>
-                    <div class="input-group">
-                        <input type="password" class="input-field" id="forgotNewPassword" placeholder="รหัสผ่านใหม่" required minlength="6">
-                        <i class="fa-solid fa-key"></i>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);">ยืนยันการเปลี่ยนรหัส</button>
-                    <button type="button" class="btn btn-outline" onclick="flipCard('login')">กลับไปหน้าล็อกอิน</button>
-                </form>
+            <div class="brand-section">
+                <div class="logo-icon" style="background: linear-gradient(135deg, var(--secondary) 0%, #10b981 100%);"><i class="fa-solid fa-user-plus"></i></div>
+                <h2>สร้างบัญชีใหม่</h2>
+                <p>ลงทะเบียนรหัสพนักงานเข้าสู่ระบบ</p>
             </div>
 
+            <form class="form-body" id="registerForm" onsubmit="handleRegister(event)">
+                <div class="input-group">
+                    <i class="fa-solid fa-id-card-clip"></i>
+                    <input type="text" id="regUserId" placeholder="รหัสพนักงาน (จะใช้เป็น Username)" required>
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="regPassword" placeholder="ตั้งรหัสผ่านเข้าใช้งาน" required>
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-address-card"></i>
+                    <input type="text" id="regIdCard" placeholder="เลขประจำตัวประชาชน 13 หลัก" maxlength="13" required>
+                </div>
+                <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, var(--secondary) 0%, #0284c7 100%); box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);">
+                    ยืนยันลงทะเบียน <i class="fa-solid fa-user-check"></i>
+                </button>
+            </form>
+
+            <div class="form-footer-links">
+                มีบัญชีอยู่แล้ว? <span class="link-trigger" onclick="flipCard('login')">กลับไปล็อกอิน</span>
+            </div>
+        </div>
+
+        <div class="card-face face-forgot">
+            <div class="back-loader" id="forgotLoader">
+                <div class="spinner"></div>
+                <p>กำลังตรวจสอบข้อมูล...</p>
+            </div>
+
+            <div class="brand-section">
+                <div class="logo-icon" style="background: linear-gradient(135deg, var(--accent) 0%, #e11d48 100%);"><i class="fa-solid fa-key"></i></div>
+                <h2>รีเซ็ตรหัสผ่าน</h2>
+                <p>ยืนยันเลขบัตรประชาชนเพื่อเปลี่ยนรหัส</p>
+            </div>
+
+            <form class="form-body" id="forgotForm" onsubmit="handleForgot(event)">
+                <div class="input-group">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="forgotUserId" placeholder="Username (รหัสพนักงาน)" required>
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-address-card"></i>
+                    <input type="text" id="forgotIdCard" placeholder="เลขประจำตัวประชาชน 13 หลัก" maxlength="13" required>
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-lock-open"></i>
+                    <input type="password" id="forgotNewPassword" placeholder="ตั้งรหัสผ่านใหม่ที่ต้องการ" required>
+                </div>
+                <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, var(--accent) 0%, #be123c 100%); box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);">
+                    เปลี่ยนรหัสผ่าน <i class="fa-solid fa-circle-check"></i>
+                </button>
+            </form>
+
+            <div class="form-footer-links">
+                นึกรหัสออกแล้ว? <span class="link-trigger" onclick="flipCard('login')">กลับไปล็อกอิน</span>
+            </div>
         </div>
 
     </div>
+</div>
 
 <script>
-    // === JavaScript คงเดิมทั้งหมด ===
-    
-    // Firebase Config
+    // ==========================================
+    // ⚙️ Firebase Initial Configuration
+    // ==========================================
     const firebaseConfig = {
         apiKey: "AIzaSyDEzU0P1EWgJgABEw3sJL54N5dq4dlVHJQ",
         authDomain: "hr-system-f9acc.firebaseapp.com",
@@ -229,52 +296,43 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Check if already logged in (ใช้คีย์ใหม่ loggedInUserId)
-    window.onload = () => {
-        if(localStorage.getItem("loggedInUserId")) {
-            window.location.href = "profile.html"; 
-        }
-    }
-
-    const container = document.getElementById('authContainer');
-    const backCard = document.getElementById('backCard');
-
-    function flipCard(target) {
-        if(target === 'login') {
-            container.className = 'auth-container';
-            setTimeout(() => { backCard.className = 'auth-card card-back'; }, 400); 
-        } else if(target === 'register') {
-            backCard.className = 'auth-card card-back show-register-content';
-            container.className = 'auth-container show-register';
-        } else if(target === 'forgot') {
-            backCard.className = 'auth-card card-back show-forgot-content';
-            container.className = 'auth-container show-forgot';
-        }
+    function flipCard(face) {
+        const cube = document.getElementById('cardCube');
+        cube.classList.remove('show-register', 'show-forgot');
+        if (face === 'register') cube.classList.add('show-register');
+        if (face === 'forgot') cube.classList.add('show-forgot');
     }
 
     function showLoader(id) { document.getElementById(id).style.display = 'flex'; }
     function hideLoader(id) { document.getElementById(id).style.display = 'none'; }
 
-    // 1. Login
+    // 1. ระบบ Login
     function handleLogin(e) {
         e.preventDefault();
         const userId = document.getElementById('loginUserId').value.trim();
-        const pass = document.getElementById('loginPassword').value.trim();
-        
+        const pass = document.getElementById('loginPassword').value;
+
         showLoader('loginLoader');
-        
-        db.ref('users/' + userId).once('value').then(snap => {
-            const data = snap.val();
+
+        if (userId === "admin" && pass === "admin1234") {
+            sessionStorage.setItem("isAdmin", "true");
             hideLoader('loginLoader');
-            if (data) {
-                if (data.password === pass) {
+            window.location.href = "admin.html";
+            return;
+        }
+
+        db.ref('users/' + userId).once('value').then(snap => {
+            hideLoader('loginLoader');
+            const userData = snap.val();
+            if (userData) {
+                if (userData.password === pass) {
                     localStorage.setItem("loggedInUserId", userId);
                     window.location.href = "profile.html";
                 } else {
-                    alert("❌ รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่");
+                    alert("❌ รหัสผ่านไม่ถูกต้อง!");
                 }
             } else {
-                alert("❌ ไม่พบ Username นี้ในระบบ กรุณาลงทะเบียนใหม่");
+                alert("❌ ไม่พบ Username นี้ในระบบ!");
             }
         }).catch(err => {
             hideLoader('loginLoader');
@@ -282,72 +340,68 @@
         });
     }
 
-    // 2. Register
+    // 2. ระบบ Register
     function handleRegister(e) {
         e.preventDefault();
         const userId = document.getElementById('regUserId').value.trim();
         const pass = document.getElementById('regPassword').value;
-        const confirmPass = document.getElementById('regConfirmPassword').value;
+        const idCard = document.getElementById('regIdCard').value.trim();
 
-        if (pass !== confirmPass) {
-            return alert("⚠️ รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน!");
-        }
-
-        showLoader('backLoader');
+        showLoader('registerLoader');
 
         db.ref('users/' + userId).once('value').then(snap => {
             if (snap.exists()) {
-                hideLoader('backLoader');
-                alert("⚠️ Username นี้มีคนใช้งานแล้ว กรุณาตั้งใหม่!");
+                hideLoader('registerLoader');
+                alert("⚠️ รหัสพนักงานนี้เคยลงทะเบียนไว้แล้วค่ะ");
+                flipCard('login');
             } else {
-                const newUser = {
-                    userId: userId,
+                const newUserData = {
+                    employeeId: userId,
                     password: pass,
-                    q_sick: 30,      
-                    q_personal: 6,
-                    q_vacation: 10,
-                    isProfileLocked: false // สถานะล็อคโปรไฟล์ (เริ่มต้น = false)
+                    idCard: idCard,
+                    fullName: "", phone: "", position: "", department: "", photo: "",
+                    q_sick: 30, q_personal: 6, q_vacation: 10
                 };
-                db.ref('users/' + userId).set(newUser).then(() => {
-                    hideLoader('backLoader');
-                    alert("✅ สร้างบัญชีสำเร็จ! ระบบกำลังพาท่านไปกรอกประวัติส่วนตัว...");
+                db.ref('users/' + userId).set(newUserData).then(() => {
+                    hideLoader('registerLoader');
+                    alert("✅ ลงทะเบียนเรียบร้อยแล้ว!");
                     localStorage.setItem("loggedInUserId", userId);
                     window.location.href = "profile.html";
                 });
             }
         }).catch(err => {
-            hideLoader('backLoader');
+            hideLoader('registerLoader');
             alert("Error: " + err.message);
         });
     }
 
-    // 3. Forgot Password
+    // 3. ระบบ Forgot Password
     function handleForgot(e) {
         e.preventDefault();
         const userId = document.getElementById('forgotUserId').value.trim();
         const idCard = document.getElementById('forgotIdCard').value.trim();
         const newPass = document.getElementById('forgotNewPassword').value;
 
-        showLoader('backLoader');
+        showLoader('forgotLoader');
 
         db.ref('users/' + userId).once('value').then(snap => {
             const data = snap.val();
-            hideLoader('backLoader');
+            hideLoader('forgotLoader');
             if (data) {
                 if (data.idCard && data.idCard === idCard) {
                     db.ref('users/' + userId).update({ password: newPass }).then(() => {
-                        alert("✅ เปลี่ยนรหัสผ่านใหม่เรียบร้อยแล้ว กรุณาล็อกอินด้วยรหัสผ่านใหม่");
+                        alert("✅ เปลี่ยนรหัสผ่านใหม่เรียบร้อยแล้ว");
                         document.getElementById('forgotForm').reset();
                         flipCard('login');
                     });
                 } else {
-                    alert("❌ เลขประจำตัวประชาชนไม่ตรงกับข้อมูลในระบบ (หรือคุณยังไม่เคยกรอกประวัติ)");
+                    alert("❌ เลขประจำตัวประชาชนไม่ตรงกับข้อมูลในระบบ!");
                 }
             } else {
                 alert("❌ ไม่พบ Username นี้ในระบบ!");
             }
         }).catch(err => {
-            hideLoader('backLoader');
+            hideLoader('forgotLoader');
             alert("Error: " + err.message);
         });
     }
