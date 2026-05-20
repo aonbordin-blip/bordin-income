@@ -11,7 +11,7 @@
 
     <style>
         /* ==========================================
-           ✨ ดีไซน์ Dark Glassmorphic สไตล์ดึงดูดสายตา
+           ✨ ดีไซน์ Dark Glassmorphic สไตล์ดึงดูดสายตา (โค้ดฐานเดิมของเตง)
            ========================================== */
         :root {
             --primary: #4f46e5;
@@ -119,6 +119,68 @@
         
         .modal-content h3 { margin: 0 0 20px 0; font-size: 18px; font-weight: 600; text-align: center; }
         .btn-secondary { flex: 1; padding: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-main); cursor: pointer; font-weight: 500; }
+
+        /* =========================================
+           ✨ จัด Layout ฟอร์มข้อมูลส่วนตัว (2 คอลัมน์ ล็อคตายตัวแม้บนมือถือ)
+           ========================================= */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .form-grid .form-group {
+            margin-bottom: 0; 
+        }
+        .form-grid-full {
+            grid-column: span 2;
+        }
+
+        /* ==========================================
+           📱 ศัลยกรรมดีไซน์บนอุปกรณ์พกพา (Mobile Responsive)
+           ========================================== */
+        @media (max-width: 768px) {
+            .wrapper { padding: 16px 12px; }
+            .main-grid { gap: 16px; }
+            .glass-card { padding: 20px 16px; border-radius: 20px; }
+            
+            /* 📊 โควตาเรียง 3 คอลัมน์บนมือถือ */
+            .quota-grid { 
+                grid-template-columns: repeat(3, 1fr) !important; 
+                gap: 8px !important; 
+            }
+            .stat-card { 
+                padding: 12px 6px !important; 
+                border-radius: 14px !important;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+            .stat-label { 
+                font-size: 11px !important; 
+                white-space: nowrap; 
+                text-align: center;
+                margin-bottom: 2px !important;
+            }
+            .stat-count { 
+                font-size: 20px !important; 
+                text-align: center;
+                margin: 2px 0 !important;
+            }
+            .stat-count small { 
+                font-size: 10px !important; 
+            }
+            .stat-remaining { 
+                font-size: 10px !important; 
+                text-align: center;
+                padding: 2px 8px !important;
+                border-radius: 12px !important;
+                margin-top: 4px !important;
+            }
+            .history-item { flex-direction: column; }
+            .status-badge { align-self: flex-start; }
+        }
     </style>
 </head>
 <body>
@@ -147,28 +209,23 @@
 
             <div class="section-header"><i class="fa-solid fa-user-pen"></i> ข้อมูลส่วนตัว (กรอกก่อนใช้งาน)</div>
             
-            <div class="form-group"><label>รหัสพนักงาน (ID ของจริง)</label><div class="input-wrapper"><input type="text" id="employeeId" class="profile-input"></div></div>
-            <div class="form-group"><label>เลขประจำตัวประชาชน</label><div class="input-wrapper"><input type="text" id="idCard" class="profile-input" maxlength="13"></div></div>
-            <div class="form-group"><label>ชื่อ-นามสกุล</label><div class="input-wrapper"><input type="text" id="fullName" class="profile-input"></div></div>
-            
-            <div class="form-row">
-                <div><label>ตำแหน่ง</label><div class="input-wrapper"><input type="text" id="position" class="profile-input"></div></div>
-                <div><label>แผนก</label><div class="input-wrapper"><input type="text" id="department" class="profile-input"></div></div>
-            </div>
-            <div class="form-row">
-                <div><label>วันเริ่มทำงาน</label><div class="input-wrapper"><input type="date" id="startDateWork" class="profile-input"></div></div>
-                <div><label>เบอร์โทรศัพท์</label><div class="input-wrapper"><input type="tel" id="phone" class="profile-input"></div></div>
+            <div class="form-grid">
+                <div class="form-group form-grid-full"><label>รหัสพนักงาน (ID ของจริง)</label><div class="input-wrapper"><input type="text" id="employeeId" class="profile-input"></div></div>
+                <div class="form-group form-grid-full"><label>เลขประจำตัวประชาชน</label><div class="input-wrapper"><input type="text" id="idCard" class="profile-input" maxlength="13"></div></div>
+                <div class="form-group form-grid-full"><label>ชื่อ-นามสกุล</label><div class="input-wrapper"><input type="text" id="fullName" class="profile-input"></div></div>
+                <div class="form-group"><label>ตำแหน่ง</label><div class="input-wrapper"><input type="text" id="position" class="profile-input"></div></div>
+                <div class="form-group"><label>แผนก</label><div class="input-wrapper"><input type="text" id="department" class="profile-input"></div></div>
+                <div class="form-group"><label>วันเริ่มทำงาน</label><div class="input-wrapper"><input type="date" id="startDateWork" class="profile-input"></div></div>
+                <div class="form-group"><label>เบอร์โทรศัพท์</label><div class="input-wrapper"><input type="tel" id="phone" class="profile-input"></div></div>
             </div>
 
             <div class="section-header"><i class="fa-solid fa-map-location-dot"></i> ที่อยู่ปัจจุบัน</div>
-            <div class="form-row">
-                <div><label>บ้านเลขที่</label><div class="input-wrapper"><input type="text" id="addr_no" class="profile-input"></div></div>
-                <div><label>หมู่ที่</label><div class="input-wrapper"><input type="text" id="addr_moo" class="profile-input"></div></div>
-            </div>
-            <div class="form-group"><label>ตำบล/แขวง</label><div class="input-wrapper"><input type="text" id="addr_subdistrict" class="profile-input"></div></div>
-            <div class="form-row">
-                <div><label>อำเภอ/เขต</label><div class="input-wrapper"><input type="text" id="addr_district" class="profile-input"></div></div>
-                <div><label>จังหวัด</label><div class="input-wrapper"><input type="text" id="addr_province" class="profile-input"></div></div>
+            <div class="form-grid">
+                <div class="form-group"><label>บ้านเลขที่</label><div class="input-wrapper"><input type="text" id="addr_no" class="profile-input"></div></div>
+                <div class="form-group"><label>หมู่ที่</label><div class="input-wrapper"><input type="text" id="addr_moo" class="profile-input"></div></div>
+                <div class="form-group form-grid-full"><label>ตำบล/แขวง</label><div class="input-wrapper"><input type="text" id="addr_subdistrict" class="profile-input"></div></div>
+                <div class="form-group"><label>อำเภอ/เขต</label><div class="input-wrapper"><input type="text" id="addr_district" class="profile-input"></div></div>
+                <div class="form-group"><label>จังหวัด</label><div class="input-wrapper"><input type="text" id="addr_province" class="profile-input"></div></div>
             </div>
 
             <button id="saveBtn" class="btn-primary" onclick="saveProfile()" style="margin-top: 20px;">
@@ -181,7 +238,7 @@
             <div class="glass-card">
                 <h3 class="section-title"><i class="fa-solid fa-chart-pie" style="color:var(--primary)"></i> สถิติการลาปีนี้</h3>
                 <div class="quota-grid" id="leaveStatsGrid">
-                    </div>
+                </div>
             </div>
 
             <div class="glass-card">
@@ -192,7 +249,7 @@
                     </button>
                 </div>
                 <div class="history-list" id="leaveHistoryBody">
-                    </div>
+                </div>
             </div>
 
         </section>
@@ -247,7 +304,6 @@
     let currentSlipId = null;  
     let isLockedProfile = false; 
 
-    // --- API LINE & Telegram ---
     function sendTelegramNotification(leaveData) {
         const token = "8427153199:AAH7QQ_WgqjPPd1RoHv9BRq2fHyVEnK_vcI"; 
         let chatId = "-1003972124668"; 
@@ -286,7 +342,6 @@
         .catch(err => console.error('LINE Error:', err));
     }
 
-    // --- อัปโหลดรูปภาพ Base64 ---
     function handleImageUpload(event) {
         if(isLockedProfile) return;
         const file = event.target.files[0];
@@ -314,7 +369,6 @@
         }
     }
 
-    // --- บันทึกโปรไฟล์ ---
     function saveProfile() {
         const profile = {
             employeeId: document.getElementById('employeeId').value,
@@ -345,7 +399,6 @@
         }
     }
 
-    // --- โหลดโปรไฟล์ ---
     function loadProfile() {
         if(loggedInUserId) {
             db.ref('users/' + loggedInUserId).on('value', snap => {
@@ -380,7 +433,6 @@
         }
     }
 
-    // --- เรนเดอร์ประวัติ & สถิติ ---
     function renderLeaveHistory(data) {
         const body = document.getElementById('leaveHistoryBody');
         body.innerHTML = "";
@@ -411,7 +463,7 @@
                 body.innerHTML += `
                 <div class="history-item">
                     <div style="flex: 1;">
-                        <div class="history-info-main" style="color:var(--primary)">${typeIcon} ${r.type} <span style="color:var(--text-main)">(${r.days} วัน)</span></div>
+                        <div class="history-info-main">${typeIcon} ${r.type} <span>(${r.days} วัน)</span></div>
                         <div class="history-info-sub"><i class="fa-regular fa-calendar"></i> ${r.startDate} ถึง ${r.endDate}</div>
                         <div class="history-info-sub" style="font-size:11px; opacity:0.7;">🕒 ร้องขอ: ${r.requestTime || '-'}</div>
                         ${actionButtonsHtml}
