@@ -38,7 +38,7 @@
         .circle-2 { width: 500px; height: 500px; bottom: -15%; right: -5%; animation-delay: 2s; background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(244, 63, 94, 0.12) 100%); }
         @keyframes floatAnimation { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-20px) scale(1.03); } }
 
-        /* 📱💻 Layout */
+        /* 📱💻 Layout บังคับเป็นแบบเดสท็อป 2 คอลัมน์ (ซ้าย-ขวา) เป๊ะๆ */
         .wrapper { position: relative; z-index: 10; width: 100%; max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
         
         .navbar { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 16px 24px; border-radius: 20px; margin-bottom: 24px; backdrop-filter: blur(10px); box-shadow: var(--shadow); }
@@ -48,12 +48,12 @@
         .btn-logout { background: rgba(244, 63, 94, 0.2); border: 1px solid rgba(244, 63, 94, 0.3); color: #fca5a5; padding: 8px 16px; border-radius: 12px; cursor: pointer; font-weight: 500; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
         .btn-logout:hover { background: var(--accent); color: white; transform: translateY(-2px); }
 
-        .main-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
-        @media (min-width: 992px) { .main-grid { grid-template-columns: 450px 1fr; } }
+        /* ปรับเมนูกริดให้เป็น 2 คอลัมน์เดสท็อปเป๊ะๆ */
+        .main-grid { display: grid; grid-template-columns: 450px 1fr; gap: 24px; }
 
         .glass-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 24px; padding: 30px 24px; backdrop-filter: blur(15px); box-shadow: var(--shadow); }
 
-        /* ฝั่งซ้าย: โปรไฟล์ */
+        /* ฝั่งซ้าย: ข้อมูลส่วนตัว (เลื่อนยาวลงมาตามรูปถ่าย) */
         .profile-widget { text-align: center; }
         .avatar-container { position: relative; width: 120px; height: 120px; margin: 0 auto 15px; cursor: pointer; }
         .avatar-preview { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid var(--glass-border); background: var(--input-bg); transition: 0.3s; }
@@ -75,18 +75,18 @@
         .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; border-radius: 14px; color: white; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45); }
 
-        /* ฝั่งขวา: โควต้า & ประวัติ */
+        /* ฝั่งขวา: โควต้า & ประวัติ (ต่อท้ายลงมาเป็นกล่องๆ) */
         .right-layout { display: flex; flex-direction: column; gap: 24px; }
         .section-title { margin: 0 0 16px 0; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
 
-        .quota-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-        @media (min-width: 576px) { .quota-grid { grid-template-columns: repeat(3, 1fr); } }
+        .quota-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        
         .stat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; text-align: center; position: relative; overflow: hidden; transition: 0.3s; }
         .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
         .stat-card.stat-sick::before { background: var(--primary); }
         .stat-card.stat-personal::before { background: var(--warning); }
         .stat-card.stat-vacation::before { background: var(--success); }
-        .stat-label { font-size: 13px; color: var(--text-sub); margin-bottom: 8px; font-weight: 500; }
+        .stat-label { font-size: 13px; color: var(--text-sub); margin-bottom: 8px; font-weight: 500; white-space: nowrap; }
         .stat-count { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
         .stat-count small { font-size: 12px; font-weight: 400; color: var(--text-sub); margin-left: 2px; }
         .stat-remaining { font-size: 11.5px; padding: 4px 10px; border-radius: 20px; display: inline-block; background: rgba(255,255,255,0.05); }
@@ -120,66 +120,23 @@
         .modal-content h3 { margin: 0 0 20px 0; font-size: 18px; font-weight: 600; text-align: center; }
         .btn-secondary { flex: 1; padding: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-main); cursor: pointer; font-weight: 500; }
 
-        /* =========================================
-           ✨ จัด Layout ฟอร์มข้อมูลส่วนตัว (2 คอลัมน์ ล็อคตายตัวแม้บนมือถือ)
-           ========================================= */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .form-grid .form-group {
-            margin-bottom: 0; 
-        }
-        .form-grid-full {
-            grid-column: span 2;
-        }
-
         /* ==========================================
            📱 ศัลยกรรมดีไซน์บนอุปกรณ์พกพา (Mobile Responsive)
            ========================================== */
         @media (max-width: 768px) {
             .wrapper { padding: 16px 12px; }
-            .main-grid { gap: 16px; }
+            .navbar { padding: 12px; border-radius: 16px; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+            .navbar-brand { font-size: 16px; }
+            .main-grid { grid-template-columns: 1fr; gap: 16px; } /* บนมือถือกดกลับมาเรียง 1 แถว */
             .glass-card { padding: 20px 16px; border-radius: 20px; }
-            
-            /* 📊 โควตาเรียง 3 คอลัมน์บนมือถือ */
-            .quota-grid { 
-                grid-template-columns: repeat(3, 1fr) !important; 
-                gap: 8px !important; 
-            }
-            .stat-card { 
-                padding: 12px 6px !important; 
-                border-radius: 14px !important;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-            }
-            .stat-label { 
-                font-size: 11px !important; 
-                white-space: nowrap; 
-                text-align: center;
-                margin-bottom: 2px !important;
-            }
-            .stat-count { 
-                font-size: 20px !important; 
-                text-align: center;
-                margin: 2px 0 !important;
-            }
-            .stat-count small { 
-                font-size: 10px !important; 
-            }
-            .stat-remaining { 
-                font-size: 10px !important; 
-                text-align: center;
-                padding: 2px 8px !important;
-                border-radius: 12px !important;
-                margin-top: 4px !important;
-            }
+            .quota-grid { gap: 12px; }
+            .stat-card { padding: 12px; border-radius: 16px; }
+            .stat-label { font-size: 12px; }
+            .stat-count { font-size: 22px; }
             .history-item { flex-direction: column; }
             .status-badge { align-self: flex-start; }
+            .action-btn-group { align-self: flex-start; width: 100%; flex-wrap: wrap; }
+            .action-btn-group > button { flex: 1; }
         }
     </style>
 </head>
@@ -209,23 +166,28 @@
 
             <div class="section-header"><i class="fa-solid fa-user-pen"></i> ข้อมูลส่วนตัว (กรอกก่อนใช้งาน)</div>
             
-            <div class="form-grid">
-                <div class="form-group form-grid-full"><label>รหัสพนักงาน (ID ของจริง)</label><div class="input-wrapper"><input type="text" id="employeeId" class="profile-input"></div></div>
-                <div class="form-group form-grid-full"><label>เลขประจำตัวประชาชน</label><div class="input-wrapper"><input type="text" id="idCard" class="profile-input" maxlength="13"></div></div>
-                <div class="form-group form-grid-full"><label>ชื่อ-นามสกุล</label><div class="input-wrapper"><input type="text" id="fullName" class="profile-input"></div></div>
-                <div class="form-group"><label>ตำแหน่ง</label><div class="input-wrapper"><input type="text" id="position" class="profile-input"></div></div>
-                <div class="form-group"><label>แผนก</label><div class="input-wrapper"><input type="text" id="department" class="profile-input"></div></div>
-                <div class="form-group"><label>วันเริ่มทำงาน</label><div class="input-wrapper"><input type="date" id="startDateWork" class="profile-input"></div></div>
-                <div class="form-group"><label>เบอร์โทรศัพท์</label><div class="input-wrapper"><input type="tel" id="phone" class="profile-input"></div></div>
+            <div class="form-group"><label>รหัสพนักงาน (ID ของจริง)</label><div class="input-wrapper"><input type="text" id="employeeId" class="profile-input"></div></div>
+            <div class="form-group"><label>เลขประจำตัวประชาชน</label><div class="input-wrapper"><input type="text" id="idCard" class="profile-input" maxlength="13"></div></div>
+            <div class="form-group"><label>ชื่อ-นามสกุล</label><div class="input-wrapper"><input type="text" id="fullName" class="profile-input"></div></div>
+            
+            <div class="form-row">
+                <div><label>ตำแหน่ง</label><div class="input-wrapper"><input type="text" id="position" class="profile-input"></div></div>
+                <div><label>แผนก</label><div class="input-wrapper"><input type="text" id="department" class="profile-input"></div></div>
+            </div>
+            <div class="form-row">
+                <div><label>วันเริ่มทำงาน</label><div class="input-wrapper"><input type="date" id="startDateWork" class="profile-input"></div></div>
+                <div><label>เบอร์โทรศัพท์</label><div class="input-wrapper"><input type="tel" id="phone" class="profile-input"></div></div>
             </div>
 
             <div class="section-header"><i class="fa-solid fa-map-location-dot"></i> ที่อยู่ปัจจุบัน</div>
-            <div class="form-grid">
-                <div class="form-group"><label>บ้านเลขที่</label><div class="input-wrapper"><input type="text" id="addr_no" class="profile-input"></div></div>
-                <div class="form-group"><label>หมู่ที่</label><div class="input-wrapper"><input type="text" id="addr_moo" class="profile-input"></div></div>
-                <div class="form-group form-grid-full"><label>ตำบล/แขวง</label><div class="input-wrapper"><input type="text" id="addr_subdistrict" class="profile-input"></div></div>
-                <div class="form-group"><label>อำเภอ/เขต</label><div class="input-wrapper"><input type="text" id="addr_district" class="profile-input"></div></div>
-                <div class="form-group"><label>จังหวัด</label><div class="input-wrapper"><input type="text" id="addr_province" class="profile-input"></div></div>
+            <div class="form-row">
+                <div><label>บ้านเลขที่</label><div class="input-wrapper"><input type="text" id="addr_no" class="profile-input"></div></div>
+                <div><label>หมู่ที่</label><div class="input-wrapper"><input type="text" id="addr_moo" class="profile-input"></div></div>
+            </div>
+            <div class="form-group"><label>ตำบล/แขวง</label><div class="input-wrapper"><input type="text" id="addr_subdistrict" class="profile-input"></div></div>
+            <div class="form-row">
+                <div><label>อำเภอ/เขต</label><div class="input-wrapper"><input type="text" id="addr_district" class="profile-input"></div></div>
+                <div><label>จังหวัด</label><div class="input-wrapper"><input type="text" id="addr_province" class="profile-input"></div></div>
             </div>
 
             <button id="saveBtn" class="btn-primary" onclick="saveProfile()" style="margin-top: 20px;">
@@ -496,6 +458,7 @@
             </div>
         `;
     }
+
 
     function submitLeave() {
         const empId = document.getElementById('employeeId').value;
