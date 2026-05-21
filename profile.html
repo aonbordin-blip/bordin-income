@@ -98,7 +98,6 @@
         .history-list { display: flex; flex-direction: column; gap: 12px; max-height: 350px; overflow-y: auto; padding-right: 4px; }
         .history-list::-webkit-scrollbar { width: 6px; } .history-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
         
-        /* 🔧 ศัลยกรรมแก้ไขเลย์เอาต์การลา (ป้องกันสถานะตกลงมา) */
         .history-item { 
             background: rgba(15, 23, 42, 0.4); 
             border: 1px solid var(--glass-border); 
@@ -109,7 +108,7 @@
             align-items: flex-start; 
             transition: 0.2s; 
             gap: 12px; 
-            flex-wrap: nowrap; /* ห้ามตกลงมาเด็ดขาด */
+            flex-wrap: nowrap; 
         }
         .history-info-main { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
         .history-info-sub { font-size: 12.5px; color: var(--text-sub); margin-bottom: 4px; }
@@ -132,14 +131,24 @@
         .modal-content h3 { margin: 0 0 20px 0; font-size: 18px; font-weight: 600; text-align: center; }
         .btn-secondary { flex: 1; padding: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-main); cursor: pointer; font-weight: 500; }
 
-        /* กระดานข่าวสารจาก Admin */
+        /* ==========================================
+           📢 ศัลยกรรมกระดานข่าวสารจาก Admin (แก้ปัญหาเว้นวรรค/กล่องยืด)
+           ========================================== */
         .announcement-board { position: relative; overflow: hidden; padding: 20px 24px; width: 100%; max-width: 100%; }
         .announcement-board::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(to bottom, var(--accent), var(--secondary)); }
         .announcement-list { display: flex; flex-direction: column; gap: 15px; max-height: 380px; overflow-y: auto; overflow-x: hidden; padding-right: 5px; }
         .announcement-list::-webkit-scrollbar { width: 6px; }
         .announcement-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
 
-        .announce-item { background: rgba(15, 23, 42, 0.4); border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; transition: transform 0.3s, box-shadow 0.3s; width: 100%; word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; }
+        /* แก้ไขกล่องให้พอดี */
+        .announce-item { 
+            background: rgba(15, 23, 42, 0.4); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 16px; 
+            padding: 16px 20px; 
+            transition: transform 0.3s, box-shadow 0.3s; 
+            width: 100%; 
+        }
         .announce-item:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); border-color: rgba(244, 63, 94, 0.3); }
         .announce-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px; }
         .admin-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), #be123c); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; box-shadow: 0 4px 10px rgba(244, 63, 94, 0.3); flex-shrink: 0; }
@@ -147,7 +156,15 @@
         .admin-name { font-weight: 600; font-size: 14px; color: #f8fafc; display: flex; align-items: center; gap: 6px; }
         .announce-time { font-size: 11px; color: var(--text-sub); }
         
-        .announce-body { font-size: 13.5px; color: #e2e8f0; line-height: 1.6; word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; white-space: pre-wrap; width: 100%; }
+        /* ศัลยกรรมข้อความข่าวสาร ตัด white-space: pre-wrap ออก */
+        .announce-body { 
+            font-size: 14px; 
+            color: #f8fafc; 
+            line-height: 1.6; 
+            overflow-wrap: break-word; 
+            width: 100%; 
+            margin-top: 5px;
+        }
         .announce-body a { color: var(--secondary); text-decoration: none; font-weight: 500; transition: 0.2s; word-break: break-all; }
         .announce-body a:hover { color: #38bdf8; text-decoration: underline; }
         
@@ -169,11 +186,10 @@
             .stat-label { font-size: 12px; }
             .stat-count { font-size: 22px; }
             
-            /* ศัลยกรรมให้ปุ่มเรียงสวยงามเวลาหดจอ แต่สถานะยังคงล็อกขวาบน */
             .action-btn-group { width: 100%; }
             .action-btn-group > button { flex: 1; }
             
-            .announce-body { font-size: 13px; }
+            .announce-body { font-size: 13.5px; }
             .announcement-board { padding: 16px; }
         }
     </style>
@@ -349,6 +365,7 @@
                     </div>`;
                 });
             } else {
+                // ศัลยกรรมช่องว่างที่ถูกดึงเข้าไปแสดงผลผิดปกติ
                 list.innerHTML = `
                     <div class="announce-item">
                         <div class="announce-header">
@@ -358,10 +375,7 @@
                                 <span class="announce-time">ประกาศต้อนรับ</span>
                             </div>
                         </div>
-                        <div class="announce-body">
-                            ยินดีต้อนรับเข้าสู่ระบบ <b>Employee Profile</b> ค่ะ 🎉<br>
-                            พื้นที่ตรงนี้คือกระดานข่าวสารเอาไว้รับการแจ้งเตือนจากทาง Admin นะคะ ไม่ว่าจะเป็นข้อความ รูปภาพ วิดีโอ หรือ <a href="#">ลิงก์ต่างๆ</a> ก็จะมาแสดงผลตรงนี้แบบเรียลไทม์เลยค่ะ รออัปเดตจากหลังบ้านได้เลยน้า!
-                        </div>
+                        <div class="announce-body">ยินดีต้อนรับเข้าสู่ระบบ <b>Employee Profile</b> ค่ะ 🎉<br>พื้นที่ตรงนี้คือกระดานข่าวสารเอาไว้รับการแจ้งเตือนจากทาง Admin นะคะ ไม่ว่าจะเป็นข้อความ รูปภาพ วิดีโอ หรือ <a href="#">ลิงก์ต่างๆ</a> ก็จะมาแสดงผลตรงนี้แบบเรียลไทม์เลยค่ะ รออัปเดตจากหลังบ้านได้เลยน้า!</div>
                     </div>
                 `;
             }
@@ -434,7 +448,7 @@
         }
     }
 
- function saveProfile() {
+    function saveProfile() {
         const profile = {
             employeeId: document.getElementById('employeeId').value,
             idCard: document.getElementById('idCard').value,
@@ -527,7 +541,6 @@
                 const statusClass = r.status === 'อนุมัติ' ? 'status-approved' : (r.status === 'ไม่อนุมัติ' ? 'status-rejected' : 'status-pending');
                 const typeIcon = r.type === 'ลาป่วย' ? '🤒' : (r.type === 'ลากิจ' ? '💼' : '🏖️');
 
-                // 🔧 ศัลยกรรม JS ป้องกันสถานะร่วง: แบ่งโซน flex ให้ชัดเจน
                 body.innerHTML += `
                 <div class="history-item">
                     <div style="flex: 1; min-width: 0;">
@@ -663,7 +676,6 @@
         }
     }
 
-    // เรียกฟังก์ชัน LoadProfile เมื่อโหลดหน้าเว็บเสร็จ
     window.onload = loadProfile;
 </script>
 
