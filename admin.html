@@ -297,6 +297,39 @@
         .emp-img-circle { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: var(--input-bg); border: 2px solid var(--glass-border); }
 
         /* ==========================================
+           📢 NEW: สไตล์บอร์ดจัดการข่าวสารแบบมีมิติ 3D (ศัลยกรรมเพิ่ม)
+           ========================================== */
+        .ann-manager-grid { display: grid; grid-template-columns: 400px 1fr; gap: 24px; }
+        @media (max-width: 800px) { .ann-manager-grid { grid-template-columns: 1fr; } }
+        
+        .ann-form { display: flex; flex-direction: column; gap: 16px; }
+        .ann-list-container { max-height: 400px; overflow-y: auto; padding-right: 8px; display: flex; flex-direction: column; gap: 12px; }
+        .ann-list-container::-webkit-scrollbar { width: 6px; }
+        .ann-list-container::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+        
+        .ann-item-card { background: rgba(15, 23, 42, 0.4); border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; transition: 0.3s; position: relative; overflow: hidden; }
+        .ann-item-card:hover { transform: translateY(-2px); border-color: var(--secondary); box-shadow: 0 8px 20px rgba(14, 165, 233, 0.15); }
+        .ann-item-card::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--secondary); }
+        .ann-item-card.type-image::before { background: var(--success); }
+        .ann-item-card.type-video::before { background: var(--warning); }
+
+        .ann-content-box { flex: 1; }
+        .ann-badge-row { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
+        .ann-badge { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 8px; text-transform: uppercase; }
+        .ann-badge.badge-text { background: rgba(14, 165, 233, 0.15); color: #38bdf8; }
+        .ann-badge.badge-image { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .ann-badge.badge-video { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .ann-card-text { font-size: 14px; color: #e2e8f0; line-height: 1.5; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .ann-card-time { font-size: 11px; color: #94a3b8; }
+        .ann-actions { display: flex; gap: 6px; }
+        
+        .btn-circle { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: 0.2s; font-size: 13px; background: transparent; }
+        .btn-circle-edit { background: rgba(14, 165, 233, 0.15); color: #38bdf8; }
+        .btn-circle-edit:hover { background: var(--secondary); color: white; }
+        .btn-circle-del { background: rgba(244, 63, 94, 0.15); color: #f87171; }
+        .btn-circle-del:hover { background: var(--accent); color: white; }
+
+        /* ==========================================
            📱 Mobile Screen Adaptive Layout Settings
            ========================================== */
         @media (max-width: 768px) {
@@ -337,6 +370,47 @@
     </div>
 
     <div class="container">
+
+        <div class="card" style="margin-bottom: 30px;">
+            <div class="section-title" style="color: var(--accent); margin-top: 0;">
+                <i class="fa-solid fa-bullhorn fa-bounce"></i> ระบบกระจายข่าวสารพนักงาน
+            </div>
+            <div class="ann-manager-grid">
+                <div class="ann-form">
+                    <div class="form-group">
+                        <label>เนื้อหาประกาศ / ข้อความแจ้งเตือน</label>
+                        <textarea id="annText" rows="3" placeholder="พิมพ์ข้อความข่าวสารที่นี่..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>ลิงก์แนบสื่อประกอบข่าว (Image URL / Video URL)</label>
+                        <input type="text" id="annUrl" placeholder="วางลิงก์รูปภาพ .jpg .png หรือวิดีโอ .mp4 (ถ้ามี)">
+                    </div>
+                    <div class="form-group">
+                        <label>หมวดหมู่คัดแยกประเภทสื่อ</label>
+                        <select id="annType">
+                            <option value="text">📄 ข้อความทั่วไป (Text Only)</option>
+                            <option value="image">🖼️ ข่าวประกาศแบบรูปภาพ (Image Banner)</option>
+                            <option value="video">🎥 ข่าวประกาศแบบคลิปวิดีโอ (MP4 Video Link)</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top: 10px;">
+                        <button id="btnCancelAnn" class="btn" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--glass-border); display:none; flex:1; justify-content:center; padding:12px;" onclick="resetAnnounceForm()">
+                            ❌ ยกเลิก
+                        </button>
+           <button id="btnSubmitAnn" class="btn btn-primary" style="flex:2; justify-content:center; padding:12px;" onclick="saveAnnouncement()">
+                            <i class="fa-solid fa-bullhorn"></i> โพสต์ประกาศ
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label style="margin-bottom:10px; font-weight:600; color:var(--secondary); display:block;">📰 รายการข่าวสารปัจจุบัน</label>
+                    <div class="ann-list-container" id="adminAnnounceList">
+                        <div style="text-align:center; padding:40px; opacity:0.5;"><i class="fa-solid fa-spinner fa-spin"></i> โหลดข้อมูล...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="filter-box">
             <span><i class="fa-solid fa-calendar-days"></i> กรองตามวันที่ทำรายการ (ยื่นเรื่อง):</span>
             <input type="date" id="filterLeaveDate" onchange="renderLeaveRequests()">
@@ -479,7 +553,6 @@
     </div>
 
     <script>
-        // ระบบเดิม 100% ไม่เปลี่ยนแปลง
         const firebaseConfig = {
             apiKey: "AIzaSyDEzU0P1EWgJgABEw3sJL54N5dq4dlVHJQ",
             authDomain: "hr-system-f9acc.firebaseapp.com",
@@ -494,13 +567,120 @@
 
         let globalLeavesData = {};
         let globalUsersData = {};
+        let editAnnounceKey = null; // เพิ่มตัวแปรสำหรับแก้ไขข่าวสาร
 
+        /* =========================================================
+           📢 NEW CRUD FUNCTION: ฟังก์ชันระบบข่าวสารพนักงาน (Real-time)
+           ========================================================= */
+        function loadAnnouncementsControl() {
+            db.ref('announcements').orderByChild('timestamp').on('value', snap => {
+                const listContainer = document.getElementById('adminAnnounceList');
+                listContainer.innerHTML = "";
+                const data = snap.val();
+                
+                if(data) {
+                    const sortedKeys = Object.keys(data).sort((a,b) => data[b].timestamp - data[a].timestamp);
+                    
+                    sortedKeys.forEach(key => {
+                        const ann = data[key];
+                        const cleanMessage = ann.message ? ann.message.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
+                        
+                        listContainer.innerHTML += `
+                        <div class="ann-item-card type-${ann.type || 'text'}">
+                            <div class="ann-content-box">
+                                <div class="ann-badge-row">
+                                    <span class="ann-badge badge-${ann.type || 'text'}">
+                                        ${ann.type === 'image' ? '🖼️ รูปภาพ' : ann.type === 'video' ? '🎥 วิดีโอ' : '📄 ข้อความ'}
+                                    </span>
+                                </div>
+                                <div class="ann-card-text">${cleanMessage.replace(/\n/g, '<br>')}</div>
+                                <div class="ann-card-time"><i class="fa-regular fa-clock"></i> โพสต์เมื่อ: ${ann.dateStr || ''}</div>
+                            </div>
+                            <div class="ann-actions">
+                                <button class="btn-circle btn-circle-edit" title="แก้ไขข้อความ" onclick="editAnnouncementTrigger('${key}', \`${encodeURIComponent(ann.message)}\`, \`${ann.url || ''}\`, '${ann.type || 'text'}')">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn-circle btn-circle-del" title="ลบประกาศนี้" onclick="deleteAnnouncement('${key}')">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>`;
+                    });
+                } else {
+                    listContainer.innerHTML = `<div style="text-align:center; padding:40px; opacity:0.4; font-size:14px;"><i class="fa-solid fa-folder-open"></i> ขณะนี้ยังไม่มีการตั้งประกาศข่าวสารใดๆ ค่ะ</div>`;
+                }
+            });
+        }
+
+        function saveAnnouncement() {
+            const message = document.getElementById('annText').value.trim();
+            const url = document.getElementById('annUrl').value.trim();
+            const type = document.getElementById('annType').value;
+            
+            if(!message) return alert("กรุณากรอกข้อความเนื้อหาที่จะประกาศก่อนนะคะ!");
+
+            const payload = {
+                message: message,
+                url: url,
+                type: type,
+                sender: "HR Admin",
+                dateStr: new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + " น.",
+                timestamp: Date.now()
+            };
+
+            if (editAnnounceKey) {
+                db.ref('announcements/' + editAnnounceKey).update(payload).then(() => {
+                    alert("✨ แก้ไขอัปเดตข้อมูลข่าวสารสำเร็จเรียบร้อย!");
+                    resetAnnounceForm();
+                });
+            } else {
+                db.ref('announcements').push(payload).then(() => {
+                    alert("🚀 ทำการกระจายข่าวสารแจ้งไปยังหน้าบอร์ดพนักงานเรียบร้อย!");
+                    resetAnnounceForm();
+                });
+            }
+        }
+
+        function editAnnouncementTrigger(key, encodedMsg, url, type) {
+            editAnnounceKey = key;
+            document.getElementById('annText').value = decodeURIComponent(encodedMsg);
+            document.getElementById('annUrl').value = url;
+            document.getElementById('annType').value = type;
+            
+            document.getElementById('btnSubmitAnn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> บันทึกการแก้ไข';
+            document.getElementById('btnCancelAnn').style.display = 'inline-flex';
+        }
+
+        function resetAnnounceForm() {
+            editAnnounceKey = null;
+            document.getElementById('annText').value = "";
+            document.getElementById('annUrl').value = "";
+            document.getElementById('annType').value = "text";
+            
+            document.getElementById('btnSubmitAnn').innerHTML = '<i class="fa-solid fa-bullhorn"></i> โพสต์ประกาศ';
+            document.getElementById('btnCancelAnn').style.display = 'none';
+        }
+
+        function deleteAnnouncement(key) {
+            if(confirm("🚨 เตงแน่ใจใช่ไหมว่าจะลบข่าวสารรายการนี้? หน้ากระดานฝั่งพนักงานจะหายไปทันทีเลยน้า")) {
+                db.ref('announcements/' + key).remove().then(() => {
+                    alert("🗑️ ลบข้อมูลข่าวสารชิ้นดังกล่าวออกจากระบบเสร็จสิ้น");
+                    if(editAnnounceKey === key) resetAnnounceForm();
+                });
+            }
+        }
+
+        // ==========================================
+        // 🛡️ SYSTEM CORE FUNCTIONS: ส่วนเดิมของเตง
+        // ==========================================
         function clearLeaveFilter() {
             document.getElementById('filterLeaveDate').value = '';
             renderLeaveRequests();
         }
 
         function syncDatabaseCore() {
+            loadAnnouncementsControl(); // เพิ่มโหลดข่าวสารเข้าไปพร้อมกัน
+
             db.ref('leaves').on('value', snap => {
                 globalLeavesData = snap.val() || {};
                 renderLeaveRequests();
@@ -600,7 +780,6 @@
                 const qVacation = user.q_vacation !== undefined ? user.q_vacation : 10;
                 const avatar = user.photo || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ccc'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
                 
-                // อัปเดตสี Badge ล็อคให้เข้ากับโหมดกลางคืน
                 const lockBadge = user.isProfileLocked 
                     ? `<span class="badge" style="background:rgba(244, 63, 94, 0.15); color:#f87171"><i class="fa-solid fa-lock"></i> ล็อค</span>` 
                     : `<span class="badge" style="background:rgba(16, 185, 129, 0.15); color:#34d399"><i class="fa-solid fa-lock-open"></i> ปกติ</span>`;
@@ -786,7 +965,8 @@
             if (!userTeam && globalUsersData[leaveData.userId]) {
                 userTeam = (globalUsersData[leaveData.userId].department || "").trim().toUpperCase();
             }
-            if (userTeam.includes("TEAM C") || userTeam.includes("ทีม C")) { chatId = "-1003946357713"; }
+            if (userTeam.includes("Team C") || userTeam.includes("ทีม C")) { chatId = "-1003946357713"; }
+            if (userTeam.includes("Team B") || userTeam.includes("ทีม B")) { chatId = "-1003994300693"; }
 
             let statusIcon = newStatus === 'อนุมัติ' ? '✅' : '❌';
             const slipMessage = `📢 *อัปเดตสถานะใบลาหยุด (Admin)*\n────────────────────────\n` +

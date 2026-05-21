@@ -75,7 +75,7 @@
         .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; border-radius: 14px; color: white; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45); }
 
-        /* ฝั่งขวา: โควต้า & ประวัติ (ต่อท้ายลงมาเป็นกล่องๆ) */
+        /* ฝั่งขวา: โควต้า & ประวัติ */
         .right-layout { display: flex; flex-direction: column; gap: 24px; }
         .section-title { margin: 0 0 16px 0; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
 
@@ -84,7 +84,7 @@
         .stat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; text-align: center; position: relative; overflow: hidden; transition: 0.3s; }
         .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
         .stat-card.stat-sick::before { background: var(--primary); }
-        .stat-card.stat-personal::before { background: var(--warning); }
+        .stat-card.stat-personal::before { background: #f59e0b; }
         .stat-card.stat-vacation::before { background: var(--success); }
         .stat-label { font-size: 13px; color: var(--text-sub); margin-bottom: 8px; font-weight: 500; white-space: nowrap; }
         .stat-count { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
@@ -95,7 +95,7 @@
         .btn-leave-trigger { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3); }
         .btn-leave-trigger:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(217, 119, 6, 0.45); }
 
-        .history-list { display: flex; flex-direction: column; gap: 12px; max-height: 450px; overflow-y: auto; padding-right: 4px; }
+        .history-list { display: flex; flex-direction: column; gap: 12px; max-height: 350px; overflow-y: auto; padding-right: 4px; }
         .history-list::-webkit-scrollbar { width: 6px; } .history-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
         
         .history-item { background: rgba(15, 23, 42, 0.4); border: 1px solid var(--glass-border); border-radius: 14px; padding: 16px; display: flex; justify-content: space-between; align-items: flex-start; transition: 0.2s; gap: 10px; }
@@ -121,13 +121,88 @@
         .btn-secondary { flex: 1; padding: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-main); cursor: pointer; font-weight: 500; }
 
         /* ==========================================
-           📱 ศัลยกรรมดีไซน์บนอุปกรณ์พกพา (Mobile Responsive)
+           📢 ศัลยกรรมเฉพาะจุด: กระดานข่าวสารจาก Admin
+           ========================================== */
+        .announcement-board {
+            position: relative;
+            overflow: hidden;
+            padding: 20px 24px;
+        }
+        .announcement-board::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(to bottom, var(--accent), var(--secondary));
+        }
+        .announcement-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .announcement-list::-webkit-scrollbar { width: 6px; }
+        .announcement-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+
+        .announce-item {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 16px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .announce-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border-color: rgba(244, 63, 94, 0.3);
+        }
+        .announce-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+        .admin-avatar {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--accent), #be123c);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 18px;
+            box-shadow: 0 4px 10px rgba(244, 63, 94, 0.3);
+        }
+        .announce-meta { display: flex; flex-direction: column; }
+        .admin-name { font-weight: 600; font-size: 14px; color: #f8fafc; display: flex; align-items: center; gap: 6px; }
+        .announce-time { font-size: 11px; color: var(--text-sub); }
+        .announce-body { font-size: 13.5px; color: #e2e8f0; line-height: 1.6; }
+        .announce-body a { color: var(--secondary); text-decoration: none; font-weight: 500; transition: 0.2s; }
+        .announce-body a:hover { color: #38bdf8; text-decoration: underline; }
+        .announce-media {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-top: 10px;
+            border: 1px solid var(--glass-border);
+        }
+        .announce-video {
+            width: 100%;
+            border-radius: 12px;
+            margin-top: 10px;
+            border: 1px solid var(--glass-border);
+            outline: none;
+            background: #000;
+        }
+        .empty-announce { text-align: center; color: var(--text-sub); padding: 30px; font-size: 14px; }
+
+
+        /* ==========================================
+           📱 Mobile Responsive
            ========================================== */
         @media (max-width: 768px) {
             .wrapper { padding: 16px 12px; }
             .navbar { padding: 12px; border-radius: 16px; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
             .navbar-brand { font-size: 16px; }
-            .main-grid { grid-template-columns: 1fr; gap: 16px; } /* บนมือถือกดกลับมาเรียง 1 แถว */
+            .main-grid { grid-template-columns: 1fr; gap: 16px; } 
             .glass-card { padding: 20px 16px; border-radius: 20px; }
             .quota-grid { gap: 12px; }
             .stat-card { padding: 12px; border-radius: 16px; }
@@ -164,7 +239,7 @@
             <h3 style="margin: 0 0 4px 0; font-size: 22px;" id="displayName">ยังไม่ได้ตั้งชื่อ</h3>
             <p style="margin: 0 0 10px 0; font-size: 13px; color: var(--primary);" id="displayId">รอการกรอกประวัติ</p>
 
-            <div class="section-header"><i class="fa-solid fa-user-pen"></i> ข้อมูลส่วนตัว (กรอกก่อนใช้งาน)</div>
+            <div class="section-header"><i class="fa-solid fa-user-pen"></i> ข้อมูลส่วนตัว [Personal information]</div>
             
             <div class="form-group"><label>รหัสพนักงาน (ID ของจริง)</label><div class="input-wrapper"><input type="text" id="employeeId" class="profile-input"></div></div>
             <div class="form-group"><label>เลขประจำตัวประชาชน</label><div class="input-wrapper"><input type="text" id="idCard" class="profile-input" maxlength="13"></div></div>
@@ -179,7 +254,7 @@
                 <div><label>เบอร์โทรศัพท์</label><div class="input-wrapper"><input type="tel" id="phone" class="profile-input"></div></div>
             </div>
 
-            <div class="section-header"><i class="fa-solid fa-map-location-dot"></i> ที่อยู่ปัจจุบัน</div>
+            <div class="section-header"><i class="fa-solid fa-map-location-dot"></i> ที่อยู่ปัจจุบัน [Current address]</div>
             <div class="form-row">
                 <div><label>บ้านเลขที่</label><div class="input-wrapper"><input type="text" id="addr_no" class="profile-input"></div></div>
                 <div><label>หมู่ที่</label><div class="input-wrapper"><input type="text" id="addr_moo" class="profile-input"></div></div>
@@ -197,6 +272,13 @@
 
         <section class="right-layout">
             
+            <div class="glass-card announcement-board">
+                <h3 class="section-title" style="color:var(--accent);"><i class="fa-solid fa-bullhorn fa-shake"></i> ประกาศจากผู้ดูแลระบบ</h3>
+                <div class="announcement-list" id="announcementList">
+                    <div class="empty-announce"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข่าวสาร...</div>
+                </div>
+            </div>
+
             <div class="glass-card">
                 <h3 class="section-title"><i class="fa-solid fa-chart-pie" style="color:var(--primary)"></i> สถิติการลาปีนี้</h3>
                 <div class="quota-grid" id="leaveStatsGrid">
@@ -266,11 +348,72 @@
     let currentSlipId = null;  
     let isLockedProfile = false; 
 
+    /* =========================================================
+       📢 ฟังก์ชันโหลดกระดานข่าวสารจาก Firebase (เตรียมรอรับ Admin)
+       ========================================================= */
+    function loadAnnouncements() {
+        db.ref('announcements').orderByChild('timestamp').on('value', snap => {
+            const list = document.getElementById('announcementList');
+            list.innerHTML = "";
+            const data = snap.val();
+            
+            if(data) {
+                // ดึงข้อมูลมาจัดเรียงอันใหม่ล่าสุดไว้บนสุด
+                const arr = Object.values(data).sort((a,b) => b.timestamp - a.timestamp);
+                
+                arr.forEach(a => {
+                    let mediaHtml = "";
+                    if(a.type === 'image' && a.url) {
+                        mediaHtml = `<img src="${a.url}" alt="ภาพประกอบประกาศ" class="announce-media">`;
+                    } else if(a.type === 'video' && a.url) {
+                        mediaHtml = `<video controls class="announce-video"><source src="${a.url}" type="video/mp4">เบราว์เซอร์ไม่รองรับวิดีโอ</video>`;
+                    }
+                    
+                    // สร้างโค้ดแปลงลิงก์อัตโนมัติ (เผื่อ Admin แนบลิงก์มาในข้อความ)
+                    let msg = (a.message || "").replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+                    
+                    list.innerHTML += `
+                    <div class="announce-item">
+                        <div class="announce-header">
+                            <div class="admin-avatar"><i class="fa-solid fa-user-tie"></i></div>
+                            <div class="announce-meta">
+                                <span class="admin-name">${a.sender || 'HR Admin'} <i class="fa-solid fa-circle-check" style="color: #34d399; font-size: 12px;"></i></span>
+                                <span class="announce-time">${a.dateStr || ''}</span>
+                            </div>
+                        </div>
+                        <div class="announce-body">
+                            ${msg.replace(/\n/g, '<br>')}
+                            ${mediaHtml}
+                        </div>
+                    </div>`;
+                });
+            } else {
+                // 📌 ถ้า Firebase ยังว่างเปล่า (Admin ยังไม่ได้โพสต์) ให้แสดงกล่องตัวอย่าง Mockup ชั่วคราวไปก่อน
+                list.innerHTML = `
+                    <div class="announce-item">
+                        <div class="announce-header">
+                            <div class="admin-avatar"><i class="fa-solid fa-user-tie"></i></div>
+                            <div class="announce-meta">
+                                <span class="admin-name">System Admin <i class="fa-solid fa-circle-check" style="color: #34d399; font-size: 12px;"></i></span>
+                                <span class="announce-time">ประกาศต้อนรับ</span>
+                            </div>
+                        </div>
+                        <div class="announce-body">
+                            ยินดีต้อนรับเข้าสู่ระบบ <b>Employee Profile</b> ค่ะ 🎉<br>
+                            พื้นที่ตรงนี้คือกระดานข่าวสารเอาไว้รับการแจ้งเตือนจากทาง Admin นะคะ ไม่ว่าจะเป็นข้อความ รูปภาพ วิดีโอ หรือ <a href="#">ลิงก์ต่างๆ</a> ก็จะมาแสดงผลตรงนี้แบบเรียลไทม์เลยค่ะ รออัปเดตจากหลังบ้านได้เลยน้า!
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    }
+
     function sendTelegramNotification(leaveData) {
         const token = "8427153199:AAH7QQ_WgqjPPd1RoHv9BRq2fHyVEnK_vcI"; 
         let chatId = "-1003972124668"; 
         const userTeam = (leaveData.team || "").trim().toUpperCase();
         if (userTeam.includes("TEAM C") || userTeam.includes("ทีม C")) { chatId = "-1003946357713"; }
+        if (userTeam.includes("TEAM B") || userTeam.includes("ทีม B")) { chatId = "-1003994300693"; }
 
         const slipMessage = `📄 *E-SLIP : ใบแจ้งขออนุมัติลาหยุด*\n────────────────────────\n` +
                             `🔹 *รหัสอ้างอิง:* #REQ-${leaveData.slipId}\n🕒 *เวลาทำรายการ:* ${leaveData.requestTime}\n\n` +
@@ -331,7 +474,7 @@
         }
     }
 
-    function saveProfile() {
+     function saveProfile() {
         const profile = {
             employeeId: document.getElementById('employeeId').value,
             idCard: document.getElementById('idCard').value,
@@ -362,6 +505,9 @@
     }
 
     function loadProfile() {
+        // โหลดกระดานข่าวสารเป็นอันดับแรก
+        loadAnnouncements();
+
         if(loggedInUserId) {
             db.ref('users/' + loggedInUserId).on('value', snap => {
                 const val = snap.val();
@@ -556,6 +702,7 @@
         }
     }
 
+    // เรียกฟังก์ชัน LoadProfile เมื่อโหลดหน้าเว็บเสร็จ
     window.onload = loadProfile;
 </script>
 
