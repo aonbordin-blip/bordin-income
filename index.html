@@ -6,245 +6,211 @@
 <title>✓Recode_Income</title>
 
 <link rel="apple-touch-icon" href="cute-star.png">
-
 <link rel="icon" type="image/png" sizes="192x192" href="cute-star.png">
 <link rel="icon" type="image/png" sizes="512x512" href="cute-star.png">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #FDFBF7; 
-    color: #333;
-    line-height: 1.6;
-    padding-bottom: 100px; /* เพิ่มพื้นที่ด้านล่างเพื่อไม่ให้แถบเมนูบังเนื้อหา */
-}
-.author-line {
-  border-bottom: 2px solid #00e5ff;
-  padding-bottom: 2px;
-  display: inline-block;
-  font-weight: 600;
-  letter-spacing: 1px;
-}
-@keyframes glow {
-  0%, 100% { 
-    text-shadow: 0 2px 10px rgba(255,255,255,0.6), 0 0 20px rgba(0,229,255,0.3); 
-    transform: translateY(0); 
-  }
-  50% { 
-    text-shadow: 0 4px 20px rgba(255,255,255,0.8), 0 0 35px rgba(106,90,249,0.6); 
-    transform: translateY(-2px); 
-  }
-}
-.title {
-  color: #fff;
-  animation: glow 3s ease-in-out infinite;
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: 4px;
-  margin: 0;
-  transition: all 0.3s ease;
+/* ==========================================
+   ✨ ดีไซน์ Dark Glassmorphic สไตล์ดึงดูดสายตา
+   ========================================== */
+:root {
+    --primary: #4f46e5;
+    --primary-dark: #3730a3;
+    --secondary: #0ea5e9;
+    --accent: #f43f5e;
+    --success: #10b981;
+    --warning: #fbbf24;
+    --bg-color: #0f172a;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #f8fafc;
+    --text-sub: #cbd5e1;
+    --input-bg: rgba(15, 23, 42, 0.6);
+    --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
-/* ===== [ปรับปรุงใหม่] FLOATING AMBIENT HEADER BAR ===== */
+body {
+    margin: 0;
+    font-family: 'Prompt', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.6;
+    padding-bottom: 100px;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* 🪐 พื้นหลังแอนิเมชันวงกลม */
+.background-decor { position: fixed; width: 100vw; height: 100vh; top: 0; left: 0; z-index: 0; pointer-events: none; }
+.circle { position: absolute; border-radius: 50%; background: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(14, 165, 233, 0.15) 100%); backdrop-filter: blur(80px); animation: floatAnimation 8s infinite ease-in-out; }
+.circle-1 { width: 400px; height: 400px; top: -10%; left: -10%; animation-delay: 0s; }
+.circle-2 { width: 500px; height: 500px; bottom: -15%; right: -5%; animation-delay: 2s; background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(244, 63, 94, 0.12) 100%); }
+@keyframes floatAnimation { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-20px) scale(1.03); } }
+
+/* ดันเนื้อหาหลักให้อยู่เหนือแอนิเมชัน */
+.header, .tab-content, .bottom-nav, .modal, .modal-glass {
+    position: relative;
+    z-index: 10;
+}
+
+.author-line { border-bottom: 2px solid var(--secondary); padding-bottom: 2px; display: inline-block; font-weight: 600; letter-spacing: 1px; color: var(--text-sub); }
+@keyframes glow {
+  0%, 100% { text-shadow: 0 2px 10px rgba(255,255,255,0.3), 0 0 20px rgba(14, 165, 233, 0.3); transform: translateY(0); }
+  50% { text-shadow: 0 4px 20px rgba(255,255,255,0.5), 0 0 35px rgba(79, 70, 229, 0.6); transform: translateY(-2px); }
+}
+.title { color: #fff; animation: glow 3s ease-in-out infinite; font-size: 28px; font-weight: 800; letter-spacing: 4px; margin: 0; transition: all 0.3s ease; }
+
+/* ===== FLOATING AMBIENT HEADER BAR ===== */
 .header {
-  background: linear-gradient(135deg, #6a5af9, #00c6ff);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(15px);
   color: #fff;
   padding: 18px 20px;
   border-radius: 24px;
-  margin: 15px 15px 20px 15px; /* ลอยตัวเว้นระยะเท่ากับความกว้างการ์ดล่าง */
+  margin: 15px 15px 20px 15px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 
-    0 20px 35px -10px rgba(106, 90, 249, 0.35),
-    0 0 0 1px rgba(255, 255, 255, 0.18) inset,
-    0 8px 16px -4px rgba(0, 198, 255, 0.2);
+  box-shadow: var(--shadow);
   transition: all 0.4s ease;
 }
-/* เพิ่มเลเยอร์สะท้อนแสงกระจกด้านในส่วนหัว */
-.header::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 65%);
-  pointer-events: none;
-}
-.header:hover {
-  transform: translateY(-2px);
-  box-shadow: 
-    0 25px 40px -8px rgba(106, 90, 249, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.25) inset;
-}
+.header:hover { transform: translateY(-2px); box-shadow: 0 25px 40px -8px rgba(79, 70, 229, 0.3); }
 
 /* ===== POP ANIMATION ===== */
 @keyframes popNumber {
     0% { transform: scale(1); }
-    50% { transform: scale(1.2); color: #6a5af9; }
+    50% { transform: scale(1.2); color: var(--secondary); }
     100% { transform: scale(1); }
 }
-.pop-animate {
-    animation: popNumber 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
+.pop-animate { animation: popNumber 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
 
 /* ===== CARDS & SHADOWS ===== */
 .card {
-    background: #ffffff;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     margin: 15px;
     padding: 20px;
     border-radius: 24px;
-    box-shadow: 
-        0 10px 20px rgba(0, 0, 0, 0.05),
-        0 0 0 1px rgba(106, 90, 249, 0.07),
-        0 20px 30px -10px rgba(106, 90, 249, 0.15);
+    box-shadow: var(--shadow);
     transition: all 0.3s ease;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(15px);
 }
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 
-        0 20px 30px rgba(0, 0, 0, 0.08),
-        0 0 0 1px rgba(0, 198, 255, 0.2),
-        0 25px 40px -10px rgba(106, 90, 249, 0.25);
-}
+.card:hover { transform: translateY(-3px); box-shadow: 0 25px 40px -10px rgba(79, 70, 229, 0.25); border-color: rgba(14, 165, 233, 0.3); }
 
-.grid-summary {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
-}
+.grid-summary { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
 
 .item {
-    background:#fff;
-    padding:2px 5px;
-    border-radius:10px;
-    text-align:center;
-    border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    background: rgba(15, 23, 42, 0.4);
+    padding: 10px 5px;
+    border-radius: 14px;
+    text-align: center;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     grid-column: span 2;
     transition: all 0.3s ease;
 }
-.item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(106,90,249,0.1);
-}
-.item span { font-size: 14px; color: #888; font-weight: 700; display: block; margin-bottom: 2px; }
-.item h3 { 
-    margin: 0; 
-    font-size: 25px; 
-    color: #2d3436; 
-    font-weight: 700;
-    transition: color 0.3s, transform 0.2s;
-}
+.item:hover { transform: translateY(-3px); border-color: var(--secondary); box-shadow: 0 8px 20px rgba(79, 70, 229, 0.2); }
+.item span { font-size: 13px; color: var(--text-sub); font-weight: 500; display: block; margin-bottom: 4px; }
+.item h3 { margin: 0; font-size: 24px; color: var(--text-main); font-weight: 700; transition: color 0.3s, transform 0.2s; }
 
-/* กลุ่มรายรับ */
-.item-salary { border-left: 5px solid #6a5af9; }
-.item-shift { border-left: 5px solid #00c6ff; }
-.item-ot { border-left: 5px solid #ff7675; }
-.item-gmp { border-left: 5px solid #55efc4; }
-.item-att { border-left: 5px solid #fd79a8; } 
-.item-bonus { border-left: 5px solid #e17055; }
-.item-extra { border-left: 5px solid #a29bfe; }
+/* กลุ่มรายรับแบบกระจกสี */
+.item-salary { border-left: 4px solid var(--primary); }
+.item-shift { border-left: 4px solid var(--secondary); }
+.item-ot { border-left: 4px solid var(--accent); }
+.item-gmp { border-left: 4px solid var(--success); }
+.item-att { border-left: 4px solid #fd79a8; } 
+.item-bonus { border-left: 4px solid var(--warning); }
+.item-extra { border-left: 4px solid #a29bfe; }
 
 .item-gross { 
   grid-column: span 4; 
-  border: 1px solid #fdcb6e; 
-  background: #fffdf5;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  border: 1px solid rgba(251, 191, 36, 0.3); 
+  background: rgba(217, 119, 6, 0.1);
+  display: flex; flex-direction: column; justify-content: center;
 }
-.item-gross h3 { color: #d97706; font-size: 22px; }
+.item-gross h3 { color: #fcd34d; font-size: 22px; }
 
-.item-social { border-left: 5px solid #fab1a0; background: #fff9f8; grid-column: span 3; }
-.item-other-deduct { border-left: 5px solid #ff7675; background: #fff9f8; grid-column: span 3; }
+.item-social { border-left: 4px solid var(--accent); background: rgba(244, 63, 94, 0.1); grid-column: span 3; border-color: rgba(244, 63, 94, 0.2); }
+.item-other-deduct { border-left: 4px solid var(--accent); background: rgba(244, 63, 94, 0.1); grid-column: span 3; border-color: rgba(244, 63, 94, 0.2); }
 
 /* ===== ส่วนสรุปจำนวนวันทำงาน/วันหยุดประจำงวด ===== */
-.work-days-summary {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin: 15px;
-}
+.work-days-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px; }
 .work-day-item {
-    background: #ffffff;
-    padding: 12px;
+    background: rgba(15, 23, 42, 0.4);
+    padding: 14px;
     border-radius: 16px;
     text-align: center;
-    border: 1px solid rgba(106, 90, 249, 0.1);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
-.work-day-item span { font-size: 13px; color: #888; display: block; font-weight: 700; margin-bottom: 5px; }
-.text-work { color: #6a5af9; font-weight: 800; font-size: 16px; }
-.text-holiday { color: #ff7675; font-weight: 800; font-size: 16px; }
+.work-day-item span { font-size: 13px; color: var(--text-sub); display: block; font-weight: 600; margin-bottom: 5px; }
+.text-work { color: var(--secondary); font-weight: 800; font-size: 16px; }
+.text-holiday { color: var(--accent); font-weight: 800; font-size: 16px; }
 
-@media (max-width: 600px) {
-  .item h3 { font-size: 18px; }
-  .item-gross h3 { font-size: 22px; }
-}
+@media (max-width: 600px) { .item h3 { font-size: 20px; } .item-gross h3 { font-size: 22px; } }
 
 .payout-zone { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px; }
-.payout-card { padding: 15px; border-radius: 15px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s; }
-.payout-card:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 15px 25px rgba(0,0,0,0.15); }
+.payout-card { padding: 18px; border-radius: 16px; text-align: center; color: white; box-shadow: var(--shadow); cursor: pointer; transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
+.payout-card:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.3); }
 .payout-card:active { transform: scale(0.95); }
-.payout-25 { background: linear-gradient(135deg, #6c5ce7, #a29bfe); }
-.payout-10 { background: linear-gradient(135deg, #00b894, #55efc4); }
-.deduct-card { padding: 10px; border-radius: 12px; text-align: center; color: #555; background: #fff; border: 1px dashed #fab1a0; margin-top: 5px;}
+.payout-25 { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+.payout-10 { background: linear-gradient(135deg, var(--success), #059669); }
+.deduct-card { padding: 10px; border-radius: 12px; text-align: center; color: var(--text-sub); background: rgba(0,0,0,0.2); border: 1px dashed var(--glass-border); margin-top: 8px;}
 .payout-card span { font-size: 13px; opacity: 0.9; }
-.payout-card h4 { margin: 1px 0; font-size: 22px; }
-.deduct-card small { font-size: 12px; color: #888; display: block;}
-.deduct-card b { font-size: 18px; color: #e17055; }
+.payout-card h4 { margin: 4px 0 0; font-size: 24px; }
+.deduct-card small { font-size: 12px; color: var(--text-sub); display: block;}
+.deduct-card b { font-size: 18px; color: var(--accent); }
 
 .grid-inputs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .full-width { grid-column: span 2; }
 
 button {
-    background: linear-gradient(135deg,#6a5af9,#00c6ff);
-    color:#fff;
-    border:none;
-    padding:14px;
-    border-radius:12px;
-    width:100%;
-    cursor:pointer;
-    font-weight: bold;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+    border: none;
+    padding: 14px;
+    border-radius: 14px;
+    width: 100%;
+    cursor: pointer;
+    font-weight: 600;
     font-size: 15px;
     transition: 0.3s;
-    box-shadow: 0 4px 10px rgba(106, 90, 249, 0.3);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    font-family: 'Prompt', sans-serif;
 }
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(106, 90, 249, 0.4);
-}
+button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45); }
 button:active { transform: scale(0.98); }
 
-.excelBtn { background: linear-gradient(135deg, #27ae60, #2ecc71); }
-.backupBtn { background: #6c5ce7; }
-.restoreBtn { background: #a29bfe; }
+.excelBtn { background: linear-gradient(135deg, var(--success), #059669); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+.backupBtn { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+.restoreBtn { background: linear-gradient(135deg, var(--secondary), #0284c7); box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); }
 
 input, select {
     width: 100%;
-    padding: 9px 12px;
+    padding: 12px 16px;
     margin: 0px 0;
-    border-radius: 10px;
-    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
     box-sizing: border-box;
-    font-size: 15px;
-    background: #fafafa;
+    font-size: 14.5px;
+    background: var(--input-bg);
+    color: var(--text-main);
     transition: all 0.3s;
+    font-family: 'Prompt', sans-serif;
 }
 input:focus, select:focus {
-    border-color: #6a5af9;
-    box-shadow: 0 0 0 3px rgba(106,90,249,0.1);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+    outline: none;
 }
+input::placeholder { color: #64748b; }
 
 .table-container {
   overflow-x: auto;
@@ -252,84 +218,85 @@ input:focus, select:focus {
   max-height: 400px;
   margin-top: 10px;
   margin-bottom: 25px;
-  border: 1px solid #eee;
-  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.4);
 }
 .table-container table thead th {
   position: sticky;
   top: 0;
-  background: #f8f9fa;
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(10px);
   z-index: 2;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 table { width:100%; border-collapse:collapse; min-width: 750px; }
-th,td { padding: 8px 4px; text-align:center; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
-th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
+th,td { padding: 10px 6px; text-align:center; border-bottom: 1px solid var(--glass-border); font-size: 13px; color: var(--text-main); }
+th { color: var(--text-sub); font-size: 12px; white-space: nowrap; font-weight: 500; }
 
 .period-header { 
-    background: #f1f2f6; 
-    padding: 10px; 
-    font-weight: bold; 
-    color: #2f3542; 
-    border-radius: 8px; 
+    background: rgba(255,255,255,0.05); 
+    padding: 12px; 
+    font-weight: 600; 
+    color: var(--secondary); 
+    border-radius: 10px; 
     margin-top: 10px; 
     display: block;
     width: 100%;
     box-sizing: border-box;
+    border: 1px solid var(--glass-border);
 }
 
 .totalBox {
-    background: linear-gradient(135deg,#6a5af9,#00c6ff);
-    color:#fff;
-    text-align:center;
-    padding:30px 20px;
-    border-radius:20px;
-    margin:15px;
-    box-shadow: 0 20px 30px rgba(106, 90, 249, 0.3), 0 5px 10px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+    text-align: center;
+    padding: 30px 20px;
+    border-radius: 24px;
+    margin: 15px;
+    box-shadow: 0 20px 30px rgba(79, 70, 229, 0.3), inset 0 1px 2px rgba(255,255,255,0.3);
     transition: transform 0.3s;
+    border: 1px solid rgba(255,255,255,0.1);
 }
-.totalBox:hover { transform: scale(1.02); }
-.totalBox h2 { 
-    margin: 10px 0 0 0; 
-    font-size: 45px; 
-    font-weight: 800;
-    transition: color 0.3s;
-}
+.totalBox:hover { transform: translateY(-3px); }
+.totalBox h2 { margin: 10px 0 0 0; font-size: 42px; font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
 
-.deleteBtn { background:#ff7675; color:#fff; border:none; padding:4px 8px; border-radius:6px; width: auto; font-size: 10px; }
+.deleteBtn { background: rgba(244, 63, 94, 0.2); color: #fca5a5; border: 1px solid rgba(244, 63, 94, 0.3); padding: 6px 12px; border-radius: 8px; width: auto; font-size: 11px; box-shadow: none; }
+.deleteBtn:hover { background: var(--accent); color: white; }
 
-.row-holiday { background-color: #fff5f5 !important; }
-.badge-holiday { background: #ff7675 !important; color: white !important; padding: 3px 8px; border-radius: 6px; font-weight: bold; }
+.row-holiday { background-color: rgba(244, 63, 94, 0.1) !important; }
+.badge-holiday { background: rgba(244, 63, 94, 0.2) !important; color: #fca5a5 !important; border: 1px solid rgba(244, 63, 94, 0.3); padding: 4px 10px; border-radius: 8px; font-weight: 600; }
 
 /* ===== MODAL BASE & DETAIL MODAL ===== */
-.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
-.modal-content { background-color: #fff; margin: 5% auto; padding: 0; border-radius: 20px; width: 95%; max-width: 1600px; max-height: 85vh; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.4); animation: slideUp 0.3s ease-out; display: flex; flex-direction: column; }
+.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); }
+.modal-content { background-color: #1e293b; border: 1px solid var(--glass-border); margin: 5% auto; padding: 0; border-radius: 24px; width: 95%; max-width: 1600px; max-height: 85vh; overflow: hidden; box-shadow: var(--shadow); animation: slideUp 0.3s ease-out; display: flex; flex-direction: column; }
 @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-.modal-header { padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-radius: 20px 20px 0 0; }
-.modal-header h3 { margin: 0; font-size: 18px; }
-.close-modal { font-size: 28px; font-weight: bold; cursor: pointer; }
+.modal-header { padding: 18px 20px; color: white; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid var(--glass-border); }
+.modal-header h3 { margin: 0; font-size: 18px; font-weight: 600; }
+.close-modal { font-size: 28px; font-weight: bold; cursor: pointer; color: rgba(255,255,255,0.7); transition: 0.2s; }
+.close-modal:hover { color: white; }
 
-.modal-body { padding: 5px; overflow-y: auto; flex-grow: 1; }
+.modal-body { padding: 15px; overflow-y: auto; flex-grow: 1; background: var(--bg-color); }
 
 .modal-table-container { 
-  border-radius: 12px; 
-  border: 1px solid #edf2f7; 
+  border-radius: 14px; 
+  border: 1px solid var(--glass-border); 
   overflow-x: auto; 
-  background: #fff;
+  background: rgba(15, 23, 42, 0.4);
   -webkit-overflow-scrolling: touch;
 }
 
 .modal-table { width: 100%; border-collapse: collapse; min-width: 700px; }
-.modal-table th { background: #f7fafc; padding: 10px 8px; color: #4a5568; font-weight: 600; font-size: 11px; border-bottom: 2px solid #edf2f7; white-space: nowrap; }
-.modal-table td { padding: 10px 8px; border-bottom: 1px solid #edf2f7; font-size: 12px; text-align: center; }
+.modal-table th { background: rgba(255,255,255,0.05); padding: 12px 8px; color: var(--text-sub); font-weight: 600; font-size: 12px; border-bottom: 1px solid var(--glass-border); white-space: nowrap; }
+.modal-table td { padding: 12px 8px; border-bottom: 1px solid var(--glass-border); font-size: 13px; text-align: center; color: var(--text-main); }
 
-.t-gross { color: #d97706; font-weight: bold; background: #fffbeb; }
-.t-social { color: #e53e3e; }
-.t-net { color: #6c5ce7; font-weight: 800; background: #f5f3ff; }
+.t-gross { color: #fcd34d; font-weight: 600; background: rgba(217, 119, 6, 0.1); }
+.t-social { color: #fca5a5; background: rgba(244, 63, 94, 0.05); }
+.t-net { color: #818cf8; font-weight: 700; background: rgba(79, 70, 229, 0.1); }
 
-.modal-footer-row { background: #2d3436 !important; color: white !important; font-weight: bold; }
-.modal-footer-row td { color: white !important; padding: 12px 8px; }
+.modal-footer-row { background: rgba(0,0,0,0.3) !important; color: white !important; font-weight: bold; border-top: 2px solid var(--glass-border); }
+.modal-footer-row td { color: white !important; padding: 14px 8px; }
 
 /* ===== FLOATING GLASSMORPHISM POPUP MODAL ===== */
 .modal-glass {
@@ -340,7 +307,7 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(15, 15, 25, 0.4);
+    background-color: rgba(15, 23, 42, 0.8);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     align-items: center;
@@ -349,90 +316,49 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.modal-glass.show {
-    display: flex;
-    opacity: 1;
-}
+.modal-glass.show { display: flex; opacity: 1; }
 
 .modal-glass-content {
-    background: rgba(255, 255, 255, 0.78);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.45);
+    background: #1e293b;
+    border: 1px solid var(--glass-border);
     padding: 24px;
-    border-radius: 32px;
+    border-radius: 28px;
     width: 92%;
     max-width: 480px;
-    box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.18),
-        0 0 0 1px rgba(106, 90, 249, 0.05),
-        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    box-shadow: var(--shadow);
     transform: scale(0.85) translateY(40px);
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     max-height: 82vh;
     overflow-y: auto;
     box-sizing: border-box;
+    color: var(--text-main);
 }
 
-.modal-glass-content.wide {
-    max-width: 1200px;
-    width: 95%;
-}
-
-.modal-glass.show .modal-glass-content {
-    transform: scale(1) translateY(0);
-}
+.modal-glass-content.wide { max-width: 1200px; width: 95%; }
+.modal-glass.show .modal-glass-content { transform: scale(1) translateY(0); }
 
 .modal-glass-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    border-bottom: 1px solid rgba(106, 90, 249, 0.1);
-    padding-bottom: 12px;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 15px;
 }
 
 .modal-glass-header h3 {
     margin: 0;
     font-size: 20px;
-    background: linear-gradient(135deg, #6a5af9, #00c6ff);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-weight: 800;
-    letter-spacing: 0.5px;
+    font-weight: 700;
 }
 
-.close-glass {
-    font-size: 30px;
-    font-weight: bold;
-    color: #aaa;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    line-height: 1;
-}
+.close-glass { font-size: 30px; font-weight: bold; color: var(--text-sub); cursor: pointer; transition: all 0.2s ease; line-height: 1; }
+.close-glass:hover { color: var(--accent); transform: scale(1.15); }
 
-.close-glass:hover {
-    color: #ff7675;
-    transform: scale(1.15);
-}
-
-.modal-glass-content input, .modal-glass-content select {
-    background: rgba(255, 255, 255, 0.65);
-    border: 1px solid rgba(106, 90, 249, 0.15);
-    border-radius: 12px;
-    padding: 11px 14px;
-    font-size: 15px;
-    transition: all 0.3s ease;
-}
-
-.modal-glass-content input:focus, .modal-glass-content select:focus {
-    background: rgba(255, 255, 255, 0.95);
-    border-color: #6a5af9;
-    box-shadow: 0 0 0 4px rgba(106, 90, 249, 0.15);
-    outline: none;
-}
-
-/* ===== แถบเมนูด้านล่างสุดหรูมีมิติ (Bottom Nav) ===== */
+/* ===== แถบเมนูด้านล่างเข้าชุด Glassmorphic ===== */
 .bottom-nav {
     position: fixed;
     bottom: 20px;
@@ -440,20 +366,17 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     transform: translateX(-50%);
     width: calc(100% - 30px);
     max-width: 460px;
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 8px 6px;
-    border-radius: 28px;
-    box-shadow: 
-        0 15px 35px rgba(106, 90, 249, 0.2),
-        0 1px 3px rgba(106, 90, 249, 0.05),
-        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    padding: 10px 8px;
+    border-radius: 24px;
+    box-shadow: var(--shadow);
     z-index: 1500;
-    border: 1px solid rgba(106, 90, 249, 0.12);
+    border: 1px solid var(--glass-border);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -465,65 +388,81 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     flex: 1;
     cursor: pointer;
     padding: 10px 0;
-    border-radius: 22px;
-    color: #888888;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border-radius: 18px;
+    color: var(--text-sub);
+    transition: all 0.3s ease;
     position: relative;
     -webkit-tap-highlight-color: transparent;
 }
 
-.nav-icon {
-    font-size: 22px;
-    margin-bottom: 2px;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.nav-label {
-    font-size: 11px;
-    font-weight: 700;
-    transition: color 0.3s ease;
-}
+.nav-icon { font-size: 22px; margin-bottom: 4px; transition: transform 0.3s; }
+.nav-label { font-size: 11.5px; font-weight: 500; transition: color 0.3s; }
 
 .nav-item.active {
-    color: #6a5af9;
-    background: linear-gradient(135deg, rgba(106, 90, 249, 0.15), rgba(0, 198, 255, 0.08));
-    box-shadow: 
-        inset 0 1px 3px rgba(106, 90, 249, 0.15),
-        0 4px 10px rgba(106, 90, 249, 0.05);
-    transform: translateY(-4px);
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.1);
 }
+.nav-item.active .nav-icon { transform: scale(1.2); color: var(--secondary); }
+.nav-item:hover { color: white; }
+.nav-item:active { transform: scale(0.92); }
 
-.nav-item.active .nav-icon {
-    transform: scale(1.25);
-}
+.tab-content { display: none; animation: fadeInTab 0.4s ease-out; }
+@keyframes fadeInTab { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-.nav-item:active {
-    transform: scale(0.92) translateY(0px);
+/* ==========================================
+   ✨ สไตล์เพิ่มเติมสำหรับ Popup แบ่งงวด (Split Modal)
+   ========================================== */
+@keyframes pulseIcon {
+    0% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.3); opacity: 1; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+    100% { transform: scale(1); opacity: 0.5; }
 }
+.click-icon { animation: pulseIcon 2s infinite; margin-left: 6px; font-size: 11px; }
 
-.tab-content {
-    display: none;
-    animation: fadeInTab 0.4s ease-out;
+.split-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
+.split-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
+.split-card.gross::before { background: #fcd34d; }
+.split-card.social::before { background: #fca5a5; }
+.split-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2); }
 
-@keyframes fadeInTab {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+.split-label { font-size: 14px; color: var(--text-sub); margin-bottom: 8px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.split-amount { font-size: 32px; font-weight: 700; color: var(--text-main); text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+.split-amount.gross-text { color: #fcd34d; }
+.split-amount.social-text { color: #fca5a5; }
 </style>
 </head>
 <body>
 
+<div class="background-decor">
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+</div>
+
 <div class="header">
   <div class="title">✓Record Income.</div>
-  <p style="font-size: 12px; margin-top: 4px; margin-bottom: 0; opacity: 0.95;">
+  <p style="font-size: 12.5px; margin-top: 6px; margin-bottom: 0; opacity: 0.9;">
     <span class="author-line">by Aonbordin</span>
   </p>
 </div>
 
 <div id="tab-dashboard" class="tab-content" style="display: block;">
   <div class="card">
-    <h3 style="margin-top:0">📅 เลือกเดือน</h3>
+    <h3 style="margin-top:0; font-size: 18px; color: var(--secondary);"><i class="fa-regular fa-calendar"></i> เลือกเดือน</h3>
     <input type="month" id="monthFilter" onchange="render()">
   </div>
 
@@ -537,9 +476,16 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
     <div class="item item-bonus"><span>โบนัส</span><h3 id="bonusDisplay">0</h3></div>
     
     <div class="item item-extra"><span>เงินพิเศษ</span><h3 id="extraDisplay">0</h3></div>
-    <div class="item item-gross"><span>รวมรายได้ก่อนหัก</span><h3 id="grossTotalDisplay">0</h3></div>
+    
+    <div class="item item-gross" onclick="openSplitModal('gross')" style="cursor: pointer;" title="คลิกเพื่อดูรายละเอียดแบ่งงวด">
+        <span>รวมรายได้ก่อนหัก <i class="fa-solid fa-hand-pointer click-icon"></i></span>
+        <h3 id="grossTotalDisplay">0</h3>
+    </div>
 
-    <div class="item item-social"><span>รวมหักจ่ายประกันสังคม</span><h3 id="socialTotalDisplay">0</h3></div>
+    <div class="item item-social" onclick="openSplitModal('social')" style="cursor: pointer;" title="คลิกเพื่อดูรายละเอียดแบ่งงวด">
+        <span>รวมหักจ่ายประกันสังคม <i class="fa-solid fa-hand-pointer click-icon"></i></span>
+        <h3 id="socialTotalDisplay">0</h3>
+    </div>
     <div class="item item-other-deduct"><span>หักจ่ายอื่นๆ</span><h3 id="otherDeductTotalDisplay">0</h3></div>
   </div>
 
@@ -557,14 +503,14 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
   <div class="payout-zone">
     <div>
       <div class="payout-card payout-25" onclick="openModal(1)">
-          <span>ยอดรับสุทธิ วันที่ 25 (คลิกดู)</span>
+          <span>ยอดรับวันที่ 25 (คลิก)</span>
           <h4 id="pay25">0</h4>
       </div>
       <div class="deduct-card"><small>✓รวมหักจ่าย ∆</small><b id="deduct25">0</b></div>
     </div>
     <div>
       <div class="payout-card payout-10" onclick="openModal(2)">
-          <span>ยอดรับสุทธิ วันที่ 10 (คลิกดู)</span>
+          <span>ยอดรับวันที่ 10 (คลิก)</span>
           <h4 id="pay10">0</h4>
       </div>
       <div class="deduct-card"><small>✓รวมหักจ่าย ∆</small><b id="deduct10">0</b></div>
@@ -572,7 +518,7 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
   </div>
 
   <div class="totalBox">
-    <span style="font-size: 20px; font-weight: bold; display: block; margin-bottom: 5px;">
+    <span style="font-size: 18px; font-weight: 600; display: block; margin-bottom: 5px; opacity: 0.9;">
       รายได้สุทธิรวมประจำเดือน
     </span>
     <h2 id="total">0 บาท</h2>
@@ -584,14 +530,14 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
 <div id="historyModal" class="modal-glass">
   <div class="modal-glass-content wide">
     <div class="modal-glass-header">
-      <h3>🗓️ ประวัติการทำรายการ</h3>
+      <h3><i class="fa-solid fa-clock-rotate-left"></i> ประวัติการทำรายการ</h3>
       <span class="close-glass" onclick="closeHistoryModal()">&times;</span>
     </div>
     
     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-      <button class="excelBtn" onclick="exportToExcel()">📥 Excel</button>
-      <button class="backupBtn" onclick="backupJSON()">💾 สำรอง</button>
-      <button class="restoreBtn" onclick="restoreJSON()">📂 ดึงข้อมูล</button>
+      <button class="excelBtn" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Excel</button>
+      <button class="backupBtn" onclick="backupJSON()"><i class="fa-solid fa-cloud-arrow-down"></i> สำรอง</button>
+      <button class="restoreBtn" onclick="restoreJSON()"><i class="fa-solid fa-folder-open"></i> ดึงข้อมูล</button>
     </div>
     <input type="file" id="fileInput" style="display:none" onchange="handleFile(event)">
 
@@ -605,14 +551,14 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
         <tbody id="fullList"></tbody>
       </table>
     </div>
-    <button onclick="clearData()" style="background:#ff7675; margin-top:10px;">ล้างรายการทั้งหมด</button>
+    <button onclick="clearData()" style="background: rgba(244, 63, 94, 0.2); border: 1px solid rgba(244, 63, 94, 0.4); color: #fca5a5; margin-top:10px; box-shadow: none;"><i class="fa-solid fa-trash-can"></i> ล้างรายการทั้งหมด</button>
   </div>
 </div>
 
 <div id="addModal" class="modal-glass">
   <div class="modal-glass-content">
     <div class="modal-glass-header">
-      <h3>➕ บันทึกรายได้รายวัน</h3>
+      <h3><i class="fa-solid fa-plus-circle"></i> บันทึกรายได้รายวัน</h3>
       <span class="close-glass" onclick="closeAddModal()">&times;</span>
     </div>
     <div class="grid-inputs">
@@ -627,7 +573,7 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
       <input type="number" id="otInput" placeholder="OT"><input type="number" id="gmpInput" placeholder="GMP">
       <input type="number" id="attInput" placeholder="เบี้ยขยัน"><input type="number" id="bonusInput" placeholder="โบนัส">
       <input type="number" id="extraInput" placeholder="เงินพิเศษ"><input type="number" id="otherInput" placeholder="หักอื่นๆ">
-      <div class="full-width" style="margin-top: 5px;"><button onclick="addData()">บันทึกรายการ</button></div>
+      <div class="full-width" style="margin-top: 10px;"><button onclick="addData()"><i class="fa-solid fa-floppy-disk"></i> บันทึกรายการ</button></div>
     </div>
   </div>
 </div>
@@ -655,43 +601,58 @@ th { background:#f8f9fa; color: #666; font-size: 11px; white-space: nowrap; }
   </div>
 </div>
 
+<div id="splitModal" class="modal-glass">
+  <div class="modal-glass-content">
+    <div class="modal-glass-header">
+      <h3 id="splitModalTitle" style="background: none; -webkit-text-fill-color: initial; color: white;">
+        <i class="fa-solid fa-chart-pie"></i> รายละเอียดแยกตามงวด
+      </h3>
+      <span class="close-glass" onclick="closeSplitModal()">&times;</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+      <div class="split-card" id="splitCardP1">
+         <div class="split-label">🗓️ งวดที่ 1 (วันที่ 1 - 15)</div>
+         <div class="split-amount" id="splitP1">0</div>
+      </div>
+      <div class="split-card" id="splitCardP2">
+         <div class="split-label">🗓️ งวดที่ 2 (วันที่ 16 - สิ้นเดือน)</div>
+         <div class="split-amount" id="splitP2">0</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="bottom-nav">
   <div class="nav-item active" onclick="location.href='index.html'">
-    <span class="nav-icon">📊</span>
+    <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span>
     <span class="nav-label">สรุปรายได้</span>
   </div>
   <div class="nav-item" onclick="openAddModal()">
-    <span class="nav-icon">➕</span>
+    <span class="nav-icon"><i class="fa-solid fa-circle-plus"></i></span>
     <span class="nav-label">บันทึก</span>
   </div>
   <div class="nav-item" onclick="openHistoryModal()">
-    <span class="nav-icon">🗓️</span>
+    <span class="nav-icon"><i class="fa-solid fa-rectangle-list"></i></span>
     <span class="nav-label">ประวัติ</span>
   </div>
   <div class="nav-item" onclick="location.href='profile.html'">
-    <span class="nav-icon">👤</span>
+    <span class="nav-icon"><i class="fa-solid fa-fingerprint"></i></span>
     <span class="nav-label">โปรไฟล์</span>
   </div>
-    <div class="nav-item" onclick="location.href='login.html'"> <span class="nav-icon">🔑</span>
+    <div class="nav-item" onclick="location.href='login_profile.html'">
+    <span class="nav-icon"><i class="fa-solid fa-gear"></i></span>
     <span class="nav-label">จัดการ</span>
   </div>
-
 </div>
 
 <script>
-// เพิ่มส่วนนี้ไว้ท้ายสุดของ <script> ใน index.html 
-// เพื่อให้ลิงก์จากหน้า Profile สั่งเปิด Modal ได้
 window.addEventListener('load', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const action = urlParams.get('action');
-    if (action === 'history') {
-        openHistoryModal();
-    } else if (action === 'add') {
-        openAddModal();
-    }
+    if (action === 'history') { openHistoryModal(); } 
+    else if (action === 'add') { openAddModal(); }
 });
 </script>
-
 
 <script>
 let data = JSON.parse(localStorage.getItem("income")) || [];
@@ -723,6 +684,56 @@ function closeAddModal() {
   const modal = document.getElementById('addModal');
   modal.classList.remove('show');
   setTimeout(() => modal.style.display = 'none', 300);
+}
+
+/* 🎯 ศัลยกรรมจุดที่ 4: ฟังก์ชันคำนวณและแสดง Popup แยกรายงวด */
+function openSplitModal(type) {
+    let p1 = 0, p2 = 0;
+    let month = document.getElementById("monthFilter").value;
+
+    data.forEach((d) => {
+        if(month && !d.date.startsWith(month)) return;
+        let day = new Date(d.date).getDate();
+        
+        let dSalary = d.salary || 0, dShiftPay = d.shiftPay || 0, dOt = d.ot || 0;
+        let dGmp = d.gmp || 0, dAtt = d.att || 0, dBonus = d.bonus || 0, dExtra = d.extra || 0;
+        
+        let gross = Math.ceil(dSalary + dShiftPay + dOt + dGmp + dAtt + dBonus + dExtra);
+        let social = Math.min(750, Math.ceil((dSalary + dShiftPay + dGmp) * 0.05));
+
+        let val = (type === 'gross') ? gross : social;
+
+        if(day <= 15) { p1 += val; } 
+        else { p2 += val; }
+    });
+
+    let titleText = type === 'gross' ? '💰 ยอดรวมรายได้ก่อนหัก' : '🛡️ ยอดรวมหักประกันสังคม';
+    let colorClass = type === 'gross' ? 'gross-text' : 'social-text';
+    let cardClass = type === 'gross' ? 'gross' : 'social';
+    
+    document.getElementById("splitModalTitle").innerHTML = titleText;
+    
+    const p1El = document.getElementById("splitP1");
+    const p2El = document.getElementById("splitP2");
+    
+    p1El.innerText = p1.toLocaleString() + " ฿";
+    p2El.innerText = p2.toLocaleString() + " ฿";
+    
+    p1El.className = "split-amount " + colorClass;
+    p2El.className = "split-amount " + colorClass;
+
+    document.getElementById("splitCardP1").className = "split-card " + cardClass;
+    document.getElementById("splitCardP2").className = "split-card " + cardClass;
+
+    const modal = document.getElementById('splitModal');
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closeSplitModal() {
+    const modal = document.getElementById('splitModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
 }
 
 /* ===== ฟังก์ชั่นสลับแท็บแบบ Smooth คงเดิม ===== */
@@ -779,8 +790,8 @@ function openModal(period) {
     document.getElementById("modalTitle").innerText = title;
     
     const header = document.getElementById("modalHeaderBg");
-    if(period === 1) header.style.background = "linear-gradient(135deg, #6c5ce7, #a29bfe)";
-    else header.style.background = "linear-gradient(135deg, #00b894, #55efc4)";
+    if(period === 1) header.style.background = "linear-gradient(135deg, #4f46e5, #3730a3)";
+    else header.style.background = "linear-gradient(135deg, #10b981, #059669)";
 
     let html = "";
     let p = {s:0, sh:0, o:0, g:0, at:0, bn:0, ex:0, gr:0, soc:0, oth:0, net:0};
@@ -798,7 +809,7 @@ function openModal(period) {
 
             let isHoliday = (d.shift === 'H' || d.shift === 'GH');
             let rowClass = isHoliday ? 'class="row-holiday"' : '';
-            let badgeClass = isHoliday ? 'class="badge-holiday"' : 'style="background:#edf2f7;padding:3px 8px;border-radius:6px; font-weight:bold;"';
+            let badgeClass = isHoliday ? 'class="badge-holiday"' : 'style="background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:6px; font-weight:bold; border: 1px solid rgba(255,255,255,0.2);"';
 
             html += `<tr ${rowClass}>
                 <td>${d.date}</td>
@@ -815,7 +826,7 @@ function openModal(period) {
         }
     });
 
-    document.getElementById("modalBody").innerHTML = html || "<tr><td colspan='13' style='padding:40px; text-align:center;'>ไม่มีข้อมูลรายการในงวดนี้</td></tr>";
+    document.getElementById("modalBody").innerHTML = html || "<tr><td colspan='13' style='padding:40px; text-align:center; color: #cbd5e1;'>ไม่มีข้อมูลรายการในงวดนี้</td></tr>";
     
     if(p.net > 0) {
         document.getElementById("modalFoot").innerHTML = `<tr class="modal-footer-row">
@@ -837,6 +848,7 @@ window.onclick = function(event) {
     if (event.target == document.getElementById("detailModal")) closeModal(); 
     if (event.target == document.getElementById("addModal")) closeAddModal();
     if (event.target == document.getElementById("historyModal")) closeHistoryModal();
+    if (event.target == document.getElementById("splitModal")) closeSplitModal(); // เพิ่มสั่งปิด Modal แบ่งงวดใหม่
 }
 
 function render(){
@@ -866,7 +878,7 @@ function render(){
       <td>${dExtra.toLocaleString()}</td><td>${gross.toLocaleString()}</td>
       <td>${social.toLocaleString()}</td><td>${dOther.toLocaleString()}</td>
       <td>${net.toLocaleString()}</td>
-      <td><button class="deleteBtn" onclick="deleteItem(${i})">ลบ</button></td>
+      <td><button class="deleteBtn" onclick="deleteItem(${i})"><i class="fa-solid fa-trash"></i> ลบ</button></td>
     </tr>`;
 
     if(day <= 15) { 
@@ -954,10 +966,15 @@ function updateChart(){
     labels.push(d.date.split('-')[2]);
   });
   if(chart) chart.destroy();
+  
+  /* เพิ่มการตั้งค่าสีแกนและตัวหนังสือให้กราฟเข้ากับ Dark Mode (ถ้าใช้งาน) */
+  Chart.defaults.color = '#cbd5e1';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.1)';
+
   const ctx = document.getElementById("chart").getContext("2d");
   chart = new Chart(ctx,{
     type:"line",
-    data:{ labels, datasets:[{ label:"รายได้สุทธิ", data:totals, borderColor:'#6a5af9', tension:0.4, fill:true, backgroundColor:'rgba(106, 90, 249, 0.1)' }] },
+    data:{ labels, datasets:[{ label:"รายได้สุทธิ", data:totals, borderColor:'#0ea5e9', tension:0.4, fill:true, backgroundColor:'rgba(14, 165, 233, 0.2)' }] },
     options: { responsive: true, plugins: { legend: { display: false } } }
   });
 }
