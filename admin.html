@@ -13,6 +13,8 @@
     <title>Admin Management - ✓Record Income</title>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-storage-compat.js"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -269,6 +271,19 @@
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25); }
         .form-group input:read-only, .form-group textarea:read-only { background: rgba(255, 255, 255, 0.02); color: #94a3b8; cursor: not-allowed; border-color: transparent; }
         
+        /* สไตล์พิเศษสำหรับปุ่มเลือกไฟล์ */
+        input[type="file"]::file-selector-button {
+            border: none;
+            background: var(--primary);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-right: 12px;
+        }
+        input[type="file"]::file-selector-button:hover { background: var(--primary-dark); }
+
         .form-section-title { font-size: 15px; font-weight: 600; margin: 25px 0 16px 0; padding-bottom: 8px; border-bottom: 1px dashed var(--glass-border); color: var(--secondary); display: flex; align-items: center; gap: 8px; }
 
         /* Actions group buttons */
@@ -297,7 +312,7 @@
         .emp-img-circle { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: var(--input-bg); border: 2px solid var(--glass-border); }
 
         /* ==========================================
-           📢 NEW: สไตล์บอร์ดจัดการข่าวสารแบบมีมิติ 3D (ศัลยกรรมเพิ่ม)
+           📢 NEW: สไตล์บอร์ดจัดการข่าวสารแบบมีมิติ 3D
            ========================================== */
         .ann-manager-grid { display: grid; grid-template-columns: 400px 1fr; gap: 24px; }
         @media (max-width: 800px) { .ann-manager-grid { grid-template-columns: 1fr; } }
@@ -382,8 +397,12 @@
                         <textarea id="annText" rows="3" placeholder="พิมพ์ข้อความข่าวสารที่นี่..."></textarea>
                     </div>
                     <div class="form-group">
-                        <label>ลิงก์แนบสื่อประกอบข่าว (Image URL / Video URL)</label>
-                        <input type="text" id="annUrl" placeholder="วางลิงก์รูปภาพ .jpg .png หรือวิดีโอ .mp4 (ถ้ามี)">
+                        <label>อัปโหลดสื่อประกอบข่าว (รูปภาพ หรือ วิดีโอ)</label>
+                        <div style="position: relative;">
+                            <input type="file" id="annFile" accept="image/*,video/mp4,video/*" style="padding: 10px; background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); color: var(--text-main); width: 100%; cursor: pointer;">
+                            <input type="hidden" id="annExistingUrl">
+                            <small id="uploadStatus" style="color: var(--warning); display: none; margin-top: 8px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังอัปโหลดไฟล์... โปรดรอสักครู่ ห้ามปิดหน้านี้</small>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>หมวดหมู่คัดแยกประเภทสื่อ</label>
@@ -397,7 +416,7 @@
                         <button id="btnCancelAnn" class="btn" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--glass-border); display:none; flex:1; justify-content:center; padding:12px;" onclick="resetAnnounceForm()">
                             ❌ ยกเลิก
                         </button>
-           <button id="btnSubmitAnn" class="btn btn-primary" style="flex:2; justify-content:center; padding:12px;" onclick="saveAnnouncement()">
+   <button id="btnSubmitAnn" class="btn btn-primary" style="flex:2; justify-content:center; padding:12px;" onclick="saveAnnouncement()">
                             <i class="fa-solid fa-bullhorn"></i> โพสต์ประกาศ
                         </button>
                     </div>
@@ -564,13 +583,14 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const storage = firebase.storage(); // ประกาศใช้งาน Storage
 
         let globalLeavesData = {};
         let globalUsersData = {};
-        let editAnnounceKey = null; // เพิ่มตัวแปรสำหรับแก้ไขข่าวสาร
+        let editAnnounceKey = null; 
 
         /* =========================================================
-           📢 NEW CRUD FUNCTION: ฟังก์ชันระบบข่าวสารพนักงาน (Real-time)
+           📢 NEW CRUD FUNCTION: ฟังก์ชันระบบข่าวสารพนักงานพร้อมระบบอัปโหลดไฟล์
            ========================================================= */
         function loadAnnouncementsControl() {
             db.ref('announcements').orderByChild('timestamp').on('value', snap => {
@@ -595,6 +615,7 @@
                                 </div>
                                 <div class="ann-card-text">${cleanMessage.replace(/\n/g, '<br>')}</div>
                                 <div class="ann-card-time"><i class="fa-regular fa-clock"></i> โพสต์เมื่อ: ${ann.dateStr || ''}</div>
+                                ${ann.url ? `<div style="margin-top:6px;"><a href="${ann.url}" target="_blank" style="color:var(--secondary); font-size:12px; text-decoration:none;"><i class="fa-solid fa-link"></i> ดูไฟล์แนบ</a></div>` : ''}
                             </div>
                             <div class="ann-actions">
                                 <button class="btn-circle btn-circle-edit" title="แก้ไขข้อความ" onclick="editAnnouncementTrigger('${key}', \`${encodeURIComponent(ann.message)}\`, \`${ann.url || ''}\`, '${ann.type || 'text'}')">
@@ -612,39 +633,77 @@
             });
         }
 
+        // ✨ ศัลยกรรมระบบบันทึกข่าวสาร ให้รองรับการอัปโหลดไฟล์ไปที่ Firebase Storage ✨
         function saveAnnouncement() {
             const message = document.getElementById('annText').value.trim();
-            const url = document.getElementById('annUrl').value.trim();
             const type = document.getElementById('annType').value;
+            const fileInput = document.getElementById('annFile');
+            const file = fileInput.files[0];
+            const existingUrl = document.getElementById('annExistingUrl').value;
             
             if(!message) return alert("กรุณากรอกข้อความเนื้อหาที่จะประกาศก่อนนะคะ!");
 
+            const btnSubmit = document.getElementById('btnSubmitAnn');
+            const statusText = document.getElementById('uploadStatus');
+
             const payload = {
                 message: message,
-                url: url,
                 type: type,
                 sender: "HR Admin",
                 dateStr: new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + " น.",
                 timestamp: Date.now()
             };
 
-            if (editAnnounceKey) {
-                db.ref('announcements/' + editAnnounceKey).update(payload).then(() => {
-                    alert("✨ แก้ไขอัปเดตข้อมูลข่าวสารสำเร็จเรียบร้อย!");
-                    resetAnnounceForm();
-                });
+            // ฟังก์ชันตัวช่วยสำหรับบันทึกข้อมูลลง Database
+            const finalizeSave = (finalUrl) => {
+                payload.url = finalUrl || "";
+                if (editAnnounceKey) {
+                    db.ref('announcements/' + editAnnounceKey).update(payload).then(() => {
+                        alert("✨ แก้ไขอัปเดตข้อมูลข่าวสารสำเร็จเรียบร้อย!");
+                        resetAnnounceForm();
+                    });
+                } else {
+                    db.ref('announcements').push(payload).then(() => {
+                        alert("🚀 ทำการกระจายข่าวสารพร้อมไฟล์แนบ แจ้งไปยังหน้าบอร์ดพนักงานเรียบร้อย!");
+                        resetAnnounceForm();
+                    });
+                }
+            };
+
+            // ถ้ามีการเลือกไฟล์อัปโหลดใหม่
+            if (file) {
+                btnSubmit.disabled = true;
+                if(statusText) statusText.style.display = 'block';
+
+                const storageRef = firebase.storage().ref('announcements/' + Date.now() + '_' + file.name);
+                const uploadTask = storageRef.put(file);
+
+                uploadTask.on('state_changed', 
+                    (snapshot) => { /* สามารถใส่คำนวณ % การอัปโหลดตรงนี้ได้ถ้าต้องการ */ }, 
+                    (error) => {
+                        alert("เกิดข้อผิดพลาดในการอัปโหลดไฟล์: " + error.message);
+                        btnSubmit.disabled = false;
+                        if(statusText) statusText.style.display = 'none';
+                    }, 
+                    () => {
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            btnSubmit.disabled = false;
+                            if(statusText) statusText.style.display = 'none';
+                            finalizeSave(downloadURL); // เมื่ออัปโหลดเสร็จ ให้บันทึก URL ลง DB
+                        });
+                    }
+                );
             } else {
-                db.ref('announcements').push(payload).then(() => {
-                    alert("🚀 ทำการกระจายข่าวสารแจ้งไปยังหน้าบอร์ดพนักงานเรียบร้อย!");
-                    resetAnnounceForm();
-                });
+                // ถ้าไม่มีการอัปโหลดไฟล์ใหม่ ให้ใช้ URL เดิมที่มีอยู่ (กรณีแก้ไข) หรือปล่อยว่าง
+                finalizeSave(existingUrl);
             }
         }
 
         function editAnnouncementTrigger(key, encodedMsg, url, type) {
             editAnnounceKey = key;
             document.getElementById('annText').value = decodeURIComponent(encodedMsg);
-            document.getElementById('annUrl').value = url;
+            document.getElementById('annExistingUrl').value = url; 
+            document.getElementById('annFile').value = ""; // เคลียร์ช่องเลือกไฟล์เผื่อไว้
             document.getElementById('annType').value = type;
             
             document.getElementById('btnSubmitAnn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> บันทึกการแก้ไข';
@@ -654,10 +713,17 @@
         function resetAnnounceForm() {
             editAnnounceKey = null;
             document.getElementById('annText').value = "";
-            document.getElementById('annUrl').value = "";
+            document.getElementById('annExistingUrl').value = "";
+            document.getElementById('annFile').value = "";
             document.getElementById('annType').value = "text";
             
-            document.getElementById('btnSubmitAnn').innerHTML = '<i class="fa-solid fa-bullhorn"></i> โพสต์ประกาศ';
+            const btnSubmit = document.getElementById('btnSubmitAnn');
+            btnSubmit.innerHTML = '<i class="fa-solid fa-bullhorn"></i> โพสต์ประกาศ';
+            btnSubmit.disabled = false;
+            
+            const statusText = document.getElementById('uploadStatus');
+            if(statusText) statusText.style.display = 'none';
+            
             document.getElementById('btnCancelAnn').style.display = 'none';
         }
 
@@ -671,7 +737,7 @@
         }
 
         // ==========================================
-        // 🛡️ SYSTEM CORE FUNCTIONS: ส่วนเดิมของเตง
+        // 🛡️ SYSTEM CORE FUNCTIONS: ส่วนเดิมของเตงทั้งหมด
         // ==========================================
         function clearLeaveFilter() {
             document.getElementById('filterLeaveDate').value = '';
@@ -679,7 +745,7 @@
         }
 
         function syncDatabaseCore() {
-            loadAnnouncementsControl(); // เพิ่มโหลดข่าวสารเข้าไปพร้อมกัน
+            loadAnnouncementsControl(); 
 
             db.ref('leaves').on('value', snap => {
                 globalLeavesData = snap.val() || {};
