@@ -35,7 +35,6 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             min-height: 100vh;
-            /* 🎯 ศัลยกรรมจุดที่ 1: ใช้ Flexbox จัดให้กล่องอยู่ตรงกลางเป๊ะทั้งแนวตั้ง-แนวนอนบน Desktop */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -43,7 +42,6 @@
             position: relative;
         }
 
-        /* 🪐 ศัลยกรรมจุดที่ 2: ล็อกขนาดพื้นหลังแอนิเมชันให้บาลานซ์กึ่งกลางจอ */
         .background-decor {
             position: fixed;
             width: 100vw;
@@ -76,9 +74,9 @@
             max-width: 400px;
             height: 600px;
             perspective: 1500px;
+            -webkit-perspective: 1500px; /* สำหรับซัพพอร์ต iOS/Safari */
             z-index: 10;
             padding: 16px;
-            /* 🎯 ศัลยกรรมจุดที่ 3: เอา margin ด้านบนออกเพื่อให้ Flexbox จัดวางกึ่งกลางได้อย่างสมบูรณ์ */
             margin: 0;
         }
 
@@ -86,18 +84,16 @@
             position: relative;
             width: 100%;
             height: 100%;
-            transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* ถอดการหมุนที่กล่องแม่ออก เพื่อแก้ปัญหาเอ๋อกลับหัวบนมือถือ */
         }
 
-        .card-cube.show-register { transform: rotateY(180deg); }
-        .card-cube.show-forgot { transform: rotateX(180deg); }
-
+        /* 🛠️ ปรับโครงสร้างแผ่นหน้าจอให้หมุนอิสระจากกันอย่างมั่นคง */
         .card-face {
             position: absolute;
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: 24px;
@@ -108,12 +104,63 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s;
         }
 
-        .face-login { transform: rotateY(0deg); z-index: 2; }
-        .face-register { transform: rotateY(180deg); }
-        .face-forgot { transform: rotateX(180deg); }
+        /* สถานะเริ่มต้น (Default) */
+        .face-login {
+            transform: rotateY(0deg);
+            -webkit-transform: rotateY(0deg);
+            z-index: 2;
+            opacity: 1;
+        }
+        .face-register {
+            transform: rotateY(-180deg);
+            -webkit-transform: rotateY(-180deg);
+            z-index: 1;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .face-forgot {
+            transform: rotateX(-180deg);
+            -webkit-transform: rotateX(-180deg);
+            z-index: 1;
+            opacity: 0;
+            pointer-events: none;
+        }
 
+        /* 🎯 เอฟเฟกต์ตอนกดสลับหน้า (สั่งงานผ่าน Class) */
+        /* เมื่อเปิดหน้า ลงทะเบียนใหม่ */
+        .card-cube.show-register .face-login {
+            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .card-cube.show-register .face-register {
+            transform: rotateY(0deg);
+            -webkit-transform: rotateY(0deg);
+            opacity: 1;
+            z-index: 2;
+            pointer-events: auto;
+        }
+
+        /* เมื่อเปิดหน้า ลืมรหัสผ่าน */
+        .card-cube.show-forgot .face-login {
+            transform: rotateX(180deg);
+            -webkit-transform: rotateX(180deg);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .card-cube.show-forgot .face-forgot {
+            transform: rotateX(0deg);
+            -webkit-transform: rotateX(0deg);
+            opacity: 1;
+            z-index: 2;
+            pointer-events: auto;
+        }
+
+        /* สไตล์เนื้อหาภายใน */
         .brand-section { text-align: center; }
         .logo-icon {
             width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
@@ -161,6 +208,41 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         .back-loader p { margin-top: 12px; font-size: 13.5px; color: var(--text-main); }
+
+        /* ==========================================
+           📱 Responsive Mobile ป้องกันช่องกรอกเบียดกันบนมือถือ
+           ========================================== */
+        @media (max-width: 480px) {
+            body {
+                align-items: flex-start;
+                padding: 20px 0;
+                overflow-y: auto;
+            }
+            .card-container {
+                height: 580px;
+            }
+            .card-face {
+                padding: 25px 20px;
+            }
+            .form-body {
+                gap: 12px;
+            }
+            .input-group input {
+                padding: 11px 16px 11px 42px;
+                font-size: 13.5px;
+            }
+            .input-group input::placeholder {
+                font-size: 12px;
+            }
+            .logo-icon {
+                width: 48px; height: 48px; font-size: 18px; margin-bottom: 6px;
+            }
+            .brand-section h2 { font-size: 19px; }
+            .btn-submit {
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -181,7 +263,7 @@
             </div>
             
             <div class="brand-section">
-                <div class="logo-icon"><i class="fa-solid fa-wallet"></i></div>
+                <div class="logo-icon"><i class="fa-solid fa-fingerprint"></i></div>
                 <h2>✓Record Income</h2>
                 <p>เข้าสู่ระบบเพื่อจัดการข้อมูลพนักงาน</p>
             </div>
@@ -215,7 +297,7 @@
 
             <div class="brand-section">
                 <div class="logo-icon" style="background: linear-gradient(135deg, var(--secondary) 0%, #10b981 100%);"><i class="fa-solid fa-user-plus"></i></div>
-                <h2>สร้างบัญชีใหม่</h2>
+                <h2>ลงทะเบียนใหม่</h2>
                 <p>ลงทะเบียนรหัสพนักงานเข้าสู่ระบบ</p>
             </div>
 
@@ -296,6 +378,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // 🔄 ปรับฟังก์ชันการสลับหน้าให้เสถียรและลื่นไหลร้อยเปอร์เซ็นต์
     function flipCard(face) {
         const cube = document.getElementById('cardCube');
         cube.classList.remove('show-register', 'show-forgot');

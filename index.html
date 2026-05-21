@@ -70,6 +70,7 @@ body {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px); /* ศัลยกรรมเพิ่มเติม: รองรับ iOS */
   color: #fff;
   padding: 18px 20px;
   border-radius: 24px;
@@ -80,6 +81,11 @@ body {
   justify-content: center;
   box-shadow: var(--shadow);
   transition: all 0.4s ease;
+  
+  /* ✨ ศัลยกรรมจุดนี้: ทำให้ Header ติดหนึบ ✨ */
+  position: sticky;
+  top: 15px;
+  z-index: 100;
 }
 .header:hover { transform: translateY(-2px); box-shadow: 0 25px 40px -8px rgba(79, 70, 229, 0.3); }
 

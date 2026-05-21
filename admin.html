@@ -1,6 +1,6 @@
 <script>
+    // ตรวจสอบสิทธิ์ ถ้าไม่ได้ล็อกอิน ให้ดีดไปหน้า login.html ทันทีแบบไม่มีแจ้งเตือนเด้ง
     if (sessionStorage.getItem("isAdmin") !== "true") {
-        alert("กรุณาเข้าสู่ระบบก่อนใช้งานหน้า Admin");
         location.href = "login.html";
     }
 </script>
@@ -18,31 +18,25 @@
     
     <style>
         /* ==========================================
-           ✨ Modern Light Theme & Responsive CSS 
+           ✨ Dark Glassmorphic Theme (ศัลยกรรมดีไซน์จาก Profile)
            ========================================== */
         :root {
             --primary: #4f46e5;
-            --primary-light: #eef2ff;
             --primary-dark: #3730a3;
             --secondary: #0ea5e9;
-            --secondary-light: #e0f2fe;
-            
-            --bg-color: #f0f4f8; 
-            --white: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-            --border-color: #e2e8f0;
-            
-            --glass-bg: rgba(255, 255, 255, 0.8);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
-            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02);
-            --shadow-lg: 0 20px 25px -5px rgba(79, 70, 229, 0.08);
-            
+            --accent: #f43f5e;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
+            
+            --bg-color: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             
             --radius-lg: 24px;
             --radius-md: 16px;
@@ -57,44 +51,56 @@
         }
         
         body { 
-            background: var(--bg-color); 
+            background-color: var(--bg-color); 
             color: var(--text-main); 
-            padding-bottom: 60px; 
-            min-height: 100vh;
-            background-image: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.05) 0%, transparent 40%), 
-                             radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 40%);
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            position: relative;
+            padding-bottom: 60px;
         }
 
-        /* Navbar Header */
+        /* 🪐 พื้นหลังแอนิเมชันวงกลม */
+        .background-decor { position: fixed; width: 100vw; height: 100vh; top: 0; left: 0; z-index: -1; pointer-events: none; }
+        .circle { position: absolute; border-radius: 50%; background: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(14, 165, 233, 0.15) 100%); backdrop-filter: blur(80px); animation: floatAnimation 8s infinite ease-in-out; }
+        .circle-1 { width: 400px; height: 400px; top: -10%; left: -10%; animation-delay: 0s; }
+        .circle-2 { width: 500px; height: 500px; bottom: -15%; right: -5%; animation-delay: 2s; background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(244, 63, 94, 0.12) 100%); }
+        @keyframes floatAnimation { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-20px) scale(1.03); } }
+
+        /* Navbar Header (ทำเป็น Glass แบบ Profile) */
         .header { 
             background: var(--glass-bg); 
+            border: 1px solid var(--glass-border); 
             backdrop-filter: blur(10px); 
             -webkit-backdrop-filter: blur(10px); 
-            padding: 18px 24px; 
+            padding: 16px 24px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            border-bottom: 1px solid var(--glass-border); 
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            margin: 20px auto;
+            max-width: 1200px;
+            width: calc(100% - 40px);
             z-index: 90;
+            position: sticky;
+            top: 20px;
         }
-        .header h2 { font-size: 20px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        .btn-logout { background: #fee2e2; color: #ef4444; border: none; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 500; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
-        .btn-logout:hover { background: #fca5a5; }
+        .header h2 { font-size: 20px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; margin: 0; }
+        .header h2 i { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); padding: 10px; border-radius: 12px; color: white; font-size: 16px; }
+        
+        .btn-logout { background: rgba(244, 63, 94, 0.2); border: 1px solid rgba(244, 63, 94, 0.3); color: #fca5a5; padding: 10px 16px; border-radius: 12px; font-weight: 500; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .btn-logout:hover { background: var(--accent); color: white; transform: translateY(-2px); }
 
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .container { max-width: 1200px; margin: 0 auto 30px; padding: 0 20px; position: relative; z-index: 10; }
 
         /* Filter Box Adaptive */
         .filter-box { 
             background: var(--glass-bg); 
-            backdrop-filter: blur(10px); 
-            -webkit-backdrop-filter: blur(10px); 
-            padding: 16px 24px; 
-            border-radius: var(--radius-md); 
             border: 1px solid var(--glass-border); 
-            box-shadow: var(--shadow-md); 
+            backdrop-filter: blur(15px); 
+            padding: 20px 24px; 
+            border-radius: 24px; 
+            box-shadow: var(--shadow); 
             margin-bottom: 30px; 
             display: flex; 
             flex-wrap: wrap; 
@@ -103,30 +109,32 @@
         }
         .filter-box span { font-weight: 600; color: var(--text-sub); display: flex; align-items: center; gap: 8px; }
         .filter-box input[type="date"] { 
-            border: 1px solid var(--border-color); 
+            border: 1px solid var(--glass-border); 
             padding: 10px 16px; 
             border-radius: var(--radius-sm); 
             outline: none; 
             color: var(--text-main); 
-            font-size: 14px; 
-            background: var(--white);
+            font-size: 14.5px; 
+            background: var(--input-bg);
+            transition: 0.3s;
         }
+        .filter-box input[type="date"]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25); }
         .btn-filter-clear { 
-            background: var(--primary-light); 
-            color: var(--primary); 
-            border: none; 
-            padding: 10px 18px; 
+            background: rgba(255,255,255,0.05); 
+            color: var(--text-main); 
+            border: 1px solid var(--glass-border); 
+            padding: 11px 18px; 
             border-radius: var(--radius-sm); 
             cursor: pointer; 
-            font-weight: 600; 
+            font-weight: 500; 
             font-size: 14px; 
             transition: 0.2s;
         }
-        .btn-filter-clear:hover { background: var(--primary); color: var(--white); }
+        .btn-filter-clear:hover { background: var(--secondary); border-color: var(--secondary); color: var(--white); }
 
         .section-title { 
             font-size: 20px; 
-            font-weight: 700; 
+            font-weight: 600; 
             color: var(--text-main); 
             margin: 35px 0 15px 0; 
             display: flex; 
@@ -141,15 +149,15 @@
             width: 100%; 
             padding: 14px 14px 14px 48px; 
             border: 1px solid var(--glass-border); 
-            border-radius: var(--radius-md); 
-            background: var(--white); 
-            box-shadow: var(--shadow-md); 
+            border-radius: 16px; 
+            background: var(--input-bg); 
+            box-shadow: var(--shadow); 
             outline: none; 
             font-size: 15px; 
-            transition: 0.2s; 
+            transition: 0.3s; 
             color: var(--text-main);
         }
-        .search-box input:focus { border-color: var(--primary); box-shadow: var(--shadow-lg); }
+        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25); background: rgba(15, 23, 42, 0.8); }
 
         /* Fluid Grid Container */
         .grid-container {
@@ -159,51 +167,52 @@
             margin-top: 15px;
         }
 
-        /* Modern Card Elements */
+        /* Modern Card Elements (Glass) */
         .card { 
-            background: var(--white); 
-            border-radius: var(--radius-md); 
-            padding: 22px; 
-            box-shadow: var(--shadow-md); 
-            border: 1px solid var(--border-color); 
-            transition: transform 0.2s ease, box-shadow 0.2s ease; 
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border); 
+            backdrop-filter: blur(15px);
+            border-radius: 24px; 
+            padding: 24px; 
+            box-shadow: var(--shadow); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
-        .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4); border-color: rgba(255,255,255,0.2); }
 
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
-        .card-title { font-weight: 700; font-size: 16px; color: var(--text-main); }
+        .card-title { font-weight: 600; font-size: 16px; color: var(--text-main); }
         .card-meta { font-size: 13px; color: var(--text-sub); display: flex; align-items: center; gap: 6px; }
 
         /* Badges */
-        .badge { padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; display: inline-block; text-align: center; width: fit-content; }
-        .status-pending { background: #fef3c7; color: #d97706; }
-        .status-approved { background: #d1fae5; color: #059669; }
-        .status-rejected { background: #fee2e2; color: #dc2626; }
+        .badge { padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; display: inline-block; text-align: center; width: fit-content; white-space: nowrap; }
+        .status-pending { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+        .status-approved { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .status-rejected { background: rgba(244, 63, 94, 0.15); color: #f87171; }
 
         /* Card Action Buttons */
         .card-btn {
-            background: var(--primary-light);
-            color: var(--primary);
-            border: none;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
             padding: 10px;
             border-radius: var(--radius-sm);
             font-size: 13.5px;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             text-align: center;
-            transition: 0.2s;
+            transition: 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
             margin-top: 8px;
         }
-        .card-btn:hover { background: var(--primary); color: var(--white); }
+        .card-btn:hover { border-color: var(--secondary); color: var(--secondary); background: rgba(14, 165, 233, 0.1); }
 
         /* Modals Structure */
         .modal { 
@@ -213,90 +222,112 @@
             left: 0; top: 0; 
             width: 100%; height: 100%; 
             overflow: auto; 
-            background-color: rgba(15, 23, 42, 0.4); 
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            background: rgba(15, 23, 42, 0.8); 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
         }
         .modal-content { 
-            background: var(--white); 
-            margin: 2% auto; 
+            background: #1e293b; 
+            margin: auto; 
             padding: 28px; 
             border: 1px solid var(--glass-border); 
-            width: 92%; 
+            width: 100%; 
             max-width: 700px; 
             border-radius: var(--radius-lg); 
-            box-shadow: var(--shadow-lg); 
-            animation: modalFade 0.25s ease-out;
+            box-shadow: var(--shadow); 
+            animation: modalFade 0.3s ease;
             position: relative;
             max-height: 90vh;
             overflow-y: auto;
         }
-        @keyframes modalFade { from { transform: translateY(15px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-content::-webkit-scrollbar { width: 6px; } .modal-content::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+
+        @keyframes modalFade { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
-        .close { float: right; font-size: 24px; font-weight: bold; color: var(--text-sub); cursor: pointer; transition: 0.2s; }
+        .close { position: absolute; right: 24px; top: 24px; font-size: 24px; font-weight: bold; color: var(--text-sub); cursor: pointer; transition: 0.2s; }
         .close:hover { color: var(--danger); transform: scale(1.1); }
-        .modal-title { font-size: 19px; font-weight: 700; color: var(--text-main); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+        .modal-title { font-size: 19px; font-weight: 600; color: var(--text-main); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 16px; }
 
         /* Form Utilities */
-        .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .form-row { display: flex; gap: 15px; margin-bottom: 16px; }
         .form-group { flex: 1; display: flex; flex-direction: column; gap: 6px; text-align: left; }
-        .form-group label { font-size: 13px; font-weight: 600; color: var(--text-sub); }
+        .form-group label { font-size: 13px; font-weight: 500; color: var(--text-sub); padding-left: 4px; }
         .form-group input, .form-group select, .form-group textarea {
-            padding: 11px 14px;
-            border: 1px solid var(--border-color);
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-sm);
             outline: none;
-            font-size: 14px;
+            font-size: 14.5px;
             color: var(--text-main);
-            background: var(--bg-color);
-            transition: 0.2s;
+            background: var(--input-bg);
+            transition: 0.3s;
         }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); background: var(--white); box-shadow: var(--shadow-sm); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25); }
+        .form-group input:read-only, .form-group textarea:read-only { background: rgba(255, 255, 255, 0.02); color: #94a3b8; cursor: not-allowed; border-color: transparent; }
         
-        .form-section-title { font-size: 14px; font-weight: 700; margin: 25px 0 12px 0; padding-bottom: 6px; border-bottom: 1px dashed var(--border-color); color: var(--primary); display: flex; align-items: center; gap: 6px; }
+        .form-section-title { font-size: 15px; font-weight: 600; margin: 25px 0 16px 0; padding-bottom: 8px; border-bottom: 1px dashed var(--glass-border); color: var(--secondary); display: flex; align-items: center; gap: 8px; }
 
         /* Actions group buttons */
         .btn-group { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; flex-wrap: wrap; }
-        .btn { padding: 11px 22px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; border: none; font-size: 14px; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
-        .btn-primary { background: var(--primary); color: var(--white); }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { opacity: 0.9; }
-        .btn-secondary { background: #e2e8f0; color: var(--text-sub); }
-        .btn-secondary:hover { background: #cbd5e1; color: var(--text-main); }
-        .btn-danger { background: #fee2e2; color: var(--danger); }
-        .btn-danger:hover { background: var(--danger); color: var(--white); }
+        .btn { padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; border: none; font-size: 14px; transition: 0.3s; display: flex; align-items: center; gap: 8px; justify-content: center; }
+        
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4); }
+        
+        .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4); }
+        
+        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid var(--glass-border); }
+        .btn-secondary:hover { border-color: var(--text-main); }
+        
+        .btn-danger { background: rgba(244, 63, 94, 0.15); color: #f87171; border: 1px solid rgba(244, 63, 94, 0.3); }
+        .btn-danger:hover { background: var(--accent); color: white; border-color: var(--accent); }
 
         /* Mini history item in popup */
-        .mini-history-box { max-height: 160px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; display: flex; flex-direction: column; gap: 8px; background: var(--bg-color); }
-        .mini-history-item { background: var(--white); padding: 10px; border-radius: 8px; font-size: 12.5px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .mini-history-box { max-height: 200px; overflow-y: auto; border: 1px solid var(--glass-border); border-radius: var(--radius-sm); padding: 12px; display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.2); }
+        .mini-history-box::-webkit-scrollbar { width: 6px; } .mini-history-box::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+        .mini-history-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; font-size: 13px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
 
         /* Employee Avatar circle in card */
-        .emp-avatar-container { display: flex; align-items: center; gap: 12px; margin-bottom: 5px; }
-        .emp-img-circle { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: #cbd5e1; border: 2px solid var(--white); box-shadow: var(--shadow-sm); }
+        .emp-avatar-container { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+        .emp-img-circle { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: var(--input-bg); border: 2px solid var(--glass-border); }
 
         /* ==========================================
            📱 Mobile Screen Adaptive Layout Settings
            ========================================== */
         @media (max-width: 768px) {
-            .header { padding: 14px 16px; }
+            .header { padding: 14px 16px; border-radius: 16px; margin: 15px auto; width: calc(100% - 30px); flex-wrap: wrap; gap: 10px; }
             .header h2 { font-size: 16px; }
-            .container { margin: 15px auto; padding: 0 12px; }
+            .btn-logout { padding: 8px 12px; font-size: 13px; }
+            .container { margin: 15px auto; padding: 0 15px; }
             
-            .filter-box { padding: 14px; flex-direction: column; align-items: stretch; gap: 12px; }
+            .filter-box { padding: 16px; flex-direction: column; align-items: stretch; gap: 12px; border-radius: 20px; }
             .filter-box input[type="date"], .btn-filter-clear { width: 100%; text-align: center; }
             
-            .grid-container { grid-template-columns: 1fr; gap: 14px; }
-            .section-title { font-size: 17px; margin: 25px 0 10px 0; }
+            .grid-container { grid-template-columns: 1fr; gap: 16px; }
+            .section-title { font-size: 18px; margin: 25px 0 12px 0; }
             
-            .modal-content { width: 95%; margin: 4% auto; padding: 20px; }
-            .form-row { flex-direction: column; gap: 12px; }
-            .btn-group { flex-direction: column; width: 100%; }
+            .card { padding: 20px; border-radius: 20px; }
+            
+            .modal { padding: 12px; display: none; }
+            .modal-content { width: 100%; margin: 0; padding: 20px; border-radius: 20px; }
+            .form-row { flex-direction: column; gap: 12px; margin-bottom: 12px; }
+            .btn-group { flex-direction: column; width: 100%; gap: 8px; }
             .btn-group .btn { width: 100%; justify-content: center; }
+            .mini-history-item { flex-direction: column; align-items: flex-start; gap: 6px; }
         }
     </style>
 </head>
 <body>
+
+    <div class="background-decor">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+    </div>
 
     <div class="header">
         <h2><i class="fa-solid fa-user-shield"></i> ระบบจัดการสำหรับแอดมิน</h2>
@@ -354,9 +385,9 @@
             <div class="mini-history-box" id="modalLeaveHistoryList"></div>
 
             <div class="btn-group">
-                <button class="btn btn-danger" style="margin-right:auto;" onclick="deleteLeaveFromPopup()"><i class="fa-solid fa-trash"></i> ลบใบลาใบนี้</button>
+                <button class="btn btn-danger" style="margin-right:auto; background:transparent; border-color:transparent;" onclick="deleteLeaveFromPopup()"><i class="fa-solid fa-trash"></i> ลบใบลาใบนี้</button>
                 <button class="btn btn-secondary" onclick="closeModal('leaveEditModal')">ปิดหน้าต่าง</button>
-                <button class="btn btn-danger" style="background:#dc2626; color:white;" onclick="updateLeaveStatus('ไม่อนุมัติ')"><i class="fa-solid fa-circle-xmark"></i> ปฏิเสธไม่อนุมัติ</button>
+                <button class="btn btn-danger" onclick="updateLeaveStatus('ไม่อนุมัติ')"><i class="fa-solid fa-circle-xmark"></i> ปฏิเสธไม่อนุมัติ</button>
                 <button class="btn btn-success" onclick="updateLeaveStatus('อนุมัติ')"><i class="fa-solid fa-circle-check"></i> อนุมัติใบลา</button>
             </div>
         </div>
@@ -417,13 +448,13 @@
             </div>
 
             <div class="form-section-title"><i class="fa-solid fa-user-shield"></i> 7. สิทธิ์การเข้าถึงข้อมูลของพนักงาน</div>
-            <div class="form-group" style="flex-direction:row; gap:10px; align-items:center; margin-top:5px; background: #fffbeb; padding: 12px; border-radius: var(--radius-sm); border: 1px solid #fde68a;">
+            <div class="form-group" style="flex-direction:row; gap:10px; align-items:center; margin-top:5px; background: rgba(245, 158, 11, 0.1); padding: 14px; border-radius: var(--radius-sm); border: 1px solid rgba(245, 158, 11, 0.3);">
                 <input type="checkbox" id="editIsLocked" style="width:20px; height:20px; cursor:pointer;">
-                <label for="editIsLocked" style="cursor:pointer; color:#b45309; font-weight:700; user-select:none;">🔒 ล็อคโปรไฟล์พนักงานคนนี้ (ห้ามไม่ให้พนักงานเข้าไปแก้ไขข้อมูลส่วนตัวด้วยตนเอง)</label>
+                <label for="editIsLocked" style="cursor:pointer; color:#fbbf24; font-weight:600; user-select:none; margin:0;">🔒 ล็อคโปรไฟล์พนักงานคนนี้ (ห้ามแก้ไขข้อมูลด้วยตนเอง)</label>
             </div>
 
             <div class="btn-group">
-                <button class="btn btn-danger" style="margin-right:auto;" onclick="deleteEmployee()"><i class="fa-solid fa-user-minus"></i> ลบพนักงานออกจากระบบ</button>
+                <button class="btn btn-danger" style="margin-right:auto; background:transparent; border-color:transparent;" onclick="deleteEmployee()"><i class="fa-solid fa-user-minus"></i> ลบพนักงาน</button>
                 <button class="btn btn-secondary" onclick="closeModal('editModal')">ยกเลิก</button>
                 <button class="btn btn-primary" onclick="saveEmployeeData()"><i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูลทั้งหมด</button>
             </div>
@@ -436,17 +467,19 @@
             <div class="modal-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--warning)"></i> ประวัติการยื่นลาทั้งหมดของพนักงาน</div>
             <input type="hidden" id="historyUserId">
 
-            <div class="filter-box" style="padding: 12px; margin-bottom: 15px; box-shadow: none; border: 1px dashed var(--border-color);">
+            <div class="filter-box" style="padding: 16px; margin-bottom: 20px; box-shadow: none; border: 1px dashed var(--glass-border); border-radius: var(--radius-md);">
                 <span style="font-size: 14px;"><i class="fa-solid fa-calendar-days"></i> กรองวันที่ทำรายการ:</span>
-                <input type="date" id="historyFilterDate" onchange="renderEmpLeaveHistory()" style="padding: 8px; font-size: 13px;">
-                <button class="btn-filter-clear" style="padding: 8px 12px; font-size: 13px;" onclick="document.getElementById('historyFilterDate').value=''; renderEmpLeaveHistory();">ล้างตัวกรอง</button>
+                <input type="date" id="historyFilterDate" onchange="renderEmpLeaveHistory()" style="flex:1;">
+                <button class="btn-filter-clear" onclick="document.getElementById('historyFilterDate').value=''; renderEmpLeaveHistory();">ล้างตัวกรอง</button>
             </div>
 
             <div id="historyLeaveList" style="display: flex; flex-direction: column; gap: 12px; max-height: 50vh; overflow-y: auto; padding-right: 5px;">
-                </div>
+            </div>
         </div>
     </div>
+
     <script>
+        // ระบบเดิม 100% ไม่เปลี่ยนแปลง
         const firebaseConfig = {
             apiKey: "AIzaSyDEzU0P1EWgJgABEw3sJL54N5dq4dlVHJQ",
             authDomain: "hr-system-f9acc.firebaseapp.com",
@@ -471,7 +504,7 @@
             db.ref('leaves').on('value', snap => {
                 globalLeavesData = snap.val() || {};
                 renderLeaveRequests();
-                if(document.getElementById('empLeaveHistoryModal').style.display === 'block'){
+                if(document.getElementById('empLeaveHistoryModal').style.display === 'flex' || document.getElementById('empLeaveHistoryModal').style.display === 'block'){
                     renderEmpLeaveHistory();
                 }
             });
@@ -511,16 +544,16 @@
                     <div class="card">
                         <div class="card-header">
                             <div>
-                                <div class="card-title">${typeIcon} ขอ${item.type} (${item.days} วัน)</div>
-                                <div class="card-meta" style="margin-top:4px;"><i class="fa-solid fa-user"></i> <b>${item.name || 'ไม่ทราบชื่อ'}</b> (ID: ${item.empId || '-'})</div>
+                                <div class="card-title">${typeIcon} ขอ${item.type} <span style="font-weight:400; font-size:14px;">(${item.days} วัน)</span></div>
+                                <div class="card-meta" style="margin-top:6px;"><i class="fa-solid fa-user" style="color:var(--primary)"></i> <b style="color:var(--text-main)">${item.name || 'ไม่ทราบชื่อ'}</b> (ID: ${item.empId || '-'})</div>
                             </div>
                             <span class="badge status-pending">รออนุมัติ</span>
                         </div>
                         <div class="card-meta"><i class="fa-regular fa-calendar"></i> วันที่หยุด: ${item.startDate} ถึง ${item.endDate}</div>
-                        <div class="card-meta" style="font-size:12px; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
-                            <i class="fa-solid fa-quote-left" style="color:var(--primary); font-size:10px;"></i> เหตุผล: "${item.reason || 'ไม่ได้ระบุสาเหตุ'}"
+                        <div class="card-meta" style="font-size:13px; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; background:rgba(255,255,255,0.05); padding:8px; border-radius:8px; margin:4px 0;">
+                            <i class="fa-solid fa-quote-left" style="color:var(--secondary); font-size:10px;"></i> เหตุผล: "${item.reason || 'ไม่ได้ระบุสาเหตุ'}"
                         </div>
-                        <div class="card-meta" style="font-size:11px; opacity:0.7;"><i class="fa-regular fa-clock"></i> ส่งเมื่อ: ${item.requestTime || '-'}</div>
+                        <div class="card-meta" style="font-size:11px; opacity:0.6;"><i class="fa-regular fa-clock"></i> ส่งเมื่อ: ${item.requestTime || '-'}</div>
                         <button class="card-btn" onclick="openLeaveApprovalPopup('${key}')">
                             <i class="fa-solid fa-gavel"></i> ตรวจสอบใบลาเเละลงมติ
                         </button>
@@ -529,7 +562,7 @@
             });
 
             if (count === 0) {
-                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 40px; background:var(--white); border-radius:var(--radius-md); border:1px solid var(--border-color)">🎉 สบายใจได้! ไม่มีใบลาที่ค้างรอการตรวจสอบอนุมัติในวันที่เลือกค่ะ</div>`;
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 40px; background:var(--glass-bg); border-radius:var(--radius-md); border:1px dashed var(--glass-border);">🎉 สบายใจได้! ไม่มีใบลาที่ค้างรอการตรวจสอบอนุมัติในวันที่เลือกค่ะ</div>`;
             }
         }
 
@@ -566,41 +599,44 @@
                 const qPersonal = user.q_personal !== undefined ? user.q_personal : 6;
                 const qVacation = user.q_vacation !== undefined ? user.q_vacation : 10;
                 const avatar = user.photo || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ccc'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
-                const lockBadge = user.isProfileLocked ? `<span class="badge" style="background:#fee2e2; color:var(--danger)"><i class="fa-solid fa-lock"></i> โปรไฟล์ล็อค</span>` : `<span class="badge" style="background:#d1fae5; color:var(--success)"><i class="fa-solid fa-lock-open"></i> อิสระ</span>`;
+                
+                // อัปเดตสี Badge ล็อคให้เข้ากับโหมดกลางคืน
+                const lockBadge = user.isProfileLocked 
+                    ? `<span class="badge" style="background:rgba(244, 63, 94, 0.15); color:#f87171"><i class="fa-solid fa-lock"></i> ล็อค</span>` 
+                    : `<span class="badge" style="background:rgba(16, 185, 129, 0.15); color:#34d399"><i class="fa-solid fa-lock-open"></i> ปกติ</span>`;
 
-                // 🛠️ ศัลยกรรมเพิ่ม: แสดงข้อมูลที่อยู่และวันเริ่มทำงานของการ์ดพนักงานหน้าแรกให้แอดมินเห็นเลย
                 const addressFormatted = [user.addr_no, user.addr_moo ? 'ม.' + user.addr_moo : '', user.addr_subdistrict, user.addr_district, user.addr_province].filter(Boolean).join(' ') || 'ยังไม่กรอกข้อมูลที่อยู่';
 
                 container.innerHTML += `
                     <div class="card">
-                        <div class="card-header" style="margin-bottom:0;">
+                        <div class="card-header" style="margin-bottom:8px;">
                             <div class="emp-avatar-container">
                                 <img src="${avatar}" class="emp-img-circle">
                                 <div>
-                                    <div class="card-title" style="font-size:15px;">${user.fullName || 'พนักงานใหม่ (ยังไม่กรอกประวัติ)'}</div>
+                                    <div class="card-title">${user.fullName || 'พนักงานใหม่ (ยังไม่กรอกประวัติ)'}</div>
                                     <div class="card-meta">ID: ${user.employeeId || 'ไม่มี ID'} | ${user.position || 'ไม่ระบุตำแหน่ง'}</div>
                                 </div>
                             </div>
                             <div>${lockBadge}</div>
                         </div>
-                        <div style="font-size:12.5px; color:var(--text-sub); border-top:1px dashed var(--border-color); padding-top:8px; margin-top:4px; display:flex; flex-direction:column; gap:3px;">
-                            <div><i class="fa-solid fa-building" style="width:16px; color:var(--primary);"></i> แผนก: ${user.department || 'ไม่ระบุ'}</div>
-                            <div><i class="fa-solid fa-phone" style="width:16px; color:var(--secondary);"></i> เบอร์โทร: ${user.phone || 'ไม่ระบุ'}</div>
-                            <div><i class="fa-solid fa-id-card" style="width:16px; color:var(--text-sub);"></i> เลขบัตร: ${user.idCard || 'ไม่ระบุ'}</div>
-                            <div><i class="fa-solid fa-calendar-day" style="width:16px; color:var(--warning);"></i> วันเริ่มงาน: ${user.startDateWork || 'ไม่ระบุ'}</div>
-                            <div style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"><i class="fa-solid fa-house" style="width:16px; color:var(--success);"></i> ที่อยู่: ${addressFormatted}</div>
+                        <div style="font-size:12.5px; color:var(--text-sub); border-top:1px dashed var(--glass-border); padding-top:12px; display:flex; flex-direction:column; gap:6px;">
+                            <div><i class="fa-solid fa-building" style="width:18px; color:var(--secondary);"></i> แผนก: ${user.department || 'ไม่ระบุ'}</div>
+                            <div><i class="fa-solid fa-phone" style="width:18px; color:var(--success);"></i> เบอร์โทร: ${user.phone || 'ไม่ระบุ'}</div>
+                            <div><i class="fa-solid fa-id-card" style="width:18px; color:var(--text-sub);"></i> เลขบัตร: ${user.idCard || 'ไม่ระบุ'}</div>
+                            <div><i class="fa-solid fa-calendar-day" style="width:18px; color:var(--warning);"></i> วันเริ่มงาน: ${user.startDateWork || 'ไม่ระบุ'}</div>
+                            <div style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"><i class="fa-solid fa-house" style="width:18px; color:var(--primary);"></i> ที่อยู่: ${addressFormatted}</div>
                         </div>
-                        <div style="font-size:12px; color:var(--text-sub); background:var(--primary-light); padding:10px; border-radius:var(--radius-sm); margin-top:5px; display:flex; flex-direction:column; gap:2px;">
-                            <div style="display:flex; justify-content:space-between;"><span>🤒 ลาป่วย:</span> <b>ใช้ ${sickUsed} / ทั้งหมด ${qSick} วัน (เหลือ ${qSick - sickUsed})</b></div>
-                            <div style="display:flex; justify-content:space-between;"><span>💼 ลากิจ:</span> <b>ใช้ ${personalUsed} / ทั้งหมด ${qPersonal} วัน (เหลือ ${qPersonal - personalUsed})</b></div>
-                            <div style="display:flex; justify-content:space-between;"><span>🏖️ พักร้อน:</span> <b>ใช้ ${vacationUsed} / ทั้งหมด ${qVacation} วัน (เหลือ ${qVacation - vacationUsed})</b></div>
+                        <div style="font-size:12px; color:var(--text-main); background:rgba(0,0,0,0.2); border:1px solid var(--glass-border); padding:12px; border-radius:var(--radius-sm); margin-top:10px; display:flex; flex-direction:column; gap:4px;">
+                            <div style="display:flex; justify-content:space-between;"><span><span style="opacity:0.8">🤒 ลาป่วย:</span></span> <span>ใช้ ${sickUsed} / ทั้งหมด ${qSick} <span style="color:var(--text-sub)">(เหลือ ${qSick - sickUsed})</span></span></div>
+                            <div style="display:flex; justify-content:space-between;"><span><span style="opacity:0.8">💼 ลากิจ:</span></span> <span>ใช้ ${personalUsed} / ทั้งหมด ${qPersonal} <span style="color:var(--text-sub)">(เหลือ ${qPersonal - personalUsed})</span></span></div>
+                            <div style="display:flex; justify-content:space-between;"><span><span style="opacity:0.8">🏖️ พักร้อน:</span></span> <span>ใช้ ${vacationUsed} / ทั้งหมด ${qVacation} <span style="color:var(--text-sub)">(เหลือ ${qVacation - vacationUsed})</span></span></div>
                         </div>
-                        <div style="display:flex; gap:8px; margin-top:8px;">
-                            <button class="card-btn" style="background:var(--primary); color:var(--white); flex:1;" onclick="openEmployeeEditPopup('${key}')">
-                                <i class="fa-solid fa-user-pen"></i> จัดการข้อมูล
+                        <div style="display:flex; gap:10px; margin-top:12px;">
+                            <button class="card-btn" style="flex:1; background:rgba(255,255,255,0.05);" onclick="openEmployeeEditPopup('${key}')">
+                                <i class="fa-solid fa-user-pen"></i> แก้ไขข้อมูล
                             </button>
-                            <button class="card-btn" style="background:var(--warning); color:#fff; flex:1;" onclick="openEmpLeaveHistory('${key}')">
-                                <i class="fa-solid fa-clock-rotate-left"></i> ดูประวัติยื่นลา
+                            <button class="card-btn" style="flex:1; background:rgba(14, 165, 233, 0.15); color:var(--secondary); border-color:rgba(14, 165, 233, 0.3);" onclick="openEmpLeaveHistory('${key}')">
+                                <i class="fa-solid fa-clock-rotate-left"></i> ประวัติลา
                             </button>
                         </div>
                     </div>
@@ -608,7 +644,7 @@
             });
 
             if (count === 0) {
-                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 40px;">🔍 ไม่พบข้อมูลรายชื่อพนักงานที่ตรงกับคำที่ค้นหาค่ะ</div>`;
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 40px; background:var(--glass-bg); border-radius:var(--radius-md); border:1px dashed var(--glass-border);">🔍 ไม่พบข้อมูลรายชื่อพนักงานที่ตรงกับคำที่ค้นหาค่ะ</div>`;
             }
         }
 
@@ -616,7 +652,7 @@
             document.getElementById("historyUserId").value = userId;
             document.getElementById("historyFilterDate").value = ""; 
             renderEmpLeaveHistory();
-            document.getElementById("empLeaveHistoryModal").style.display = "block";
+            document.getElementById("empLeaveHistoryModal").style.display = "flex";
         }
 
         function renderEmpLeaveHistory() {
@@ -648,27 +684,27 @@
                 else statusBadge = `<span class="badge status-pending">รอพิจารณา</span>`;
 
                 container.innerHTML += `
-                    <div style="border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 15px; background: var(--bg-color);">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <strong style="color:var(--text-main);">${item.type} (${item.days} วัน)</strong>
+                    <div style="border: 1px solid var(--glass-border); border-radius: var(--radius-sm); padding: 16px; background: rgba(0,0,0,0.2);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <strong style="color:var(--text-main); font-size:15px;">${item.type} (${item.days} วัน)</strong>
                             ${statusBadge}
                         </div>
-                        <div style="font-size: 13px; color: var(--text-sub); margin-bottom: 5px;">
+                        <div style="font-size: 13px; color: var(--text-sub); margin-bottom: 6px;">
                             <i class="fa-regular fa-calendar"></i> ลาตั้งแต่วันที่: ${item.startDate} ถึง ${item.endDate}
                         </div>
-                        <div style="font-size: 13px; color: var(--text-sub); margin-bottom: 12px;">
+                        <div style="font-size: 13px; color: var(--text-sub); margin-bottom: 14px;">
                             <i class="fa-regular fa-clock"></i> ส่งรายการเมื่อ: ${item.requestTime || '-'}
                         </div>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px; flex:1; justify-content:center;" onclick="openLeaveApprovalPopup('${key}')"><i class="fa-solid fa-pen-to-square"></i> แก้ไข/ตรวจสอบ</button>
-                            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 13px;" onclick="deleteLeaveById('${key}')"><i class="fa-solid fa-trash"></i></button>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-secondary" style="padding: 8px 14px; font-size: 13px; flex:1; justify-content:center;" onclick="openLeaveApprovalPopup('${key}')"><i class="fa-solid fa-pen-to-square"></i> เปิดตรวจสอบ</button>
+                            <button class="btn btn-danger" style="padding: 8px 14px; font-size: 13px;" onclick="deleteLeaveById('${key}')"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
             });
 
             if (count === 0) {
-                container.innerHTML = `<div style="text-align: center; color: var(--text-sub); padding: 20px;">ไม่มีประวัติการยื่นลาในระบบ</div>`;
+                container.innerHTML = `<div style="text-align: center; color: var(--text-sub); padding: 30px;">ไม่มีประวัติการยื่นลาในระบบ</div>`;
             }
         }
 
@@ -704,21 +740,21 @@
                     historyCount++;
                     historyListContainer.innerHTML += `
                         <div class="mini-history-item">
-                            <span><b>${lItem.type}</b> (${lItem.days} วัน) - วันที่: ${lItem.startDate}</span>
-                            <span style="color:var(--success); font-weight:bold;"><i class="fa-solid fa-check"></i> อนุมัติแล้ว</span>
+                            <span><b>${lItem.type}</b> <span style="font-weight:400">(${lItem.days} วัน) - วันที่: ${lItem.startDate}</span></span>
+                            <span style="color:#34d399; font-weight:bold;"><i class="fa-solid fa-check"></i> อนุมัติ</span>
                         </div>
                     `;
                 }
             });
 
             if(historyCount === 0) {
-                historyListContainer.innerHTML = `<div style="font-size:12px; color:var(--text-sub); text-align:center; padding:10px;">ไม่มีประวัติการอนุมัติการลาก่อนหน้านี้ในปีนี้</div>`;
+                historyListContainer.innerHTML = `<div style="font-size:13px; color:var(--text-sub); text-align:center; padding:15px;">ไม่มีประวัติการอนุมัติการลาก่อนหน้านี้ในปีนี้</div>`;
             }
 
-            if(document.getElementById("empLeaveHistoryModal").style.display === "block") {
+            if(document.getElementById("empLeaveHistoryModal").style.display === "flex" || document.getElementById("empLeaveHistoryModal").style.display === "block") {
                 closeModal('empLeaveHistoryModal');
             }
-            document.getElementById("leaveEditModal").style.display = "block";
+            document.getElementById("leaveEditModal").style.display = "flex";
         }
 
         function sendLineNotificationAdmin(leaveData, newStatus) {
@@ -795,7 +831,6 @@
             }
         }
 
-        // 🛠️ ศัลยกรรมจุดโหลดข้อมูล: แมปข้อมูลดึงตามฟิลด์จาก profile.html เข้าฟอร์มโดยตรง
         function openEmployeeEditPopup(key) {
             const user = globalUsersData[key];
             if (!user) return;
@@ -812,11 +847,8 @@
             document.getElementById("editBankName").value = user.bankName || ''; 
             document.getElementById("editBankAccount").value = user.bankAccount || ''; 
             document.getElementById("editPromptPay").value = user.promptPay || ''; 
-            
-            // 🛠️ เชื่อมคีย์วันเริ่มทำงานให้สัมพันธ์ตามโปรไฟล์
             document.getElementById("editStartDate").value = user.startDateWork || ''; 
             
-            // 🛠️ เชื่อมคีย์ที่อยู่แบบแยกฟิลด์ให้สัมพันธ์ตามโปรไฟล์พนักงาน
             document.getElementById("editAddrNo").value = user.addr_no || '';
             document.getElementById("editAddrMoo").value = user.addr_moo || '';
             document.getElementById("editAddrSubdistrict").value = user.addr_subdistrict || '';
@@ -828,10 +860,9 @@
             document.getElementById("editQVacation").value = user.q_vacation !== undefined ? user.q_vacation : 10;
             document.getElementById("editIsLocked").checked = user.isProfileLocked === true;
 
-            document.getElementById("editModal").style.display = "block";
+            document.getElementById("editModal").style.display = "flex";
         }
 
-        // 🛠️ ศัลยกรรมจุดบันทึกข้อมูล: เซฟข้อมูลแยกฟิลด์ที่ถูกต้องกลับลง Firebase เคลียร์ปัญหาคีย์ไม่ตรงกัน
         function saveEmployeeData() {
             const key = document.getElementById("editEmpKey").value;
             if (!key) return;
@@ -848,17 +879,12 @@
                 bankName: document.getElementById("editBankName").value.trim(),
                 bankAccount: document.getElementById("editBankAccount").value.trim(),
                 promptPay: document.getElementById("editPromptPay").value.trim(),
-                
-                // 🛠️ ส่งบันทึกเข้าคีย์ startDateWork ให้พนักงานเห็นตรงกัน
                 startDateWork: document.getElementById("editStartDate").value,
-                
-                // 🛠️ ส่งบันทึกที่อยู่แยกฟิลด์กลับเข้า database
                 addr_no: document.getElementById("editAddrNo").value.trim(),
                 addr_moo: document.getElementById("editAddrMoo").value.trim(),
                 addr_subdistrict: document.getElementById("editAddrSubdistrict").value.trim(),
                 addr_district: document.getElementById("editAddrDistrict").value.trim(),
                 addr_province: document.getElementById("editAddrProvince").value.trim(),
-                
                 q_sick: parseInt(document.getElementById("editQSick").value) || 0,
                 q_personal: parseInt(document.getElementById("editQPersonal").value) || 0,
                 q_vacation: parseInt(document.getElementById("editQVacation").value) || 0,
