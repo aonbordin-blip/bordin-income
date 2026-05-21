@@ -68,7 +68,7 @@
         .circle-2 { width: 500px; height: 500px; bottom: -15%; right: -5%; animation-delay: 2s; background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(244, 63, 94, 0.12) 100%); }
         @keyframes floatAnimation { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-20px) scale(1.03); } }
 
-        /* Navbar Header (ทำเป็น Glass แบบ Profile) */
+        /* Navbar Header */
         .header { 
             background: var(--glass-bg); 
             border: 1px solid var(--glass-border); 
@@ -328,13 +328,29 @@
         .ann-item-card.type-image::before { background: var(--success); }
         .ann-item-card.type-video::before { background: var(--warning); }
 
-        .ann-content-box { flex: 1; }
+        /* ✨ ศัลยกรรมเพิ่มเติม: ป้องกันกล่องยืดเมื่อมีลิงก์ยาวหรือคำภาษาไทยติดกัน */
+        .ann-content-box { flex: 1; min-width: 0; }
+        
         .ann-badge-row { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
         .ann-badge { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 8px; text-transform: uppercase; }
         .ann-badge.badge-text { background: rgba(14, 165, 233, 0.15); color: #38bdf8; }
         .ann-badge.badge-image { background: rgba(16, 185, 129, 0.15); color: #34d399; }
         .ann-badge.badge-video { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-        .ann-card-text { font-size: 14px; color: #e2e8f0; line-height: 1.5; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        .ann-card-text { 
+            font-size: 14px; 
+            color: #e2e8f0; 
+            line-height: 1.5; 
+            margin-bottom: 4px; 
+            display: -webkit-box; 
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical; 
+            overflow: hidden; 
+            /* ✨ ศัลยกรรมบังคับตัดคำให้อยู่ในกรอบ */
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+        
         .ann-card-time { font-size: 11px; color: #94a3b8; }
         .ann-actions { display: flex; gap: 6px; }
         
@@ -416,7 +432,7 @@
                         <button id="btnCancelAnn" class="btn" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--glass-border); display:none; flex:1; justify-content:center; padding:12px;" onclick="resetAnnounceForm()">
                             ❌ ยกเลิก
                         </button>
-   <button id="btnSubmitAnn" class="btn btn-primary" style="flex:2; justify-content:center; padding:12px;" onclick="saveAnnouncement()">
+              <button id="btnSubmitAnn" class="btn btn-primary" style="flex:2; justify-content:center; padding:12px;" onclick="saveAnnouncement()">
                             <i class="fa-solid fa-bullhorn"></i> โพสต์ประกาศ
                         </button>
                     </div>
@@ -583,15 +599,12 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const storage = firebase.storage(); // ประกาศใช้งาน Storage
+        const storage = firebase.storage(); 
 
         let globalLeavesData = {};
         let globalUsersData = {};
         let editAnnounceKey = null; 
 
-        /* =========================================================
-           📢 NEW CRUD FUNCTION: ฟังก์ชันระบบข่าวสารพนักงานพร้อมระบบอัปโหลดไฟล์
-           ========================================================= */
         function loadAnnouncementsControl() {
             db.ref('announcements').orderByChild('timestamp').on('value', snap => {
                 const listContainer = document.getElementById('adminAnnounceList');
@@ -633,7 +646,6 @@
             });
         }
 
-        // ✨ ศัลยกรรมระบบบันทึกข่าวสาร ให้รองรับการอัปโหลดไฟล์ไปที่ Firebase Storage ✨
         function saveAnnouncement() {
             const message = document.getElementById('annText').value.trim();
             const type = document.getElementById('annType').value;
@@ -654,7 +666,6 @@
                 timestamp: Date.now()
             };
 
-            // ฟังก์ชันตัวช่วยสำหรับบันทึกข้อมูลลง Database
             const finalizeSave = (finalUrl) => {
                 payload.url = finalUrl || "";
                 if (editAnnounceKey) {
@@ -670,7 +681,6 @@
                 }
             };
 
-            // ถ้ามีการเลือกไฟล์อัปโหลดใหม่
             if (file) {
                 btnSubmit.disabled = true;
                 if(statusText) statusText.style.display = 'block';
@@ -679,7 +689,7 @@
                 const uploadTask = storageRef.put(file);
 
                 uploadTask.on('state_changed', 
-                    (snapshot) => { /* สามารถใส่คำนวณ % การอัปโหลดตรงนี้ได้ถ้าต้องการ */ }, 
+                    (snapshot) => { }, 
                     (error) => {
                         alert("เกิดข้อผิดพลาดในการอัปโหลดไฟล์: " + error.message);
                         btnSubmit.disabled = false;
@@ -689,12 +699,11 @@
                         uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
                             btnSubmit.disabled = false;
                             if(statusText) statusText.style.display = 'none';
-                            finalizeSave(downloadURL); // เมื่ออัปโหลดเสร็จ ให้บันทึก URL ลง DB
+                            finalizeSave(downloadURL); 
                         });
                     }
                 );
             } else {
-                // ถ้าไม่มีการอัปโหลดไฟล์ใหม่ ให้ใช้ URL เดิมที่มีอยู่ (กรณีแก้ไข) หรือปล่อยว่าง
                 finalizeSave(existingUrl);
             }
         }
@@ -703,7 +712,7 @@
             editAnnounceKey = key;
             document.getElementById('annText').value = decodeURIComponent(encodedMsg);
             document.getElementById('annExistingUrl').value = url; 
-            document.getElementById('annFile').value = ""; // เคลียร์ช่องเลือกไฟล์เผื่อไว้
+            document.getElementById('annFile').value = ""; 
             document.getElementById('annType').value = type;
             
             document.getElementById('btnSubmitAnn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> บันทึกการแก้ไข';
@@ -736,9 +745,6 @@
             }
         }
 
-        // ==========================================
-        // 🛡️ SYSTEM CORE FUNCTIONS: ส่วนเดิมของเตงทั้งหมด
-        // ==========================================
         function clearLeaveFilter() {
             document.getElementById('filterLeaveDate').value = '';
             renderLeaveRequests();

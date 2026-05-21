@@ -98,7 +98,19 @@
         .history-list { display: flex; flex-direction: column; gap: 12px; max-height: 350px; overflow-y: auto; padding-right: 4px; }
         .history-list::-webkit-scrollbar { width: 6px; } .history-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
         
-        .history-item { background: rgba(15, 23, 42, 0.4); border: 1px solid var(--glass-border); border-radius: 14px; padding: 16px; display: flex; justify-content: space-between; align-items: flex-start; transition: 0.2s; gap: 10px; }
+        /* 🔧 ศัลยกรรมแก้ไขเลย์เอาต์การลา (ป้องกันสถานะตกลงมา) */
+        .history-item { 
+            background: rgba(15, 23, 42, 0.4); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 14px; 
+            padding: 16px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+            transition: 0.2s; 
+            gap: 12px; 
+            flex-wrap: nowrap; /* ห้ามตกลงมาเด็ดขาด */
+        }
         .history-info-main { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
         .history-info-sub { font-size: 12.5px; color: var(--text-sub); margin-bottom: 4px; }
         
@@ -107,8 +119,8 @@
         .status-approved { background: rgba(16, 185, 129, 0.15); color: #34d399; }
         .status-rejected { background: rgba(244, 63, 94, 0.15); color: #f87171; }
 
-        .action-btn-group { display: flex; gap: 8px; margin-top: 10px; }
-        .btn-edit-leave, .btn-cancel-leave { border: 1px solid transparent; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.05); color: var(--text-main); }
+        .action-btn-group { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .btn-edit-leave, .btn-cancel-leave { border: 1px solid transparent; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 4px; background: rgba(255,255,255,0.05); color: var(--text-main); }
         .btn-edit-leave:hover { border-color: var(--secondary); color: var(--secondary); }
         .btn-cancel-leave:hover { border-color: var(--accent); color: var(--accent); }
 
@@ -120,80 +132,28 @@
         .modal-content h3 { margin: 0 0 20px 0; font-size: 18px; font-weight: 600; text-align: center; }
         .btn-secondary { flex: 1; padding: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-main); cursor: pointer; font-weight: 500; }
 
-        /* ==========================================
-           📢 ศัลยกรรมเฉพาะจุด: กระดานข่าวสารจาก Admin
-           ========================================== */
-        .announcement-board {
-            position: relative;
-            overflow: hidden;
-            padding: 20px 24px;
-        }
-        .announcement-board::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(to bottom, var(--accent), var(--secondary));
-        }
-        .announcement-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-height: 380px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
+        /* กระดานข่าวสารจาก Admin */
+        .announcement-board { position: relative; overflow: hidden; padding: 20px 24px; width: 100%; max-width: 100%; }
+        .announcement-board::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(to bottom, var(--accent), var(--secondary)); }
+        .announcement-list { display: flex; flex-direction: column; gap: 15px; max-height: 380px; overflow-y: auto; overflow-x: hidden; padding-right: 5px; }
         .announcement-list::-webkit-scrollbar { width: 6px; }
         .announcement-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
 
-        .announce-item {
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 16px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .announce-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            border-color: rgba(244, 63, 94, 0.3);
-        }
-        .announce-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-            border-bottom: 1px dashed rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-        }
-        .admin-avatar {
-            width: 40px; height: 40px;
-            background: linear-gradient(135deg, var(--accent), #be123c);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 18px;
-            box-shadow: 0 4px 10px rgba(244, 63, 94, 0.3);
-        }
-        .announce-meta { display: flex; flex-direction: column; }
+        .announce-item { background: rgba(15, 23, 42, 0.4); border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; transition: transform 0.3s, box-shadow 0.3s; width: 100%; word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; }
+        .announce-item:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); border-color: rgba(244, 63, 94, 0.3); }
+        .announce-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .admin-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), #be123c); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; box-shadow: 0 4px 10px rgba(244, 63, 94, 0.3); flex-shrink: 0; }
+        .announce-meta { display: flex; flex-direction: column; overflow: hidden; }
         .admin-name { font-weight: 600; font-size: 14px; color: #f8fafc; display: flex; align-items: center; gap: 6px; }
         .announce-time { font-size: 11px; color: var(--text-sub); }
-        .announce-body { font-size: 13.5px; color: #e2e8f0; line-height: 1.6; }
-        .announce-body a { color: var(--secondary); text-decoration: none; font-weight: 500; transition: 0.2s; }
+        
+        .announce-body { font-size: 13.5px; color: #e2e8f0; line-height: 1.6; word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; white-space: pre-wrap; width: 100%; }
+        .announce-body a { color: var(--secondary); text-decoration: none; font-weight: 500; transition: 0.2s; word-break: break-all; }
         .announce-body a:hover { color: #38bdf8; text-decoration: underline; }
-        .announce-media {
-            width: 100%;
-            max-height: 250px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-top: 10px;
-            border: 1px solid var(--glass-border);
-        }
-        .announce-video {
-            width: 100%;
-            border-radius: 12px;
-            margin-top: 10px;
-            border: 1px solid var(--glass-border);
-            outline: none;
-            background: #000;
-        }
+        
+        .announce-media { width: 100%; max-width: 100%; max-height: 250px; object-fit: contain; border-radius: 12px; margin-top: 10px; border: 1px solid var(--glass-border); display: block; }
+        .announce-video { width: 100%; max-width: 100%; border-radius: 12px; margin-top: 10px; border: 1px solid var(--glass-border); outline: none; background: #000; }
         .empty-announce { text-align: center; color: var(--text-sub); padding: 30px; font-size: 14px; }
-
 
         /* ==========================================
            📱 Mobile Responsive
@@ -208,10 +168,13 @@
             .stat-card { padding: 12px; border-radius: 16px; }
             .stat-label { font-size: 12px; }
             .stat-count { font-size: 22px; }
-            .history-item { flex-direction: column; }
-            .status-badge { align-self: flex-start; }
-            .action-btn-group { align-self: flex-start; width: 100%; flex-wrap: wrap; }
+            
+            /* ศัลยกรรมให้ปุ่มเรียงสวยงามเวลาหดจอ แต่สถานะยังคงล็อกขวาบน */
+            .action-btn-group { width: 100%; }
             .action-btn-group > button { flex: 1; }
+            
+            .announce-body { font-size: 13px; }
+            .announcement-board { padding: 16px; }
         }
     </style>
 </head>
@@ -358,7 +321,6 @@
             const data = snap.val();
             
             if(data) {
-                // ดึงข้อมูลมาจัดเรียงอันใหม่ล่าสุดไว้บนสุด
                 const arr = Object.values(data).sort((a,b) => b.timestamp - a.timestamp);
                 
                 arr.forEach(a => {
@@ -369,7 +331,6 @@
                         mediaHtml = `<video controls class="announce-video"><source src="${a.url}" type="video/mp4">เบราว์เซอร์ไม่รองรับวิดีโอ</video>`;
                     }
                     
-                    // สร้างโค้ดแปลงลิงก์อัตโนมัติ (เผื่อ Admin แนบลิงก์มาในข้อความ)
                     let msg = (a.message || "").replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
                     
                     list.innerHTML += `
@@ -388,7 +349,6 @@
                     </div>`;
                 });
             } else {
-                // 📌 ถ้า Firebase ยังว่างเปล่า (Admin ยังไม่ได้โพสต์) ให้แสดงกล่องตัวอย่าง Mockup ชั่วคราวไปก่อน
                 list.innerHTML = `
                     <div class="announce-item">
                         <div class="announce-header">
@@ -474,7 +434,7 @@
         }
     }
 
-     function saveProfile() {
+ function saveProfile() {
         const profile = {
             employeeId: document.getElementById('employeeId').value,
             idCard: document.getElementById('idCard').value,
@@ -505,7 +465,6 @@
     }
 
     function loadProfile() {
-        // โหลดกระดานข่าวสารเป็นอันดับแรก
         loadAnnouncements();
 
         if(loggedInUserId) {
@@ -568,15 +527,18 @@
                 const statusClass = r.status === 'อนุมัติ' ? 'status-approved' : (r.status === 'ไม่อนุมัติ' ? 'status-rejected' : 'status-pending');
                 const typeIcon = r.type === 'ลาป่วย' ? '🤒' : (r.type === 'ลากิจ' ? '💼' : '🏖️');
 
+                // 🔧 ศัลยกรรม JS ป้องกันสถานะร่วง: แบ่งโซน flex ให้ชัดเจน
                 body.innerHTML += `
                 <div class="history-item">
-                    <div style="flex: 1;">
+                    <div style="flex: 1; min-width: 0;">
                         <div class="history-info-main">${typeIcon} ${r.type} <span>(${r.days} วัน)</span></div>
                         <div class="history-info-sub"><i class="fa-regular fa-calendar"></i> ${r.startDate} ถึง ${r.endDate}</div>
                         <div class="history-info-sub" style="font-size:11px; opacity:0.7;">🕒 ร้องขอ: ${r.requestTime || '-'}</div>
                         ${actionButtonsHtml}
                     </div>
-                    <div><span class="status-badge ${statusClass}">${r.status}</span></div>
+                    <div style="flex-shrink: 0; margin-left: 8px;">
+                        <span class="status-badge ${statusClass}">${r.status}</span>
+                    </div>
                 </div>`;
             });
         } else {
@@ -604,7 +566,6 @@
             </div>
         `;
     }
-
 
     function submitLeave() {
         const empId = document.getElementById('employeeId').value;
